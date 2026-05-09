@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Token Almanac</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Source Serif Pro', Georgia, serif;
+    background: #f5efde;
+    color: #1a1a1a;
+    line-height: 1.5;
+    padding: 40px 20px 60px;
+  }
+  /* Paper texture */
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(120,80,30,0.04) 1px, transparent 1px),
+      radial-gradient(circle at 70% 60%, rgba(120,80,30,0.04) 1px, transparent 1px),
+      radial-gradient(circle at 50% 80%, rgba(120,80,30,0.03) 1px, transparent 1px);
+    background-size: 7px 7px, 11px 11px, 5px 5px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .paper {
+    position: relative; z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    background: #faf6e8;
+    box-shadow:
+      0 0 0 1px #1a1a1a,
+      0 30px 80px rgba(0,0,0,0.18);
+    padding: 48px 56px 60px;
+  }
+
+  /* Masthead */
+  .masthead {
+    text-align: center;
+    border-bottom: 5px double #1a1a1a;
+    padding-bottom: 14px;
+  }
+  .masthead .name {
+    font-family: 'UnifrakturCook', 'Old English Text MT', serif;
+    font-size: 74px; line-height: 0.95;
+    letter-spacing: 0.005em;
+    margin-top: 4px;
+  }
+  .masthead .top-rule {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 5px; margin-bottom: 8px;
+  }
+  .masthead .sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: 14px;
+    margin-top: 6px;
+    letter-spacing: 0.01em;
+  }
+  .masthead .deck-rule {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 14px;
+    padding-top: 8px;
+    border-top: 1px solid #1a1a1a;
+  }
+
+  /* Headline section */
+  .lead {
+    text-align: center;
+    border-bottom: 2px solid #1a1a1a;
+    padding: 28px 16px 24px;
+  }
+  .lead h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900; font-size: 70px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  .lead h1 em {
+    font-style: italic; font-weight: 700;
+  }
+  .lead .deck {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: 18px;
+    margin-top: 12px;
+    color: #2a2a2a;
+  }
+  .lead .byline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 18px;
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    border-bottom: 5px double #1a1a1a;
+  }
+  .stats > div {
+    padding: 18px 14px;
+    border-right: 1px solid #1a1a1a;
+    text-align: center;
+  }
+  .stats > div:last-child { border-right: 0; }
+  .stats .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px; font-weight: 900;
+    line-height: 1;
+  }
+  .stats .lab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* Section heading */
+  .sec-h {
+    font-family: 'Playfair Display', serif;
+    text-align: center;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 22px;
+    padding: 18px 0 10px;
+    border-bottom: 1px solid #1a1a1a;
+    position: relative;
+  }
+  .sec-h::before, .sec-h::after {
+    content: '❦';
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-style: normal; font-size: 14px;
+  }
+  .sec-h::before { left: 30%; }
+  .sec-h::after  { right: 30%; }
+
+  /* Monthly chronicle */
+  .month-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 100px;
+    gap: 22px; align-items: baseline;
+    padding: 14px 8px;
+    border-bottom: 1px dotted #1a1a1a;
+  }
+  .month-row.peak {
+    background: #ffe6004d;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .month-row .mn {
+    font-family: 'UnifrakturCook', serif;
+    font-size: 30px; line-height: 1;
+  }
+  .month-row .body {
+    font-size: 14px; line-height: 1.5;
+  }
+  .month-row .body b { font-style: italic; font-weight: 700; }
+  .month-row .body .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.05em;
+    color: #555;
+    margin-top: 4px;
+  }
+  .month-row .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 900;
+    text-align: right;
+  }
+
+  /* Two-column layout for projects + models */
+  .twocol {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 5px double #1a1a1a;
+  }
+
+  /* Classifieds (projects) */
+  .classifieds .sec-h-mini {
+    text-align: center;
+    font-family: 'UnifrakturCook', serif;
+    font-size: 22px;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .classifieds .ad {
+    border-bottom: 1px dotted #1a1a1a;
+    padding: 10px 4px;
+  }
+  .classifieds .ad-h {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900; font-size: 16px;
+    text-transform: uppercase; letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+  .classifieds .ad-h em {
+    font-style: normal; color: #a83c20;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; margin-left: 6px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+  .classifieds .ad-b {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .classifieds .ad-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #555;
+    margin-top: 4px;
+  }
+
+  /* Models index */
+  .models {
+    background: #f0e9d4;
+    border: 2px solid #1a1a1a;
+    padding: 18px;
+  }
+  .models .h {
+    font-family: 'UnifrakturCook', serif;
+    font-size: 22px;
+    text-align: center;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .models .row {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px dotted #1a1a1a;
+  }
+  .models .row:last-child { border-bottom: 0; }
+  .models .nm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600;
+  }
+  .models .nm small {
+    display: block; font-family: 'Source Serif Pro', serif;
+    font-style: italic; font-size: 11px; color: #555;
+    margin-top: 2px;
+  }
+  .models .v {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-weight: 900;
+  }
+  .models .v small {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #555;
+    text-align: right;
+  }
+
+  /* Highlights row */
+  .hi-row {
+    margin-top: 28px;
+    padding: 18px 0;
+    border-top: 5px double #1a1a1a;
+    border-bottom: 5px double #1a1a1a;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    text-align: center;
+  }
+  .hi-row .hi-l {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .hi-row .hi-v {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 900;
+    line-height: 1;
+    margin: 6px 0 4px;
+    font-style: italic;
+  }
+  .hi-row .hi-d {
+    font-size: 11px; color: #555;
+    font-style: italic;
+  }
+
+  /* Colophon */
+  .colophon {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+  }
+  .colophon a { color: #1a1a1a; border-bottom: 1px solid #1a1a1a; text-decoration: none; }
+</style>
+</head>
+<body>
+  <article class="paper">
+
+    <header class="masthead">
+      <div class="top-rule">
+        <span>EST. <span id="since">—</span></span>
+        <span>"All the prompts that fit"</span>
+        <span>VOL. I · NO. <span id="vol">—</span></span>
+      </div>
+      <div class="name">The Token Almanac</div>
+      <div class="sub">A monthly chronicle of one engineer's collaboration with the machine.</div>
+      <div class="deck-rule">
+        <span>YEAR <span id="year2">—</span></span>
+        <span>EDITION OF ONE</span>
+        <span>PRICE: ONE SESSION</span>
+      </div>
+    </header>
+
+    <section class="lead">
+      <h1 id="lead-h">— Million<br>Tokens, in <em>Twelve</em> Months.</h1>
+      <p class="deck" id="lead-deck">— · — · —</p>
+      <p class="byline">By <span id="byline-name">—</span> · Filed from <span id="byline-loc">—</span></p>
+    </section>
+
+    <section class="stats">
+      <div><div class="num" id="st-tot">—</div><div class="lab">Total tokens</div></div>
+      <div><div class="num" id="st-avg">—</div><div class="lab">Avg / month</div></div>
+      <div><div class="num" id="st-sess">—</div><div class="lab">Sessions</div></div>
+      <div><div class="num" id="st-proj">—</div><div class="lab">Projects</div></div>
+    </section>
+
+    <h2 class="sec-h">The Monthly Dispatch</h2>
+    <div id="month-list"></div>
+
+    <section class="twocol">
+      <div class="classifieds">
+        <div class="sec-h-mini">Classifieds &amp; Repositories</div>
+        <div id="proj-list"></div>
+      </div>
+
+      <aside class="models">
+        <div class="h">Index of<br>Models</div>
+        <div id="model-list"></div>
+        <div style="font-family:'Source Serif Pro';font-style:italic;font-size:11px;text-align:center;margin-top:10px;border-top:1px dotted #1a1a1a;padding-top:8px">
+          By total tokens this year.
+        </div>
+      </aside>
+    </section>
+
+    <section class="hi-row" id="hi-row"></section>
+
+    <div class="colophon">
+      Set in Playfair, Source Serif &amp; UnifrakturCook · printed via
+      <a href="https://github.com/tt-a1i/tokenfolio" target="_blank">tokenfolio</a>
+    </div>
+
+  </article>
+
+<script src="../../data.js"></script>
+<script>
+(function() {
+  const D = window.RESUME_DATA;
+  const F = window.RESUME_FMT;
+
+  // masthead
+  document.getElementById('since').textContent = D.user.since;
+  document.getElementById('vol').textContent   = D.totals.sessions;
+  document.getElementById('year2').textContent = D.year;
+
+  // lead
+  document.getElementById('lead-h').innerHTML =
+    `${F.num(D.totals.tokens).replace('M','')} Million<br>Tokens, in <em>Twelve</em> Months.`;
+  const peak = D.by_month.find(m => m.peak) || D.by_month.reduce((a,b) => a.tokens > b.tokens ? a : b);
+  document.getElementById('lead-deck').textContent =
+    `Across ${D.totals.sessions} sessions and ${D.totals.projects} projects, with a peak in ${peak.label} of ${F.num(peak.tokens)} tokens.`;
+  document.getElementById('byline-name').textContent = D.user.name;
+  document.getElementById('byline-loc').textContent  = D.user.location;
+
+  // stats
+  document.getElementById('st-tot').textContent  = F.num(D.totals.tokens);
+  const avg = D.totals.tokens / D.by_month.length;
+  document.getElementById('st-avg').textContent  = F.num(avg);
+  document.getElementById('st-sess').textContent = D.totals.sessions;
+  document.getElementById('st-proj').textContent = D.totals.projects;
+
+  // months
+  document.getElementById('month-list').innerHTML = D.by_month.map(m => `
+    <div class="month-row${m.peak ? ' peak' : ''}">
+      <div class="mn">${m.label}</div>
+      <div class="body">
+        ${m.note}
+        <div class="meta">${m.sessions} sessions · top model ${m.top_model} · ${m.top_project}</div>
+      </div>
+      <div class="num">${F.num(m.tokens)}</div>
+    </div>
+  `).join('');
+
+  // classifieds
+  document.getElementById('proj-list').innerHTML = D.top_projects.map((p, i) => `
+    <div class="ad">
+      <div class="ad-h">${p.name} <em>${F.num(p.tokens)}</em></div>
+      <div class="ad-b">${p.description}</div>
+      <div class="ad-meta">${p.language} · ${p.sessions} sessions · #${i + 1} this year</div>
+    </div>
+  `).join('');
+
+  // models
+  const totModelTok = D.by_model.reduce((s, m) => s + m.tokens, 0);
+  document.getElementById('model-list').innerHTML = D.by_model.map(m => {
+    const pct = (m.tokens / totModelTok * 100).toFixed(0);
+    return `
+      <div class="row">
+        <div class="nm">${m.name}<small>${m.sessions} sessions</small></div>
+        <div class="v">${F.num(m.tokens)}<small>${pct}%</small></div>
+      </div>`;
+  }).join('');
+
+  // highlights
+  document.getElementById('hi-row').innerHTML = D.highlights.map(h => `
+    <div>
+      <div class="hi-l">${h.label}</div>
+      <div class="hi-v">${h.value}</div>
+      <div class="hi-d">${h.detail}</div>
+    </div>
+  `).join('');
+})();
+</script>
+</body>
+</html>

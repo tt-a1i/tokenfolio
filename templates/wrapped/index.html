@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrapped · token-resume</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0a0a0f;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .stage {
+    max-width: 540px;
+    margin: 0 auto;
+    background: #0a0a0f;
+    box-shadow: 0 0 80px rgba(255,255,255,0.04);
+    overflow: hidden;
+  }
+  /* Each "story" is a full color-block panel */
+  .story {
+    padding: 36px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .story .top {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase; font-weight: 700;
+    margin-bottom: 14px; opacity: 0.85;
+  }
+
+  /* hero */
+  .s-hero {
+    background: #1ed760;
+    color: #0a0a0f;
+    padding: 56px 28px 48px;
+  }
+  .s-hero::before, .s-hero::after { content: ''; position: absolute; border-radius: 50%; }
+  .s-hero::before { width: 220px; height: 220px; background: #ffe600; top: -60px; right: -60px; }
+  .s-hero::after  { width: 180px; height: 180px; background: #8b39ff; bottom: -50px; left: -50px; }
+  .s-hero .top { color: #0a0a0f; }
+  .s-hero h1 {
+    font-size: 92px; font-weight: 900; letter-spacing: -0.05em;
+    line-height: 0.85; position: relative; z-index: 5;
+  }
+  .s-hero h1 em { font-style: normal; color: #fff; }
+  .s-hero p.tag {
+    position: relative; z-index: 5;
+    font-size: 14px; font-weight: 700; margin-top: 18px;
+  }
+  .s-hero .who {
+    position: relative; z-index: 5;
+    margin-top: 28px; display: flex; gap: 12px; align-items: center;
+  }
+  .s-hero .who .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #0a0a0f; color: #1ed760;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px;
+  }
+  .s-hero .who .name { font-size: 16px; font-weight: 800; line-height: 1.1; }
+  .s-hero .who .role { font-size: 12px; opacity: 0.75; }
+
+  /* months */
+  .s-months {
+    background: #ff5500;
+    color: #fff;
+    padding: 36px 0 28px;
+  }
+  .s-months .top { padding: 0 28px; color: #fff; }
+  .s-months h2 {
+    padding: 0 28px;
+    font-size: 36px; font-weight: 900; letter-spacing: -0.03em;
+    margin-bottom: 22px; line-height: 0.95;
+  }
+  .s-months h2 em { font-style: normal; color: #ffe600; }
+  .month-row {
+    padding: 11px 28px;
+    display: grid; grid-template-columns: 50px 1fr auto;
+    align-items: center; gap: 14px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+  }
+  .month-row.peak { background: rgba(0,0,0,0.18); }
+  .month-row .lab {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.15em; opacity: 0.8;
+  }
+  .month-row .bar-track {
+    height: 14px; background: rgba(0,0,0,0.18);
+    border-radius: 7px; overflow: hidden; position: relative;
+  }
+  .month-row .bar-fill {
+    height: 100%; border-radius: 7px;
+    background: linear-gradient(90deg, #ffe600, #fff);
+    transition: width 0.6s ease;
+  }
+  .month-row.peak .bar-fill {
+    background: linear-gradient(90deg, #fff, #ffe600);
+    box-shadow: 0 0 12px rgba(255,255,255,0.6);
+  }
+  .month-row .num {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 13px;
+    min-width: 50px; text-align: right;
+  }
+  .month-row .peak-tag {
+    font-size: 9px; background: #ffe600; color: #ff5500;
+    padding: 2px 6px; border-radius: 4px; font-weight: 800;
+    margin-left: 6px; letter-spacing: 0.05em;
+  }
+
+  /* peak callout */
+  .s-peak {
+    background: #ffe600; color: #1a1a1a;
+  }
+  .s-peak .top { color: #1a1a1a; }
+  .s-peak h2 {
+    font-size: 60px; font-weight: 900;
+    letter-spacing: -0.04em; line-height: 0.9;
+  }
+  .s-peak .body {
+    margin-top: 20px; font-size: 16px; line-height: 1.4;
+    font-weight: 600; max-width: 380px;
+  }
+  .s-peak .body em { font-style: normal; background: #1a1a1a; color: #ffe600; padding: 0 6px; }
+
+  /* models */
+  .s-models {
+    background: #8b39ff; color: #fff;
+  }
+  .s-models h2 {
+    font-size: 32px; font-weight: 900;
+    letter-spacing: -0.03em; line-height: 1; margin-bottom: 22px;
+  }
+  .model-row {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: baseline; gap: 12px;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.2);
+  }
+  .model-row .nm { font-size: 18px; font-weight: 800; }
+  .model-row .nm small {
+    display: block; font-size: 11px; font-weight: 600; opacity: 0.7;
+    margin-top: 2px;
+  }
+  .model-row .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px; font-weight: 700;
+  }
+  .model-row .v small { font-size: 10px; opacity: 0.75; margin-left: 4px; }
+  .model-bar {
+    grid-column: 1 / -1;
+    height: 8px; background: rgba(0,0,0,0.25);
+    border-radius: 4px; overflow: hidden;
+    margin-top: 8px;
+  }
+  .model-bar > div {
+    height: 100%; background: linear-gradient(90deg, #ffe600, #fff);
+    border-radius: 4px;
+  }
+
+  /* projects */
+  .s-projects {
+    background: #4facff; color: #1a1a1a;
+  }
+  .s-projects .top { color: #1a1a1a; }
+  .s-projects h2 {
+    font-size: 32px; font-weight: 900;
+    letter-spacing: -0.03em; line-height: 1; margin-bottom: 22px;
+  }
+  .proj-row {
+    background: #fff; color: #1a1a1a;
+    padding: 14px 16px; margin-bottom: 8px; border-radius: 12px;
+    display: grid; grid-template-columns: 30px 1fr auto;
+    align-items: center; gap: 12px;
+  }
+  .proj-row .rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 900; color: #4facff;
+  }
+  .proj-row .nm {
+    font-size: 15px; font-weight: 800;
+  }
+  .proj-row .desc {
+    font-size: 11px; color: #666; margin-top: 1px;
+  }
+  .proj-row .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 13px; color: #1a1a1a;
+  }
+  .proj-row .v small { display: block; font-size: 9px; opacity: 0.6; }
+
+  /* highlights */
+  .s-hi {
+    background: #1a1a1a; color: #fff;
+  }
+  .hi-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-top: 18px;
+  }
+  .hi-card {
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 14px;
+  }
+  .hi-card .l { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.6; }
+  .hi-card .v { font-size: 24px; font-weight: 800; line-height: 1; margin-top: 6px; color: #1ed760; }
+  .hi-card .d { font-size: 11px; opacity: 0.7; margin-top: 4px; }
+
+  /* footer */
+  .s-foot {
+    background: #0a0a0f; color: #6b6b73;
+    text-align: center; font-size: 10px;
+    padding: 28px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.15em;
+  }
+  .s-foot a { color: #1ed760; text-decoration: none; }
+</style>
+</head>
+<body>
+  <main class="stage">
+
+    <section class="story s-hero">
+      <div class="top">YOUR · YEAR · WRAPPED</div>
+      <h1 id="hero-num">— <em>M</em><br>tokens.</h1>
+      <p class="tag" id="hero-sub"></p>
+      <div class="who">
+        <div class="avatar" id="hero-avatar">—</div>
+        <div>
+          <div class="name" id="hero-name">—</div>
+          <div class="role" id="hero-role">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story s-months">
+      <div class="top">A YEAR IN MONTHS</div>
+      <h2>Every <em>month</em>,<br>logged.</h2>
+      <div id="months-list"></div>
+    </section>
+
+    <section class="story s-peak">
+      <div class="top">YOUR PEAK MOMENT</div>
+      <h2 id="peak-h"></h2>
+      <p class="body" id="peak-body"></p>
+    </section>
+
+    <section class="story s-models">
+      <div class="top">MODEL MIX</div>
+      <h2>Who you<br>worked with.</h2>
+      <div id="models-list"></div>
+    </section>
+
+    <section class="story s-projects">
+      <div class="top">TOP REPOS</div>
+      <h2>What you<br>shipped.</h2>
+      <div id="projects-list"></div>
+    </section>
+
+    <section class="story s-hi">
+      <div class="top">FOR THE RECORD</div>
+      <h2 style="font-size:28px;font-weight:900;letter-spacing:-0.02em">A few small flexes.</h2>
+      <div class="hi-grid" id="hi-grid"></div>
+    </section>
+
+    <footer class="s-foot">
+      generated with <a href="https://github.com/tt-a1i/tokenfolio" target="_blank">tokenfolio</a>
+    </footer>
+
+  </main>
+
+<script src="../../data.js"></script>
+<script>
+(function() {
+  const D = window.RESUME_DATA;
+  const F = window.RESUME_FMT;
+
+  // hero
+  document.getElementById('hero-num').innerHTML =
+    F.num(D.totals.tokens) + '<em>&nbsp;</em><br>tokens.';
+  document.getElementById('hero-sub').textContent =
+    `${D.totals.sessions} sessions · ${D.totals.projects} projects · ${D.year}`;
+  document.getElementById('hero-avatar').textContent = D.user.avatar_initials;
+  document.getElementById('hero-name').textContent = D.user.name;
+  document.getElementById('hero-role').textContent = D.user.title + ' · ' + D.user.location;
+
+  // months
+  const maxTok = Math.max(...D.by_month.map(m => m.tokens));
+  const monthsHtml = D.by_month.map(m => {
+    const pct = (m.tokens / maxTok * 100).toFixed(1);
+    return `
+      <div class="month-row${m.peak ? ' peak' : ''}">
+        <div class="lab">${m.label.toUpperCase()}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="num">${F.num(m.tokens)}${m.peak ? '<span class="peak-tag">PEAK</span>' : ''}</div>
+      </div>`;
+  }).join('');
+  document.getElementById('months-list').innerHTML = monthsHtml;
+
+  // peak
+  const peak = D.by_month.find(m => m.peak) || D.by_month.reduce((a,b) => a.tokens > b.tokens ? a : b);
+  document.getElementById('peak-h').textContent = peak.label + '.';
+  document.getElementById('peak-body').innerHTML =
+    `Your busiest month — <em>${F.num(peak.tokens)}</em> tokens across <em>${peak.sessions}</em> sessions, mostly on <em>${peak.top_project}</em>.`;
+
+  // models
+  const totModelTok = D.by_model.reduce((s, m) => s + m.tokens, 0);
+  document.getElementById('models-list').innerHTML = D.by_model.map(m => {
+    const pct = (m.tokens / totModelTok * 100).toFixed(0);
+    return `
+      <div class="model-row">
+        <div class="nm">${m.name}<small>${m.sessions} sessions</small></div>
+        <div class="v">${F.num(m.tokens)}<small>${pct}%</small></div>
+        <div class="model-bar"><div style="width:${pct}%"></div></div>
+      </div>`;
+  }).join('');
+
+  // projects
+  document.getElementById('projects-list').innerHTML = D.top_projects.slice(0, 5).map((p, i) => `
+    <div class="proj-row">
+      <div class="rank">${String(i + 1).padStart(2, '0')}</div>
+      <div>
+        <div class="nm">${p.name}</div>
+        <div class="desc">${p.description}</div>
+      </div>
+      <div class="v">${F.num(p.tokens)}<small>${p.sessions} sess</small></div>
+    </div>
+  `).join('');
+
+  // highlights
+  document.getElementById('hi-grid').innerHTML = D.highlights.map(h => `
+    <div class="hi-card">
+      <div class="l">${h.label}</div>
+      <div class="v">${h.value}</div>
+      <div class="d">${h.detail}</div>
+    </div>
+  `).join('');
+})();
+</script>
+</body>
+</html>

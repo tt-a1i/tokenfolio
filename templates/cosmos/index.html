@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosmos · token-resume</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,200;0,300;0,500;1,300&family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #000;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+  .bg-stars {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+  .bg-stars canvas { width: 100%; height: 100%; }
+
+  .nebula {
+    position: fixed;
+    width: 800px; height: 800px;
+    top: 20%; left: 50%; transform: translateX(-50%);
+    background:
+      radial-gradient(ellipse at center, rgba(131,56,236,0.35) 0%, transparent 50%),
+      radial-gradient(ellipse at 30% 40%, rgba(255,0,110,0.25) 0%, transparent 45%),
+      radial-gradient(ellipse at 70% 60%, rgba(58,134,255,0.3) 0%, transparent 50%);
+    filter: blur(40px);
+    z-index: 0; pointer-events: none;
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 80px 32px 60px;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 60px 0 80px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: #a6e22e;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 132px; font-weight: 200; line-height: 0.9;
+    letter-spacing: -0.05em;
+    background: linear-gradient(180deg, #fff 0%, #a6e22e 90%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .label {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: 22px; opacity: 0.6;
+    margin-top: 14px; font-weight: 300;
+  }
+  .hero .who {
+    margin-top: 36px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .hero .who .name {
+    font-size: 16px; font-weight: 600; letter-spacing: 0.05em;
+  }
+  .hero .who .role {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: rgba(255,255,255,0.5); letter-spacing: 0.15em; text-transform: uppercase;
+  }
+
+  /* Section heads */
+  .section { margin-top: 80px; }
+  .sec-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 12px; margin-bottom: 28px;
+  }
+  .sec-head h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 36px; font-weight: 300; letter-spacing: -0.02em;
+  }
+  .sec-head h2 em {
+    font-style: italic; color: #a6e22e;
+  }
+  .sec-head .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.2em;
+  }
+
+  /* Monthly constellations */
+  .const-row {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 18px;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.2s;
+  }
+  .const-row:hover { background: rgba(255,255,255,0.02); }
+  .const-row.peak {
+    background: linear-gradient(90deg, rgba(255,190,11,0.06), transparent);
+  }
+  .const-row .m {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.5);
+  }
+  .const-row .stars {
+    height: 50px; position: relative;
+  }
+  .star {
+    position: absolute;
+    width: 6px; height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255,255,255,0.7);
+    transform: translate(-50%, -50%);
+  }
+  .star.gold { background: #ffbe0b; box-shadow: 0 0 14px rgba(255,190,11,0.9); }
+  .star.green { background: #a6e22e; box-shadow: 0 0 10px rgba(166,226,46,0.7); }
+  .star.blue { background: #66c0f4; box-shadow: 0 0 10px rgba(102,192,244,0.7); }
+  .star.pink { background: #ff006e; box-shadow: 0 0 10px rgba(255,0,110,0.6); }
+  .const-row .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 600;
+    text-align: right; min-width: 80px;
+  }
+  .const-row.peak .num { color: #ffbe0b; }
+  .const-row .desc {
+    grid-column: 2 / 3;
+    font-size: 11px; color: rgba(255,255,255,0.45);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* Models orbital */
+  .models-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+  }
+  .model-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    background: rgba(255,255,255,0.02);
+  }
+  .model-orb {
+    width: 80px; height: 80px;
+    border-radius: 50%; margin: 0 auto 16px;
+    position: relative;
+  }
+  .model-orb::after {
+    content: ''; position: absolute; inset: -4px;
+    border-radius: 50%;
+    border: 1px solid; opacity: 0.4;
+  }
+  .model-card .nm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+  }
+  .model-card .pct {
+    font-family: 'Fraunces', serif;
+    font-size: 38px; font-weight: 200; line-height: 1;
+  }
+  .model-card .v {
+    font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px;
+  }
+
+  /* Projects */
+  .proj-row {
+    display: grid;
+    grid-template-columns: 30px 1fr 100px;
+    gap: 18px; align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .proj-row:hover { background: rgba(255,255,255,0.02); }
+  .proj-row .rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: rgba(255,255,255,0.35);
+    letter-spacing: 0.1em;
+  }
+  .proj-row .nm {
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 300;
+    letter-spacing: -0.01em;
+  }
+  .proj-row .desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .proj-row .lang {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #a6e22e;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+    border: 1px solid rgba(166,226,46,0.4);
+    padding: 1px 6px; border-radius: 4px;
+  }
+  .proj-row .v {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 600;
+  }
+  .proj-row .v small { display: block; font-size: 9px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+  /* Highlights */
+  .hi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  .hi-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 20px;
+    background: rgba(255,255,255,0.02);
+  }
+  .hi-card .l {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.5); text-transform: uppercase;
+  }
+  .hi-card .v {
+    font-family: 'Fraunces', serif;
+    font-size: 32px; font-weight: 300; line-height: 1;
+    margin: 8px 0;
+    color: #a6e22e;
+  }
+  .hi-card .d {
+    font-size: 12px; color: rgba(255,255,255,0.6);
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 100px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.35);
+  }
+  footer a { color: #a6e22e; text-decoration: none; }
+</style>
+</head>
+<body>
+  <div class="bg-stars"><canvas id="stars"></canvas></div>
+  <div class="nebula"></div>
+
+  <main class="container">
+
+    <section class="hero">
+      <div class="kicker">A WORKING CONSTELLATION · <span id="year">—</span></div>
+      <h1 id="hero-num">—</h1>
+      <p class="label">tokens of collaboration</p>
+      <div class="who">
+        <div class="name" id="hero-name">—</div>
+        <div class="role" id="hero-role">—</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="sec-head">
+        <h2>Twelve <em>months</em>, by sky.</h2>
+        <span class="num">§ 01 · MONTHLY</span>
+      </div>
+      <div id="months-list"></div>
+    </section>
+
+    <section class="section">
+      <div class="sec-head">
+        <h2>Three <em>orbits</em>.</h2>
+        <span class="num">§ 02 · MODELS</span>
+      </div>
+      <div class="models-grid" id="models-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="sec-head">
+        <h2>What was <em>built</em>.</h2>
+        <span class="num">§ 03 · PROJECTS</span>
+      </div>
+      <div id="projects-list"></div>
+    </section>
+
+    <section class="section">
+      <div class="sec-head">
+        <h2>For the <em>record</em>.</h2>
+        <span class="num">§ 04 · HIGHLIGHTS</span>
+      </div>
+      <div class="hi-grid" id="hi-grid"></div>
+    </section>
+
+    <footer>
+      generated with <a href="https://github.com/tt-a1i/tokenfolio" target="_blank">tokenfolio</a> · open source · MIT
+    </footer>
+
+  </main>
+
+<script src="../../data.js"></script>
+<script>
+(function() {
+  const D = window.RESUME_DATA;
+  const F = window.RESUME_FMT;
+  const colors = ['', 'gold', 'green', 'blue', 'pink'];
+
+  // background stars
+  const cv = document.getElementById('stars');
+  function drawStars() {
+    cv.width = window.innerWidth; cv.height = window.innerHeight;
+    const ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    for (let i = 0; i < 200; i++) {
+      const x = Math.random() * cv.width;
+      const y = Math.random() * cv.height;
+      const r = Math.random() * 1.4 + 0.2;
+      const a = Math.random() * 0.7 + 0.3;
+      ctx.fillStyle = `rgba(255,255,255,${a})`;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  drawStars();
+  window.addEventListener('resize', drawStars);
+
+  // hero
+  document.getElementById('year').textContent = D.year;
+  document.getElementById('hero-num').textContent = F.num(D.totals.tokens);
+  document.getElementById('hero-name').textContent = D.user.name;
+  document.getElementById('hero-role').textContent =
+    D.user.title + ' · ' + D.totals.sessions + ' sessions · ' + D.totals.projects + ' projects';
+
+  // months as constellations
+  const maxTok = Math.max(...D.by_month.map(m => m.tokens));
+  const monthsHtml = D.by_month.map(m => {
+    // each session is a star, but cap visual to ~30 dots
+    const dotCount = Math.min(30, Math.max(3, Math.round(m.sessions * 0.8)));
+    const intensity = m.tokens / maxTok;
+    let stars = '';
+    for (let i = 0; i < dotCount; i++) {
+      const x = 5 + Math.random() * 90;
+      const y = 5 + Math.random() * 90;
+      const size = 0.5 + Math.random() * intensity * 1.5;
+      const cls = m.peak ? 'gold' : (Math.random() > 0.7 ? 'blue' : (Math.random() > 0.5 ? 'green' : ''));
+      stars += `<span class="star ${cls}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) scale(${size})"></span>`;
+    }
+    return `
+      <div class="const-row${m.peak ? ' peak' : ''}">
+        <div class="m">${m.label.toUpperCase()}</div>
+        <div>
+          <div class="stars">${stars}</div>
+          <div class="desc">${m.note}</div>
+        </div>
+        <div class="num">${F.num(m.tokens)}${m.peak ? ' ★' : ''}</div>
+      </div>`;
+  }).join('');
+  document.getElementById('months-list').innerHTML = monthsHtml;
+
+  // models as orbits
+  const totModelTok = D.by_model.reduce((s, m) => s + m.tokens, 0);
+  document.getElementById('models-grid').innerHTML = D.by_model.map(m => {
+    const pct = (m.tokens / totModelTok * 100).toFixed(0);
+    return `
+      <div class="model-card">
+        <div class="model-orb" style="background: radial-gradient(circle, ${m.color}, transparent); border-color: ${m.color}; box-shadow: 0 0 30px ${m.color}66"></div>
+        <div class="nm">${m.name}</div>
+        <div class="pct" style="color: ${m.color}">${pct}%</div>
+        <div class="v">${F.num(m.tokens)} tokens · ${m.sessions} sessions</div>
+      </div>`;
+  }).join('');
+
+  // projects
+  document.getElementById('projects-list').innerHTML = D.top_projects.map((p, i) => `
+    <div class="proj-row">
+      <div class="rank">${String(i + 1).padStart(2, '0')}</div>
+      <div>
+        <div class="nm">${p.name}</div>
+        <div class="desc">${p.description}</div>
+        <span class="lang">${p.language}</span>
+      </div>
+      <div class="v">${F.num(p.tokens)}<small>${p.sessions} sessions</small></div>
+    </div>
+  `).join('');
+
+  // highlights
+  document.getElementById('hi-grid').innerHTML = D.highlights.map(h => `
+    <div class="hi-card">
+      <div class="l">${h.label}</div>
+      <div class="v">${h.value}</div>
+      <div class="d">${h.detail}</div>
+    </div>
+  `).join('');
+})();
+</script>
+</body>
+</html>

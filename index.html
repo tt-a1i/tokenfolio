@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tokenfolio · template gallery</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --fg: #f5f5f7;
+    --dim: #8a8a92;
+    --border: #1f1f28;
+    --accent: #a6e22e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); }
+  body {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    min-height: 100vh;
+    padding: 36px 28px 48px;
+    max-width: 1280px; margin: 0 auto;
+  }
+  header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px; margin-bottom: 28px;
+  }
+  header .brand { font-size: 14px; font-weight: 600; }
+  header .brand em { font-style: normal; color: var(--accent); }
+  header .meta { color: var(--dim); font-size: 11px; letter-spacing: 0.1em; }
+  h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 14px;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+  .lede {
+    color: var(--dim); max-width: 620px;
+    font-family: 'Fraunces', Georgia, serif; font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 36px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 22px;
+  }
+  .tcard {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #11111a;
+    transition: transform 0.15s, border-color 0.15s;
+    display: flex; flex-direction: column;
+  }
+  .tcard:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .tcard .frame {
+    height: 320px; overflow: hidden; position: relative;
+    background: #000; border-bottom: 1px solid var(--border);
+  }
+  .tcard iframe {
+    width: 200%; height: 200%;
+    transform: scale(0.5); transform-origin: 0 0;
+    border: 0; pointer-events: none;
+  }
+  .tcard .info {
+    padding: 16px 18px 18px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .tcard .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .tcard h3 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 22px; font-weight: 500; letter-spacing: -0.01em;
+  }
+  .tcard .tag {
+    font-size: 9px; letter-spacing: 0.2em; color: var(--dim);
+    text-transform: uppercase;
+  }
+  .tcard p {
+    color: var(--dim); font-size: 12px; line-height: 1.55;
+  }
+  .tcard .actions {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .tcard .btn {
+    flex: 1; text-align: center;
+    padding: 9px 10px;
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--fg); text-decoration: none;
+    font-size: 11px; letter-spacing: 0.1em;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .tcard .btn:hover { background: #1a1a25; border-color: var(--accent); }
+  .tcard .btn.primary {
+    background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600;
+  }
+  .tcard .btn.primary:hover { background: #b8ed46; }
+  footer {
+    margin-top: 48px;
+    padding-top: 18px; border-top: 1px solid var(--border);
+    color: var(--dim); font-size: 11px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  footer a { color: var(--fg); text-decoration: none; border-bottom: 1px dotted var(--dim); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">token<em>folio</em></div>
+    <div class="meta">v0.1 · TEMPLATE GALLERY</div>
+  </header>
+
+  <h1>An AI usage <em>portfolio</em>,<br>made readable.</h1>
+  <p class="lede">
+    Pick a template, drop in your <code style="color:var(--accent)">data.js</code>,
+    deploy to GitHub Pages. Show recruiters what working with machines actually
+    looks like — by month, by model, by project.
+  </p>
+
+  <div class="grid">
+
+    <article class="tcard">
+      <div class="frame"><iframe src="templates/wrapped/" loading="lazy"></iframe></div>
+      <div class="info">
+        <div class="row">
+          <h3>Wrapped</h3>
+          <span class="tag">SOCIAL · BOLD</span>
+        </div>
+        <p>Spotify-Wrapped style. Big numbers, color-block months, peak month highlighted. Loud, shareable, made for posting.</p>
+        <div class="actions">
+          <a class="btn primary" href="templates/wrapped/" target="_blank">Open</a>
+          <a class="btn" href="templates/wrapped/index.html">View source</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="tcard">
+      <div class="frame"><iframe src="templates/cosmos/" loading="lazy"></iframe></div>
+      <div class="info">
+        <div class="row">
+          <h3>Cosmos</h3>
+          <span class="tag">ART · UNIQUE</span>
+        </div>
+        <p>Each month a constellation, each session a star. Dark, generative, premium. The shape of your year is unique to you.</p>
+        <div class="actions">
+          <a class="btn primary" href="templates/cosmos/" target="_blank">Open</a>
+          <a class="btn" href="templates/cosmos/index.html">View source</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="tcard">
+      <div class="frame"><iframe src="templates/almanac/" loading="lazy"></iframe></div>
+      <div class="info">
+        <div class="row">
+          <h3>Almanac</h3>
+          <span class="tag">EDITORIAL · LITERARY</span>
+        </div>
+        <p>"The Token Almanac" — gothic masthead, monthly dispatches, classified ads of your top projects. A working portrait, written.</p>
+        <div class="actions">
+          <a class="btn primary" href="templates/almanac/" target="_blank">Open</a>
+          <a class="btn" href="templates/almanac/index.html">View source</a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <footer>
+    <span>3 templates · more coming · open source · MIT</span>
+    <span>edit <a href="data.js">data.js</a> to customize</span>
+  </footer>
+</body>
+</html>
