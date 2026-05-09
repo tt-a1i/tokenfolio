@@ -39,23 +39,30 @@ More coming. Contributions welcome.
 # preview without writing — recommended first run
 npx github:tt-a1i/tokenfolio init --dry
 
-# write to ./data.js (refuses to overwrite by default)
+# both sources merged (default)
 npx github:tt-a1i/tokenfolio init --force
 
-# narrow to a specific year
-npx github:tt-a1i/tokenfolio init --year 2025 --force
+# narrow to one source / one year
+npx github:tt-a1i/tokenfolio init --source codex  --year 2026 --dry
+npx github:tt-a1i/tokenfolio init --source claude --year 2025 --dry
 
 # override identity (defaults pull from `git config`)
 npx github:tt-a1i/tokenfolio init \
   --name "Ada Lovelace" --handle "@ada" --location "London"
 ```
 
-The CLI shells out to [`ccusage`](https://github.com/ryoppippi/ccusage) under the hood — npx fetches both on first run.
+The CLI uses [`ccusage`](https://github.com/ryoppippi/ccusage) for Claude Code and a built-in JSONL parser for Codex.
 
-**Privacy red line:** only token counts, model names, project paths, and dates are read. Prompt contents are never extracted.
+**Currently supported sources:**
 
-**Currently supported:** Claude Code (`~/.claude/projects/`).
-**Coming next:** Codex (`~/.codex/sessions/`), Cursor, Aider.
+| source | location | mechanism |
+|---|---|---|
+| Claude Code | `~/.claude/projects/` | `ccusage` (auto-fetched via npx) |
+| Codex       | `~/.codex/sessions/`  | built-in parser |
+
+**Coming next:** Cursor, Aider, Continue.dev (where token counts exist).
+
+**Privacy red line:** only token counts, model names, project paths, and dates are read. Prompt content (`response_item` lines in Codex, `message` lines in Claude JSONL) is never parsed.
 
 ### Run locally
 
@@ -92,7 +99,7 @@ Every template reads from the same data object. Switch templates with zero data 
 
 - [x] 9 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist)
 - [x] `tokenfolio init` CLI for Claude Code (via ccusage)
-- [ ] CLI: Codex (`~/.codex/sessions/`) parser
+- [x] CLI: Codex (`~/.codex/sessions/`) parser
 - [ ] CLI: Cursor / Aider / Continue.dev support (where token counts exist)
 - [ ] More templates: synthwave, manga, trading-floor
 - [ ] Per-user dynamic OG image (Vercel Edge + Satori)

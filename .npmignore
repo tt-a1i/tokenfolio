@@ -1,0 +1,9 @@
+# files in the repo we don't ship to npm consumers
+.superpowers/
+.github/
+docs/
+.git*
+.gitignore
+.npmignore
+*.log
+.DS_Store
