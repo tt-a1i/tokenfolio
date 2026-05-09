@@ -1,0 +1,1430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boarding Pass · tokenfolio</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="tokenfolio · boarding pass">
+<meta property="og:description" content="Your AI usage rendered as a vintage airline boarding pass.">
+<meta property="og:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<meta property="og:url" content="https://tt-a1i.github.io/tokenfolio/templates/pass/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="tokenfolio · boarding pass">
+<meta name="twitter:description" content="Your AI usage rendered as a vintage airline boarding pass.">
+<meta name="twitter:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Bebas+Neue&family=Special+Elite&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Page / Background ──────────────────────────────────────── */
+:root {
+  --paper:    #faf6e8;
+  --paper2:   #f4f1ea;
+  --ink:      #1a1a1a;
+  --ink-dim:  #6a6a6a;
+  --stamp-red:#b8362a;
+  --board:    #ffd66e;
+  --bg:       #2a2520;
+}
+
+body {
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 48px 20px 72px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  color: var(--ink);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* SVG noise texture on page bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* Cross-hatching overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 8px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 8px);
+  pointer-events: none; z-index: 0;
+}
+
+/* ─── Main ticket wrapper ────────────────────────────────────── */
+.ticket-wrap {
+  position: relative; z-index: 1;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.ticket {
+  background: var(--paper);
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(26,26,26,0.4),
+    0 2px 0 1px rgba(26,26,26,0.15),
+    0 20px 60px rgba(0,0,0,0.5),
+    0 4px 20px rgba(0,0,0,0.3);
+  /* Subtle paper texture */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23p)' opacity='0.035'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #faf6e8 0%, #f6f2e0 100%);
+}
+
+/* ─── Header Strip ───────────────────────────────────────────── */
+.header-strip {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+.header-strip .center-txt {
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+/* ─── Main Pass Body ─────────────────────────────────────────── */
+.pass-body {
+  padding: 28px 36px 24px;
+}
+
+/* ─── Airline logo row ───────────────────────────────────────── */
+.airline-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.airline-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.airline-logo .plane-icon {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--stamp-red);
+}
+
+.airline-name {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--stamp-red);
+}
+.airline-name small {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  color: var(--ink-dim);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.ticket-type {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  line-height: 1.7;
+}
+.ticket-type strong {
+  display: block;
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 19px;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+}
+
+/* ─── Passenger Block ────────────────────────────────────────── */
+.passenger-block {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: start;
+  padding: 16px 0 18px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid rgba(26,26,26,0.2);
+  margin-bottom: 20px;
+}
+
+.passenger-label {
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 4px;
+}
+
+.passenger-name {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 46px;
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.passenger-handle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-dim);
+  margin-top: 5px;
+  letter-spacing: 0.05em;
+}
+
+.passenger-meta {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 6px;
+  line-height: 1.8;
+}
+
+.ff-badge {
+  text-align: right;
+}
+.ff-label {
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 6px;
+}
+.ff-number {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  border: 2px solid var(--ink);
+  padding: 4px 12px;
+  display: inline-block;
+}
+.ff-since {
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 5px;
+  display: block;
+  text-align: right;
+}
+
+/* ─── Route ──────────────────────────────────────────────────── */
+.route-block {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(26,26,26,0.2);
+}
+
+.route-city {
+  flex: 1;
+}
+.route-city .code {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 72px;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+}
+.route-city .city-name {
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 4px;
+}
+.route-city .city-time {
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  color: var(--ink-dim);
+  margin-top: 2px;
+}
+
+.route-arrow {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 0 24px;
+}
+.route-arrow .arrow-line {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+.route-arrow .arr-dash {
+  flex: 1;
+  height: 1px;
+  border-top: 1px solid var(--ink);
+  min-width: 40px;
+}
+.route-arrow .arr-plane {
+  font-size: 22px;
+  padding: 0 6px;
+  transform: scaleX(-1);
+  display: inline-block;
+}
+.route-arrow .arr-label {
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  text-align: center;
+  margin-top: 6px;
+}
+
+.route-city.dest {
+  text-align: right;
+}
+
+/* ─── Boarding Info Grid ─────────────────────────────────────── */
+.boarding-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+  margin-bottom: 0;
+}
+
+.boarding-cell {
+  padding: 12px 14px;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.boarding-cell .bc-label {
+  font-size: 7.5px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 5px;
+}
+
+.boarding-cell .bc-value {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  word-break: break-all;
+}
+
+.boarding-cell .bc-sub {
+  font-size: 7.5px;
+  letter-spacing: 0.12em;
+  color: var(--ink-dim);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* ─── Perforation Line ───────────────────────────────────────── */
+.perf-line {
+  position: relative;
+  margin: 0 -1px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+
+/* Left circle cutout */
+.perf-line::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px rgba(26,26,26,0.3);
+  z-index: 2;
+}
+
+/* Right circle cutout */
+.perf-line::after {
+  content: '';
+  position: absolute;
+  right: -16px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px rgba(26,26,26,0.3);
+  z-index: 2;
+}
+
+.perf-inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+}
+
+.perf-dash {
+  flex: 1;
+  border-top: 2px dashed var(--ink-dim);
+  opacity: 0.6;
+}
+
+.perf-cut {
+  font-size: 18px;
+  color: var(--ink-dim);
+  opacity: 0.7;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.perf-text {
+  font-size: 8px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+/* ─── Stub / Receipt ─────────────────────────────────────────── */
+.stub {
+  padding: 18px 36px 22px;
+  background: var(--paper2);
+  border-top: 1px dashed rgba(26,26,26,0.3);
+}
+
+.stub-header {
+  font-size: 8px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 14px;
+}
+
+.receipt-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 1px solid var(--ink);
+  margin-bottom: 18px;
+}
+
+.receipt-cell {
+  padding: 14px 16px;
+  border-right: 1px solid var(--ink);
+  text-align: center;
+}
+.receipt-cell:last-child { border-right: 0; }
+
+.receipt-cell .rc-icon {
+  font-size: 20px;
+  margin-bottom: 6px;
+  display: block;
+}
+.receipt-cell .rc-value {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 34px;
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+.receipt-cell .rc-label {
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 5px;
+}
+.receipt-cell .rc-sub {
+  font-size: 8px;
+  color: var(--ink-dim);
+  margin-top: 3px;
+}
+
+.stub-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Barcode */
+.barcode-block {
+  flex: 0 0 auto;
+}
+.barcode {
+  height: 52px;
+  width: 180px;
+  background: repeating-linear-gradient(
+    90deg,
+    #1a1a1a 0px 3px,
+    transparent 3px 5px,
+    #1a1a1a 5px 6px,
+    transparent 6px 9px,
+    #1a1a1a 9px 13px,
+    transparent 13px 15px,
+    #1a1a1a 15px 16px,
+    transparent 16px 20px,
+    #1a1a1a 20px 22px,
+    transparent 22px 24px,
+    #1a1a1a 24px 26px,
+    transparent 26px 30px,
+    #1a1a1a 30px 33px,
+    transparent 33px 35px,
+    #1a1a1a 35px 36px,
+    transparent 36px 40px,
+    #1a1a1a 40px 42px,
+    transparent 42px 45px,
+    #1a1a1a 45px 47px,
+    transparent 47px 50px,
+    #1a1a1a 50px 53px,
+    transparent 53px 56px,
+    #1a1a1a 56px 57px,
+    transparent 57px 60px,
+    #1a1a1a 60px 63px,
+    transparent 63px 66px,
+    #1a1a1a 66px 68px,
+    transparent 68px 71px,
+    #1a1a1a 71px 74px,
+    transparent 74px 77px,
+    #1a1a1a 77px 79px,
+    transparent 79px 82px,
+    #1a1a1a 82px 84px,
+    transparent 84px 88px,
+    #1a1a1a 88px 90px,
+    transparent 90px 93px,
+    #1a1a1a 93px 96px,
+    transparent 96px 99px,
+    #1a1a1a 99px 101px,
+    transparent 101px 104px,
+    #1a1a1a 104px 107px,
+    transparent 107px 110px,
+    #1a1a1a 110px 112px,
+    transparent 112px 116px,
+    #1a1a1a 116px 119px,
+    transparent 119px 122px,
+    #1a1a1a 122px 124px,
+    transparent 124px 128px,
+    #1a1a1a 128px 130px,
+    transparent 130px 133px,
+    #1a1a1a 133px 136px,
+    transparent 136px 139px,
+    #1a1a1a 139px 142px,
+    transparent 142px 145px,
+    #1a1a1a 145px 147px,
+    transparent 147px 150px,
+    #1a1a1a 150px 153px,
+    transparent 153px 156px,
+    #1a1a1a 156px 158px,
+    transparent 158px 162px,
+    #1a1a1a 162px 165px,
+    transparent 165px 168px,
+    #1a1a1a 168px 170px,
+    transparent 170px 173px,
+    #1a1a1a 173px 175px,
+    transparent 175px 178px,
+    #1a1a1a 178px 180px
+  );
+  margin-bottom: 4px;
+}
+.barcode-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.15em;
+  color: var(--ink-dim);
+  text-align: center;
+}
+
+/* Status stamp */
+.status-stamp {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.boarding-now {
+  display: inline-block;
+  background: var(--board);
+  border: 3px solid var(--ink);
+  padding: 8px 18px;
+  transform: rotate(-2.5deg);
+  box-shadow: 2px 2px 0 rgba(26,26,26,0.3);
+}
+
+.boarding-now .bn-status {
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 2px;
+}
+.boarding-now .bn-main {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: var(--ink);
+  display: block;
+}
+.boarding-now .bn-gate {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  color: var(--ink);
+  display: block;
+  margin-top: 3px;
+}
+
+/* Model breakdown in stub */
+.model-breakdown {
+  flex: 1;
+}
+.model-breakdown .mb-title {
+  font-size: 7.5px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 8px;
+}
+.model-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+.model-row .mr-name {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  min-width: 90px;
+  color: var(--ink);
+}
+.model-row .mr-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(26,26,26,0.12);
+  position: relative;
+}
+.model-row .mr-bar {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--ink);
+  opacity: 0.75;
+}
+.model-row .mr-pct {
+  font-size: 8.5px;
+  color: var(--ink-dim);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ─── Luggage Tag ────────────────────────────────────────────── */
+.luggage-tag-section {
+  position: relative; z-index: 1;
+  margin-top: 32px;
+}
+
+.luggage-tag-section .section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(250,246,232,0.45);
+  margin-bottom: 14px;
+}
+
+.luggage-tag {
+  background: var(--paper);
+  transform: rotate(-1.8deg);
+  box-shadow:
+    0 0 0 1px rgba(26,26,26,0.5),
+    0 8px 32px rgba(0,0,0,0.4);
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23p)' opacity='0.04'/%3E%3C/svg%3E"),
+    linear-gradient(170deg, #faf6e8 0%, #efe8d2 100%);
+}
+
+/* Tag hole */
+.tag-hole-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(26,26,26,0.2);
+}
+.tag-hole {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--bg);
+  flex-shrink: 0;
+  position: relative;
+}
+.tag-hole::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(26,26,26,0.15);
+}
+.tag-hole-label {
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-left: 14px;
+  flex: 1;
+}
+.tag-hole-dest {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+}
+
+.tag-body {
+  padding: 16px 24px 20px;
+}
+
+.tag-body .tag-title {
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 14px;
+  border-bottom: 1px dotted rgba(26,26,26,0.3);
+  padding-bottom: 8px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px 16px;
+}
+
+.proj-item {
+  border-left: 3px solid var(--ink);
+  padding-left: 10px;
+}
+.proj-item .pi-name {
+  font-family: 'Oswald', 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.proj-item .pi-lang {
+  font-size: 7.5px;
+  letter-spacing: 0.15em;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.proj-item .pi-tokens {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  margin-top: 3px;
+  color: var(--ink);
+}
+.proj-item .pi-desc {
+  font-size: 8px;
+  color: var(--ink-dim);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* ─── Passport Stamps ─────────────────────────────────────────── */
+.passport-section {
+  position: relative; z-index: 1;
+  margin-top: 32px;
+}
+
+.passport-section .section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(250,246,232,0.45);
+  margin-bottom: 14px;
+}
+
+.passport-page {
+  background: var(--paper2);
+  border: 1px solid rgba(26,26,26,0.5);
+  padding: 28px 28px 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23p)' opacity='0.045'/%3E%3C/svg%3E"),
+    linear-gradient(to bottom right, #f4f1ea, #f0ead6);
+}
+
+.passport-page .pp-header {
+  text-align: center;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(26,26,26,0.2);
+}
+.pp-header .pp-title {
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.pp-header .pp-year {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  margin-top: 4px;
+}
+
+.stamps-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: 3px double var(--ink);
+  padding: 8px 6px;
+  text-align: center;
+  position: relative;
+  transform: rotate(var(--rot, 0deg));
+  opacity: 0.82;
+  filter: contrast(1.1);
+  transition: opacity 0.15s;
+  cursor: default;
+}
+
+.stamp:hover {
+  opacity: 1;
+}
+
+.stamp.peak {
+  border-color: var(--stamp-red);
+  border-width: 3px;
+  border-style: solid;
+  transform: rotate(var(--rot, 0deg)) scale(1.08);
+  opacity: 0.92;
+}
+
+.stamp .st-month {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.stamp .st-tokens {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  margin-top: 3px;
+  color: var(--ink-dim);
+}
+
+.stamp .st-sessions {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7px;
+  color: var(--ink-dim);
+  margin-top: 1px;
+}
+
+.stamp.peak .st-month { color: var(--stamp-red); }
+.stamp.peak .st-tokens { color: var(--stamp-red); font-weight: 700; }
+
+.peak-badge {
+  position: absolute;
+  top: -8px; right: -8px;
+  background: var(--stamp-red);
+  color: var(--paper);
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  padding: 1px 4px;
+  border-radius: 2px;
+  line-height: 1.3;
+}
+
+/* Token bar under stamp grid */
+.month-bars {
+  margin-top: 18px;
+  border-top: 1px dotted rgba(26,26,26,0.3);
+  padding-top: 14px;
+}
+.month-bars .mb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.month-bars .mb-lbl {
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  width: 28px;
+  flex-shrink: 0;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+}
+.month-bars .mb-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(26,26,26,0.1);
+  position: relative;
+}
+.month-bars .mb-bar {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--ink);
+  opacity: 0.7;
+}
+.month-bars .mb-bar.peak-bar {
+  background: var(--stamp-red);
+  opacity: 0.85;
+}
+.month-bars .mb-val {
+  font-size: 8.5px;
+  width: 40px;
+  text-align: right;
+  color: var(--ink-dim);
+  flex-shrink: 0;
+}
+.month-bars .mb-note {
+  font-size: 7.5px;
+  color: var(--ink-dim);
+  letter-spacing: 0.03em;
+  flex: 0 0 auto;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Visa / Highlights ───────────────────────────────────────── */
+.visa-section {
+  position: relative; z-index: 1;
+  margin-top: 32px;
+}
+
+.visa-section .section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(250,246,232,0.45);
+  margin-bottom: 14px;
+}
+
+.visa-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.visa-stamp {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 16px 14px;
+  position: relative;
+  box-shadow: 2px 2px 0 rgba(26,26,26,0.2);
+  transform: rotate(var(--vrot, 0deg));
+}
+
+.visa-stamp::before {
+  content: 'VISA';
+  position: absolute;
+  top: -1px; right: 8px;
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--ink-dim);
+  background: var(--paper);
+  padding: 0 4px;
+  transform: translateY(-50%);
+}
+
+.visa-label {
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 5px;
+}
+
+.visa-value {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.visa-detail {
+  font-size: 8.5px;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+}
+
+.visa-serial {
+  font-size: 7.5px;
+  letter-spacing: 0.15em;
+  color: rgba(26,26,26,0.3);
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────── */
+.pass-footer {
+  position: relative; z-index: 1;
+  margin-top: 36px;
+  text-align: center;
+}
+
+.pass-footer .foot-txt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(250,246,232,0.3);
+  line-height: 2;
+}
+
+.pass-footer a {
+  color: rgba(250,246,232,0.5);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(250,246,232,0.2);
+}
+
+/* ─── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .boarding-grid { grid-template-columns: repeat(3, 1fr); }
+  .route-city .code { font-size: 52px; }
+  .stamps-grid { grid-template-columns: repeat(4, 1fr); }
+  .visa-grid { grid-template-columns: repeat(2, 1fr); }
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+  .passenger-name { font-size: 34px; }
+  .receipt-grid { grid-template-columns: 1fr; }
+  .receipt-cell { border-right: none; border-bottom: 1px solid var(--ink); }
+  .receipt-cell:last-child { border-bottom: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="ticket-wrap">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN PASS
+  ══════════════════════════════════════════════════════════════ -->
+  <article class="ticket">
+
+    <!-- Header strip: black bar -->
+    <div class="header-strip">
+      <span id="hs-left">AI BOARDING PASS</span>
+      <div class="center-txt" id="hs-center">✈ TOKENFOLIO AIR ✈</div>
+      <span id="hs-right">NO. — · —</span>
+    </div>
+
+    <div class="pass-body">
+
+      <!-- Airline logo row -->
+      <div class="airline-row">
+        <div class="airline-logo">
+          <span class="plane-icon">✈</span>
+          <div>
+            <div class="airline-name">TOKENFOLIO AIR<small>ARTIFICIAL INTELLIGENCE TRANSIT</small></div>
+          </div>
+        </div>
+        <div class="ticket-type">
+          <strong>BOARDING PASS</strong>
+          ORIGINAL · NON-TRANSFERABLE<br>
+          CLASS: ECONOMY OF SCALE
+        </div>
+      </div>
+
+      <!-- Passenger block -->
+      <div class="passenger-block">
+        <div>
+          <div class="passenger-label">PASSENGER NAME / NOM DU PASSAGER</div>
+          <div class="passenger-name" id="pass-name">—</div>
+          <div class="passenger-handle" id="pass-handle">—</div>
+          <div class="passenger-meta" id="pass-meta">—</div>
+        </div>
+        <div class="ff-badge">
+          <div class="ff-label">FREQUENT FLYER NO.</div>
+          <div class="ff-number" id="ff-num">——</div>
+          <span class="ff-since" id="ff-since">MEMBER SINCE —</span>
+        </div>
+      </div>
+
+      <!-- Route -->
+      <div class="route-block">
+        <div class="route-city">
+          <div class="passenger-label">FROM / DÉPART</div>
+          <div class="code" id="route-from">—</div>
+          <div class="city-name" id="from-city">—</div>
+          <div class="city-time" id="from-time">DEPARTURE —</div>
+        </div>
+        <div class="route-arrow">
+          <div class="arrow-line">
+            <span class="arr-dash"></span>
+            <span class="arr-plane">✈</span>
+            <span class="arr-dash"></span>
+          </div>
+          <div class="arr-label" id="arr-duration">DURATION: ONGOING</div>
+        </div>
+        <div class="route-city dest">
+          <div class="passenger-label">TO / ARRIVÉE</div>
+          <div class="code" id="route-to">—</div>
+          <div class="city-name" id="to-city">—</div>
+          <div class="city-time" id="to-time">ARRIVAL ∞</div>
+        </div>
+      </div>
+
+      <!-- Boarding info grid: CLASS · SEAT · GATE · BOARDING · FLIGHT -->
+      <div class="boarding-grid" id="boarding-grid">
+        <div class="boarding-cell">
+          <div class="bc-label">CLASS</div>
+          <div class="bc-value" id="bc-class">—</div>
+          <div class="bc-sub">TOP MODEL</div>
+        </div>
+        <div class="boarding-cell">
+          <div class="bc-label">SEAT</div>
+          <div class="bc-value" id="bc-seat">—</div>
+          <div class="bc-sub">TOKEN ID</div>
+        </div>
+        <div class="boarding-cell">
+          <div class="bc-label">GATE</div>
+          <div class="bc-value" id="bc-gate">—</div>
+          <div class="bc-sub">PROJECTS</div>
+        </div>
+        <div class="boarding-cell">
+          <div class="bc-label">BOARDING</div>
+          <div class="bc-value" id="bc-board">—</div>
+          <div class="bc-sub">SESSIONS</div>
+        </div>
+        <div class="boarding-cell">
+          <div class="bc-label">FLIGHT NO.</div>
+          <div class="bc-value" id="bc-flight">—</div>
+          <div class="bc-sub">TOP PROJECT</div>
+        </div>
+      </div>
+
+    </div><!-- /.pass-body -->
+
+    <!-- ░░░░░░ PERFORATION LINE ░░░░░░ -->
+    <div class="perf-line">
+      <div class="perf-inner">
+        <span class="perf-dash"></span>
+        <span class="perf-text">PASSENGER COPY</span>
+        <span class="perf-cut">✂</span>
+        <span class="perf-text">RETAIN FOR RECORDS</span>
+        <span class="perf-dash"></span>
+      </div>
+    </div>
+
+    <!-- ░░░░░░ STUB / RECEIPT ░░░░░░ -->
+    <div class="stub">
+      <div class="stub-header">— BAGGAGE RECEIPT / REÇU DE BAGAGES ———————————————————</div>
+
+      <!-- 3-col totals -->
+      <div class="receipt-grid" id="receipt-grid">
+        <div class="receipt-cell">
+          <span class="rc-icon">⚡</span>
+          <div class="rc-value" id="rc-tokens">—</div>
+          <div class="rc-label">TOTAL TOKENS</div>
+          <div class="rc-sub" id="rc-tokens-sub">—</div>
+        </div>
+        <div class="receipt-cell">
+          <span class="rc-icon">📋</span>
+          <div class="rc-value" id="rc-sess">—</div>
+          <div class="rc-label">SESSIONS</div>
+          <div class="rc-sub" id="rc-sess-sub">—</div>
+        </div>
+        <div class="receipt-cell">
+          <span class="rc-icon">📁</span>
+          <div class="rc-value" id="rc-proj">—</div>
+          <div class="rc-label">PROJECTS</div>
+          <div class="rc-sub" id="rc-proj-sub">—</div>
+        </div>
+      </div>
+
+      <!-- Barcode + Status + Model breakdown -->
+      <div class="stub-bottom">
+        <div class="barcode-block">
+          <div class="barcode"></div>
+          <div class="barcode-num" id="barcode-num">0000000000000</div>
+        </div>
+
+        <div class="model-breakdown">
+          <div class="mb-title">MODEL ALLOCATION / RÉPARTITION DES MODÈLES</div>
+          <div id="model-bars"></div>
+        </div>
+
+        <div class="status-stamp">
+          <div class="boarding-now">
+            <span class="bn-status">STATUS</span>
+            <span class="bn-main">BOARDING<br>NOW</span>
+            <span class="bn-gate" id="bn-gate-txt">GATE —</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.stub -->
+
+  </article><!-- /.ticket -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LUGGAGE TAG
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="luggage-tag-section">
+    <div class="section-label">— BAGGAGE TAG / ÉTIQUETTE DE BAGAGE ─────────────────────</div>
+    <div class="luggage-tag">
+      <div class="tag-hole-row">
+        <div class="tag-hole"></div>
+        <div class="tag-hole-label">ATTACH TO HANDLE · ATTACHER À LA POIGNÉE</div>
+        <div class="tag-hole-dest" id="tag-dest">—</div>
+      </div>
+      <div class="tag-body">
+        <div class="tag-title">TOP PROJECTS · ANNUAL CARGO MANIFEST</div>
+        <div class="projects-grid" id="projects-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PASSPORT STAMPS — TRAVEL LOG
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="passport-section">
+    <div class="section-label">— TRAVEL LOG / JOURNAL DE VOYAGE ──────────────────────────</div>
+    <div class="passport-page">
+      <div class="pp-header">
+        <div class="pp-title">ENTRY / SORTIE · TOKEN TRANSIT AUTHORITY</div>
+        <div class="pp-year" id="pp-year">YEAR —</div>
+      </div>
+      <div class="stamps-grid" id="stamps-grid"></div>
+      <div class="month-bars" id="month-bars"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       VISA STAMPS — HIGHLIGHTS
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="visa-section">
+    <div class="section-label">— TRANSIT VISAS / CERTIFICATS DE TRANSIT ───────────────────</div>
+    <div class="visa-grid" id="visa-grid"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="pass-footer">
+    <div class="foot-txt">
+      PRINTED BY <a href="https://github.com/tt-a1i/tokenfolio" target="_blank">TOKENFOLIO</a> ·
+      KEEP THIS PASS FOR YOUR RECORDS ·
+      <span id="foot-year">—</span>
+    </div>
+  </div>
+
+</div><!-- /.ticket-wrap -->
+
+<script src="../../data.js"></script>
+<script>
+(function () {
+  const D = window.RESUME_DATA;
+  const F = window.RESUME_FMT;
+
+  /* ── helpers ─────────────────────────────────────────── */
+  function $(id) { return document.getElementById(id); }
+
+  function topModel(by_model) {
+    return by_model.reduce((a, b) => a.tokens > b.tokens ? a : b);
+  }
+
+  function seatNum(tokens) {
+    // last 4 digits of token count → seat number with letter prefix
+    const n = tokens % 10000;
+    const row = Math.floor(n / 100) || 1;
+    const col = ['A','B','C','D','E','F'][n % 6];
+    return row + col;
+  }
+
+  function flightCode(name) {
+    // TF-XXXX style
+    const code = name.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, 6);
+    return 'TF-' + code;
+  }
+
+  function gateNum(projects) {
+    return 'G' + String(projects).padStart(2, '0');
+  }
+
+  function barcodeStr(sessions, tokens) {
+    // 13-char code built from sessions + token hash
+    const base = String(sessions).padStart(3, '0') +
+                 String(tokens % 10000000).padStart(7, '0') +
+                 String(Math.floor(tokens / 1e6)).padStart(3, '0');
+    return base.slice(0, 13);
+  }
+
+  /* ── header strip ────────────────────────────────────── */
+  $('hs-left').textContent  = 'AI BOARDING PASS';
+  $('hs-right').textContent = 'NO. ' + D.totals.sessions + ' · ' + D.year;
+
+  /* ── passenger block ─────────────────────────────────── */
+  $('pass-name').textContent   = D.user.name.toUpperCase();
+  $('pass-handle').textContent = D.user.handle + ' · ' + D.user.title;
+  $('pass-meta').textContent   = D.user.location + ' · ' + D.user.bio;
+
+  const ffNum = String(D.totals.tokens % 100000).padStart(6, '0');
+  $('ff-num').textContent   = 'TKF-' + ffNum;
+  $('ff-since').textContent = 'MEMBER SINCE ' + D.user.since;
+
+  /* ── route ───────────────────────────────────────────── */
+  const fromYear = D.user.since.split('-')[0];
+  const toYear   = D.year;
+
+  // 3-letter airport-style codes from years
+  const fromCode = fromYear.slice(1); // "024" — looks airport-ish
+  const toCode   = toYear.toString().slice(1); // "025"
+
+  $('route-from').textContent = "'" + fromCode;
+  $('from-city').textContent  = 'ORIGIN: ' + fromYear;
+  $('from-time').textContent  = 'DEPARTURE ' + D.user.since.toUpperCase();
+
+  $('route-to').textContent = "'" + toCode;
+  $('to-city').textContent  = 'DESTINATION: ' + toYear;
+  $('to-time').textContent  = 'ARRIVAL: ONGOING';
+
+  // duration in months
+  const sinceDate = new Date(D.user.since + '-01');
+  const nowDate   = new Date(D.year + '-12-31');
+  const diffMs    = nowDate - sinceDate;
+  const diffMo    = Math.round(diffMs / (1000 * 60 * 60 * 24 * 30.5));
+  $('arr-duration').textContent = 'DURATION: ' + diffMo + ' MO.';
+
+  /* ── boarding grid ───────────────────────────────────── */
+  const tm = topModel(D.by_model);
+  // shorten model name for display
+  const classDisplay = tm.name.split('-')[0].toUpperCase();
+
+  $('bc-class').textContent  = classDisplay;
+  $('bc-seat').textContent   = seatNum(D.top_projects[0].tokens);
+  $('bc-gate').textContent   = gateNum(D.totals.projects);
+  $('bc-board').textContent  = D.totals.sessions;
+  $('bc-flight').textContent = flightCode(D.top_projects[0].name);
+
+  $('bn-gate-txt').textContent = 'GATE ' + gateNum(D.totals.projects);
+
+  /* ── receipt (stub) ──────────────────────────────────── */
+  $('rc-tokens').textContent     = F.num(D.totals.tokens);
+  $('rc-tokens-sub').textContent = F.comma(D.totals.tokens) + ' TOK';
+
+  $('rc-sess').textContent     = D.totals.sessions;
+  $('rc-sess-sub').textContent = F.num(D.totals.avg_session_tokens) + ' AVG/SESS';
+
+  $('rc-proj').textContent     = D.totals.projects;
+  $('rc-proj-sub').textContent = '$' + D.totals.cost_usd.toFixed(2) + ' USD';
+
+  /* ── barcode ─────────────────────────────────────────── */
+  $('barcode-num').textContent = barcodeStr(D.totals.sessions, D.totals.tokens);
+
+  /* ── model bars ──────────────────────────────────────── */
+  const totModelTok = D.by_model.reduce((s, m) => s + m.tokens, 0);
+  $('model-bars').innerHTML = D.by_model.map(m => {
+    const pct = ((m.tokens / totModelTok) * 100).toFixed(0);
+    return `<div class="model-row">
+      <span class="mr-name">${m.name}</span>
+      <div class="mr-bar-wrap"><div class="mr-bar" style="width:${pct}%"></div></div>
+      <span class="mr-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+
+  /* ── luggage tag / projects ──────────────────────────── */
+  $('tag-dest').textContent = D.year + ' ∞';
+  $('projects-grid').innerHTML = D.top_projects.map((p, i) => `
+    <div class="proj-item">
+      <div class="pi-name">${p.name}</div>
+      <div class="pi-lang">${p.language} · #${i + 1}</div>
+      <div class="pi-tokens">${F.num(p.tokens)}</div>
+      <div class="pi-desc">${p.description}</div>
+    </div>
+  `).join('');
+
+  /* ── passport stamps (by_month) ──────────────────────── */
+  $('pp-year').textContent = 'YEAR ' + D.year;
+
+  const maxTok = Math.max(...D.by_month.map(m => m.tokens));
+  const rotations = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 3, -4, 2];
+
+  $('stamps-grid').innerHTML = D.by_month.map((m, i) => {
+    const isPeak = m.peak || m.tokens === maxTok;
+    const rot    = rotations[i] || 0;
+    const style  = `--rot: ${rot}deg;`;
+    return `<div class="stamp${isPeak ? ' peak' : ''}" style="${style}">
+      ${isPeak ? '<span class="peak-badge">PEAK ★</span>' : ''}
+      <div class="st-month">${m.label.toUpperCase()}</div>
+      <div class="st-tokens">${F.num(m.tokens)}</div>
+      <div class="st-sessions">${m.sessions}sess</div>
+    </div>`;
+  }).join('');
+
+  // Month bar chart
+  $('month-bars').innerHTML = D.by_month.map(m => {
+    const pct    = ((m.tokens / maxTok) * 100).toFixed(1);
+    const isPeak = m.peak || m.tokens === maxTok;
+    return `<div class="mb-row">
+      <span class="mb-lbl">${m.label.toUpperCase()}</span>
+      <div class="mb-bar-wrap">
+        <div class="mb-bar${isPeak ? ' peak-bar' : ''}" style="width:${pct}%"></div>
+      </div>
+      <span class="mb-val">${F.num(m.tokens)}</span>
+      <span class="mb-note">${m.note}</span>
+    </div>`;
+  }).join('');
+
+  /* ── visa / highlights ───────────────────────────────── */
+  const visaRots  = [-2.5, 1.8, -1.2, 2.8];
+  const visaSerials = ['TKF-VIS-001', 'TKF-VIS-002', 'TKF-VIS-003', 'TKF-VIS-004'];
+
+  $('visa-grid').innerHTML = D.highlights.map((h, i) => `
+    <div class="visa-stamp" style="--vrot: ${visaRots[i] || 0}deg;">
+      <div class="visa-label">${h.label.toUpperCase()}</div>
+      <div class="visa-value">${h.value}</div>
+      <div class="visa-detail">${h.detail}</div>
+      <div class="visa-serial">${visaSerials[i]}</div>
+    </div>
+  `).join('');
+
+  /* ── footer year ─────────────────────────────────────── */
+  $('foot-year').textContent = D.year;
+
+})();
+</script>
+</body>
+</html>

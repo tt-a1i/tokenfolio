@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel · tokenfolio</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="tokenfolio · pixel">
+<meta property="og:description" content="Your AI usage as an 8-bit RPG character sheet.">
+<meta property="og:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<meta property="og:url" content="https://tt-a1i.github.io/tokenfolio/templates/pixel/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="tokenfolio · pixel">
+<meta name="twitter:description" content="Your AI usage as an 8-bit RPG character sheet.">
+<meta name="twitter:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Base ─────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: auto; }
+
+/* NES 16-color derived palette */
+:root {
+  --bg:       #1a1c2c;
+  --shadow:   #29366f;
+  --white:    #ffffff;
+  --gold:     #ffcd75;
+  --red:      #b13e53;
+  --green:    #38b764;
+  --blue:     #41a6f6;
+  --purple:   #b13e9a;
+  --orange:   #ef7d57;
+  --dark:     #0f111a;
+  --void:     #09090f;
+}
+
+body {
+  background: var(--void);
+  color: var(--white);
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+  min-height: 100vh;
+  padding: 32px 16px 48px;
+  overflow-x: hidden;
+}
+
+/* ─── Card Shell ────────────────────────────────────────────────── */
+.card {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--bg);
+  /* Pixel outer frame: white outline + shadow ring (no blur, stepped) */
+  box-shadow:
+    0   -4px 0 0 var(--white),
+    0    4px 0 0 var(--white),
+    -4px 0   0 0 var(--white),
+    4px  0   0 0 var(--white),
+    0   -8px 0 0 var(--shadow),
+    0    8px 0 0 var(--shadow),
+    -8px 0   0 0 var(--shadow),
+    8px  0   0 0 var(--shadow);
+  padding: 0;
+}
+
+/* ─── Pixel border utility ──────────────────────────────────────── */
+.px-border {
+  box-shadow:
+    0   -4px 0 0 var(--white),
+    0    4px 0 0 var(--white),
+    -4px 0   0 0 var(--white),
+    4px  0   0 0 var(--white),
+    0   -8px 0 0 var(--shadow),
+    0    8px 0 0 var(--shadow),
+    -8px 0   0 0 var(--shadow),
+    8px  0   0 0 var(--shadow);
+}
+
+/* Double inner border for section boxes */
+.px-box {
+  border: 4px solid var(--white);
+  outline: 4px solid var(--shadow);
+  outline-offset: 4px;
+}
+
+/* ─── Animations ────────────────────────────────────────────────── */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+@keyframes cursor-flash {
+  0%, 49% { border-right-color: var(--gold); }
+  50%, 100% { border-right-color: transparent; }
+}
+
+/* ─── Scanline overlay ──────────────────────────────────────────── */
+.card::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: rgba(255,255,255,0.04);
+  pointer-events: none;
+  z-index: 100;
+  animation: scanline 8s linear infinite;
+}
+
+/* ─── Section base ──────────────────────────────────────────────── */
+.section {
+  padding: 24px;
+  border-bottom: 4px solid var(--shadow);
+}
+.section:last-child { border-bottom: none; }
+
+.section-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::before,
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 4px;
+  background: var(--shadow);
+}
+
+/* ─── TOP BAR ───────────────────────────────────────────────────── */
+.topbar {
+  background: var(--shadow);
+  padding: 16px 24px;
+  text-align: center;
+  border-bottom: 4px solid var(--white);
+  position: relative;
+}
+.topbar-title {
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  /* Stepped pixel text-shadow (no blur) */
+  text-shadow:
+    2px  0   0 var(--bg),
+    -2px 0   0 var(--bg),
+    0    2px 0 var(--bg),
+    0   -2px 0 var(--bg),
+    2px  2px 0 var(--bg),
+    4px  4px 0 rgba(0,0,0,0.5);
+}
+.topbar-sub {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: var(--white);
+  margin-top: 8px;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+/* ─── PORTRAIT + NAMEPLATE ──────────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  gap: 24px;
+  padding: 24px;
+  background: var(--bg);
+  border-bottom: 4px solid var(--shadow);
+}
+
+.portrait-frame {
+  width: 128px;
+  height: 128px;
+  background: var(--shadow);
+  border: 4px solid var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  /* Corner pixel accents */
+  box-shadow:
+    -4px -4px 0 0 var(--bg),
+    4px  -4px 0 0 var(--bg),
+    -4px  4px 0 0 var(--bg),
+    4px   4px 0 0 var(--bg);
+}
+.portrait-initials {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 32px;
+  color: var(--gold);
+  text-shadow:
+    2px  0   0 var(--bg),
+    -2px 0   0 var(--bg),
+    0    2px 0 var(--bg),
+    0   -2px 0 var(--bg),
+    3px  3px 0 rgba(0,0,0,0.7);
+}
+
+.nameplate {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+.name-tag {
+  font-size: 14px;
+  color: var(--white);
+  line-height: 1.4;
+  text-shadow: 2px 2px 0 var(--shadow);
+}
+.class-badge {
+  display: inline-block;
+  background: var(--blue);
+  color: var(--bg);
+  font-size: 8px;
+  padding: 4px 8px;
+  border: 2px solid var(--white);
+  box-shadow: 2px 2px 0 var(--shadow);
+  width: fit-content;
+}
+.handle-tag {
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  color: var(--gold);
+  opacity: 0.9;
+}
+.location-tag {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--white);
+  opacity: 0.65;
+}
+
+/* ─── STATS SECTION ─────────────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-block {
+  background: var(--dark);
+  border: 4px solid var(--shadow);
+  padding: 12px;
+}
+
+.stat-label {
+  font-size: 8px;
+  color: var(--gold);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  color: var(--white);
+  line-height: 1;
+}
+
+/* HP / MP bar: discrete pixel cells */
+.bar-row {
+  margin-bottom: 12px;
+}
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.bar-name {
+  font-size: 9px;
+  color: var(--white);
+}
+.bar-frac {
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  color: var(--white);
+}
+
+/* The cell-based bar */
+.pixel-bar {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.pixel-bar .cell {
+  width: 12px;
+  height: 12px;
+  background: var(--shadow);
+}
+.pixel-bar .cell.filled-hp  { background: var(--green); }
+.pixel-bar .cell.filled-mp  { background: var(--blue); }
+
+/* ─── RPG STARS ─────────────────────────────────────────────────── */
+.rpg-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+.rpg-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--dark);
+  border: 2px solid var(--shadow);
+  padding: 8px 12px;
+}
+.rpg-stat-name {
+  font-size: 9px;
+  color: var(--gold);
+  min-width: 28px;
+}
+.rpg-stars {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+.rpg-stars .empty { color: var(--shadow); }
+
+/* ─── EQUIPMENT / PARTY ROSTER ──────────────────────────────────── */
+.proj-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.proj-item {
+  display: grid;
+  grid-template-columns: 20px 1fr auto 56px;
+  align-items: center;
+  gap: 8px;
+  background: var(--dark);
+  border: 2px solid var(--shadow);
+  border-left: 4px solid var(--blue);
+  padding: 12px;
+}
+.proj-item.rank1 { border-left-color: var(--gold); }
+.proj-item.rank2 { border-left-color: var(--orange); }
+.proj-item.rank3 { border-left-color: var(--purple); }
+
+.proj-icon {
+  font-size: 14px;
+  color: var(--gold);
+  text-align: center;
+}
+.proj-name {
+  font-size: 8px;
+  color: var(--white);
+  line-height: 1.5;
+}
+.proj-desc {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: var(--white);
+  opacity: 0.55;
+  margin-top: 2px;
+}
+.proj-tokens {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--green);
+  text-align: right;
+}
+.proj-rarity {
+  font-size: 9px;
+  color: var(--gold);
+  text-align: right;
+}
+
+/* ─── QUEST LOG ─────────────────────────────────────────────────── */
+.quest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.quest-row {
+  display: grid;
+  grid-template-columns: 40px 44px 1fr 72px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--dark);
+  border: 2px solid var(--shadow);
+}
+.quest-row.peak-month {
+  background: rgba(177, 62, 83, 0.25);
+  border-color: var(--red);
+}
+.quest-id {
+  font-size: 8px;
+  color: var(--shadow);
+}
+.quest-month {
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  color: var(--gold);
+}
+.quest-exp {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--green);
+}
+.quest-month.peak-txt { color: var(--red); }
+.quest-peak-star {
+  font-size: 10px;
+  color: var(--red);
+  margin-left: 4px;
+}
+.quest-proj {
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  color: var(--white);
+  opacity: 0.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── MODEL ALLEGIANCE ──────────────────────────────────────────── */
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.model-card {
+  background: var(--dark);
+  border: 4px solid var(--shadow);
+  padding: 12px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.model-card.primary { border-color: var(--purple); }
+.model-card.secondary { border-color: var(--blue); }
+.model-card.tertiary { border-color: var(--green); }
+
+.model-avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 2px solid currentColor;
+}
+.model-card.primary   .model-avatar { color: var(--purple); background: rgba(177,62,154,0.2); }
+.model-card.secondary .model-avatar { color: var(--blue);   background: rgba(65,166,246,0.2); }
+.model-card.tertiary  .model-avatar { color: var(--green);  background: rgba(56,183,100,0.2); }
+
+.model-name {
+  font-size: 7px;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.5;
+  word-break: break-all;
+}
+.model-pct {
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  color: var(--gold);
+  line-height: 1;
+}
+.model-sessions {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: var(--white);
+  opacity: 0.6;
+}
+
+/* ─── ACHIEVEMENTS ──────────────────────────────────────────────── */
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.ach-badge {
+  background: var(--dark);
+  border: 4px solid var(--shadow);
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Pixel hexagon badge via clip-path on a square */
+.ach-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: var(--shadow);
+  border: 2px solid var(--gold);
+  /* Pixel-octagon via clip-path, 4px steps */
+  clip-path: polygon(
+    8px 0%, calc(100% - 8px) 0%,
+    100% 8px, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 8px 100%,
+    0% calc(100% - 8px), 0% 8px
+  );
+}
+
+.ach-text {}
+.ach-label {
+  font-size: 7px;
+  color: var(--gold);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.ach-value {
+  font-family: 'VT323', monospace;
+  font-size: 26px;
+  color: var(--white);
+  line-height: 1;
+}
+.ach-detail {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: var(--white);
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+/* ─── FOOTER ────────────────────────────────────────────────────── */
+.footer {
+  background: var(--shadow);
+  border-top: 4px solid var(--white);
+  padding: 16px 24px;
+  text-align: center;
+}
+.press-a {
+  font-size: 11px;
+  color: var(--white);
+  letter-spacing: 0.1em;
+  animation: blink 1s step-end infinite;
+  margin-bottom: 12px;
+}
+.footer-copy {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--white);
+  opacity: 0.5;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Responsive tweaks ─────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .hero { grid-template-columns: 96px 1fr; gap: 16px; }
+  .portrait-frame { width: 96px; height: 96px; }
+  .portrait-initials { font-size: 24px; }
+  .name-tag { font-size: 11px; }
+  .model-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .quest-row { grid-template-columns: 36px 40px 1fr; }
+  .quest-proj { display: none; }
+  .ach-grid { grid-template-columns: 1fr; }
+  .topbar-title { font-size: 13px; }
+}
+@media (max-width: 420px) {
+  .proj-item { grid-template-columns: 18px 1fr auto; }
+  .proj-rarity { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- ── TOP BAR ─────────────────────────────────────── -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">★  &mdash;  ★</div>
+    <div class="topbar-sub" id="topbar-sub"></div>
+  </div>
+
+  <!-- ── PORTRAIT + NAMEPLATE ───────────────────────── -->
+  <div class="hero">
+    <div class="portrait-frame">
+      <span class="portrait-initials" id="portrait-initials">??</span>
+    </div>
+    <div class="nameplate">
+      <div class="name-tag" id="hero-name">—</div>
+      <div class="class-badge" id="hero-class">CLASS: —</div>
+      <div class="handle-tag" id="hero-handle">—</div>
+      <div class="location-tag" id="hero-location">—</div>
+    </div>
+  </div>
+
+  <!-- ── STATS ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">CHARACTER STATS</div>
+
+    <!-- HP row -->
+    <div class="bar-row">
+      <div class="bar-header">
+        <span class="bar-name">HP <span style="font-family:'VT323',monospace;font-size:16px;color:var(--white);opacity:.6;">(SESSIONS)</span></span>
+        <span class="bar-frac" id="hp-frac"></span>
+      </div>
+      <div class="pixel-bar" id="hp-bar"></div>
+    </div>
+
+    <!-- MP row -->
+    <div class="bar-row">
+      <div class="bar-header">
+        <span class="bar-name">MP <span style="font-family:'VT323',monospace;font-size:16px;color:var(--white);opacity:.6;">(TOKEN M)</span></span>
+        <span class="bar-frac" id="mp-frac"></span>
+      </div>
+      <div class="pixel-bar" id="mp-bar"></div>
+    </div>
+
+    <!-- STR / INT / DEX / LCK -->
+    <div class="rpg-stats" id="rpg-stats"></div>
+
+    <!-- Quick totals -->
+    <div class="stats-grid" style="margin-top:16px;" id="quick-stats"></div>
+  </div>
+
+  <!-- ── EQUIPMENT ──────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">EQUIPMENT · TOP PROJECTS</div>
+    <div class="proj-list" id="proj-list"></div>
+  </div>
+
+  <!-- ── QUEST LOG ───────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">QUEST LOG · 12 MONTHS</div>
+    <div class="quest-list" id="quest-list"></div>
+  </div>
+
+  <!-- ── MODEL ALLEGIANCE ───────────────────────────── -->
+  <div class="section">
+    <div class="section-label">MODEL ALLEGIANCE</div>
+    <div class="model-grid" id="model-grid"></div>
+  </div>
+
+  <!-- ── ACHIEVEMENTS ───────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">ACHIEVEMENTS UNLOCKED</div>
+    <div class="ach-grid" id="ach-grid"></div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <div class="footer">
+    <div class="press-a">&#9660; PRESS A TO RECRUIT</div>
+    <div class="footer-copy">tokenfolio &middot; cards.token / 0001</div>
+  </div>
+
+</div><!-- /.card -->
+
+<script src="../../data.js"></script>
+<script>
+(function () {
+  'use strict';
+  var D = window.RESUME_DATA;
+  var F = window.RESUME_FMT;
+
+  /* ── Helpers ─────────────────────────────────── */
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+  function starsHtml(filled, max) {
+    var out = '';
+    for (var i = 0; i < max; i++) {
+      out += i < filled
+        ? '<span>&#9733;</span>'
+        : '<span class="empty">&#9733;</span>';
+    }
+    return out;
+  }
+
+  // Build a discrete-cell pixel bar, returns HTML string
+  function pixelBarHtml(filled, total, cssClass) {
+    var html = '';
+    for (var i = 0; i < total; i++) {
+      html += '<div class="cell ' + (i < filled ? cssClass : '') + '"></div>';
+    }
+    return html;
+  }
+
+  /* ── Derived stats ───────────────────────────── */
+  var tok     = D.totals.tokens;          // e.g. 47221890
+  var sess    = D.totals.sessions;        // 312
+  var projCt  = D.totals.projects;        // 28
+  var outTok  = D.totals.output_tokens;   // 9089450
+  var avgSess = D.totals.avg_session_tokens; // 151352
+
+  var level  = Math.floor(tok / 1e6);    // LV 47
+
+  /* HP: sessions, cap at 50 cells, max represents sessions/10 */
+  var HP_MAX   = 50;
+  var HP_VAL   = clamp(Math.round(sess / 10), 1, HP_MAX); // 31 / 50
+  var HP_RAW   = sess;
+
+  /* MP: token millions, cap at 60 cells */
+  var MP_MAX   = 60;
+  var MP_VAL   = clamp(Math.round(tok / 1e6), 1, MP_MAX); // 47 / 60
+  var MP_RAW   = Math.round(tok / 1e6);
+
+  /*
+   * RPG stat derivation (all mapped to 1-5 ★):
+   *  STR – output token ratio (more output = higher STR)
+   *         ratio = output / total; 5 if >25%, 4 if >18%, 3 if >12%, 2 if >6%, else 1
+   *  INT – average session depth (larger avg session = more INT)
+   *         scale: 5 if >300k, 4 if >150k, 3 if >75k, 2 if >30k, else 1
+   *  DEX – sessions count (more sessions = more DEX)
+   *         scale: 5 if >400, 4 if >250, 3 if >150, 2 if >75, else 1
+   *  LCK – project diversity (projects count)
+   *         scale: 5 if >40, 4 if >25, 3 if >15, 2 if >8, else 1
+   */
+  var outputRatio = outTok / tok;
+  var STR = outputRatio > 0.25 ? 5 : outputRatio > 0.18 ? 4 : outputRatio > 0.12 ? 3 : outputRatio > 0.06 ? 2 : 1;
+  var INT = avgSess > 300000 ? 5 : avgSess > 150000 ? 4 : avgSess > 75000 ? 3 : avgSess > 30000 ? 2 : 1;
+  var DEX = sess > 400 ? 5 : sess > 250 ? 4 : sess > 150 ? 3 : sess > 75 ? 2 : 1;
+  var LCK = projCt > 40 ? 5 : projCt > 25 ? 4 : projCt > 15 ? 3 : projCt > 8 ? 2 : 1;
+
+  /* ── Render: TOP BAR ──────────────────────────── */
+  document.getElementById('topbar-title').innerHTML =
+    '&#9733;&nbsp;&nbsp;' + D.user.name.toUpperCase() + '&nbsp;&nbsp;&#9733;';
+  document.getElementById('topbar-sub').textContent =
+    D.user.title + '  ·  LV.' + level;
+
+  /* ── Render: PORTRAIT + NAMEPLATE ────────────── */
+  document.getElementById('portrait-initials').textContent = D.user.avatar_initials;
+  document.getElementById('hero-name').textContent = D.user.name;
+  document.getElementById('hero-class').textContent = 'CLASS: ' + D.user.title.toUpperCase().slice(0, 20);
+  document.getElementById('hero-handle').textContent = D.user.handle;
+  document.getElementById('hero-location').textContent = '> ' + D.user.location;
+
+  /* ── Render: HP/MP bars ───────────────────────── */
+  document.getElementById('hp-frac').textContent = HP_VAL + ' / ' + HP_MAX;
+  document.getElementById('hp-bar').innerHTML = pixelBarHtml(HP_VAL, HP_MAX, 'filled-hp');
+
+  document.getElementById('mp-frac').textContent = Math.min(MP_VAL, MP_MAX) + ' / ' + MP_MAX;
+  document.getElementById('mp-bar').innerHTML = pixelBarHtml(Math.min(MP_VAL, MP_MAX), MP_MAX, 'filled-mp');
+
+  /* ── Render: RPG stats ────────────────────────── */
+  var rpgData = [
+    { key: 'STR', val: STR, note: 'OUTPUT RATIO' },
+    { key: 'INT', val: INT, note: 'SESSION DEPTH' },
+    { key: 'DEX', val: DEX, note: 'SESSIONS' },
+    { key: 'LCK', val: LCK, note: 'PROJECTS' }
+  ];
+  document.getElementById('rpg-stats').innerHTML = rpgData.map(function (s) {
+    return '<div class="rpg-stat-row">'
+      + '<span class="rpg-stat-name">' + s.key + '</span>'
+      + '<span class="rpg-stars">' + starsHtml(s.val, 5) + '</span>'
+      + '</div>';
+  }).join('');
+
+  /* ── Render: quick totals ─────────────────────── */
+  var quickData = [
+    { label: 'TOTAL TOKENS', val: F.num(tok) },
+    { label: 'SESSIONS',     val: F.comma(sess) },
+    { label: 'PROJECTS',     val: String(projCt) },
+    { label: 'COST USD',     val: '$' + D.totals.cost_usd.toFixed(0) }
+  ];
+  document.getElementById('quick-stats').innerHTML = quickData.map(function (q) {
+    return '<div class="stat-block">'
+      + '<div class="stat-label">' + q.label + '</div>'
+      + '<div class="stat-value">' + q.val + '</div>'
+      + '</div>';
+  }).join('');
+
+  /* ── Render: EQUIPMENT (top projects) ────────── */
+  var projIcons = ['&#9635;', '&#9636;', '&#9638;', '&#9639;', '&#9640;', '&#9641;', '&#9642;', '&#9644;'];
+  var rankClasses = ['rank1', 'rank2', 'rank3'];
+  var totalProjTok = D.top_projects.reduce(function (s, p) { return s + p.tokens; }, 0);
+
+  document.getElementById('proj-list').innerHTML = D.top_projects.map(function (p, i) {
+    var share = p.tokens / totalProjTok;
+    var rarity = share >= 0.30 ? '&#9733;&#9733;&#9733;' : share >= 0.15 ? '&#9733;&#9733;' : '&#9733;';
+    var rankClass = rankClasses[i] || '';
+    return '<div class="proj-item ' + rankClass + '">'
+      + '<div class="proj-icon">' + (projIcons[i] || '&#9632;') + '</div>'
+      + '<div>'
+        + '<div class="proj-name">' + p.name + '</div>'
+        + '<div class="proj-desc">' + p.description.slice(0, 38) + '</div>'
+      + '</div>'
+      + '<div class="proj-tokens">' + F.num(p.tokens) + '<br><span style="font-size:13px;color:var(--white);opacity:.5;">' + p.sessions + ' sess</span></div>'
+      + '<div class="proj-rarity" style="color:var(--gold);">' + rarity + '</div>'
+      + '</div>';
+  }).join('');
+
+  /* ── Render: QUEST LOG ────────────────────────── */
+  var maxMonthTok = Math.max.apply(null, D.by_month.map(function (m) { return m.tokens; }));
+  document.getElementById('quest-list').innerHTML = D.by_month.map(function (m, i) {
+    var isPeak = !!m.peak;
+    var qId = 'Q' + String(i + 1).padStart(2, '0');
+    return '<div class="quest-row' + (isPeak ? ' peak-month' : '') + '">'
+      + '<div class="quest-id">' + qId + '</div>'
+      + '<div class="quest-month' + (isPeak ? ' peak-txt' : '') + '">'
+        + m.label.toUpperCase()
+        + (isPeak ? '<span class="quest-peak-star">&#9733;</span>' : '')
+      + '</div>'
+      + '<div class="quest-exp">+' + F.num(m.tokens) + '<span style="font-size:12px;opacity:.6;"> EXP</span></div>'
+      + '<div class="quest-proj">' + m.top_project + '</div>'
+      + '</div>';
+  }).join('');
+
+  /* ── Render: MODEL ALLEGIANCE ─────────────────── */
+  var totalModelTok = D.by_model.reduce(function (s, m) { return s + m.tokens; }, 0);
+  var modelTierClass = ['primary', 'secondary', 'tertiary'];
+  var modelEmoji = ['&#9670;', '&#9671;', '&#9651;'];
+
+  document.getElementById('model-grid').innerHTML = D.by_model.map(function (m, i) {
+    var pct = ((m.tokens / totalModelTok) * 100).toFixed(0);
+    return '<div class="model-card ' + (modelTierClass[i] || '') + '">'
+      + '<div class="model-avatar">' + (modelEmoji[i] || '?') + '</div>'
+      + '<div class="model-name">' + m.name + '</div>'
+      + '<div class="model-pct">' + pct + '%</div>'
+      + '<div class="model-sessions">' + m.sessions + ' sess</div>'
+      + '</div>';
+  }).join('');
+
+  /* ── Render: ACHIEVEMENTS ─────────────────────── */
+  var achIcons = ['&#9733;', '&#9830;', '&#9824;', '&#9829;'];
+  document.getElementById('ach-grid').innerHTML = D.highlights.map(function (h, i) {
+    return '<div class="ach-badge">'
+      + '<div class="ach-icon" style="font-size:20px;">' + (achIcons[i] || '&#9733;') + '</div>'
+      + '<div class="ach-text">'
+        + '<div class="ach-label">' + h.label.toUpperCase() + '</div>'
+        + '<div class="ach-value">' + h.value + '</div>'
+        + '<div class="ach-detail">' + h.detail + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+})();
+</script>
+</body>
+</html>

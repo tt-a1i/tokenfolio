@@ -14,21 +14,48 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 
 | | name | vibe |
 |---|---|---|
-| 🟢 | **wrapped**  | Spotify-Wrapped style — bold color blocks, peak month highlighted, made to be posted |
-| 🌌 | **cosmos**   | Each month a constellation, each session a star — premium, generative, unique-per-user |
-| 📰 | **almanac**  | "The Token Almanac" — gothic masthead, monthly dispatches, classified ads — literary |
-| 💻 | **terminal** | Black on green. Boot sequence + ASCII bar charts + Unicode boxes — hacker dense |
-| 🌈 | **aurora**   | Aurora gradients + frosted-glass cards. Apple Vision / Linear polish — HR-friendly |
-| ✨ | **holo**     | Your résumé as a holographic trading card. Mouse-tracked tilt + rainbow sheen |
+| 🟢 | **wrapped**   | Spotify-Wrapped style — bold color blocks, peak month highlighted, made to be posted |
+| 🌌 | **cosmos**    | Each month a constellation, each session a star — premium, generative, unique-per-user |
+| 📰 | **almanac**   | "The Token Almanac" — gothic masthead, monthly dispatches, classified ads — literary |
+| 💻 | **terminal**  | Black on green. Boot sequence + ASCII bar charts + Unicode boxes — hacker dense |
+| 🌈 | **aurora**    | Aurora gradients + frosted-glass cards. Apple Vision / Linear polish — HR-friendly |
+| ✨ | **holo**      | Your résumé as a holographic trading card. Mouse-tracked tilt + rainbow sheen |
+| 🎮 | **pixel**     | An 8-bit RPG character sheet. HP/MP bars, star stats, quest log, "Press A to recruit" |
+| ✈️ | **pass**      | A 1980s airline boarding pass — perforations, barcode, passport stamps per month |
+| 🟨 | **brutalist** | Wired magazine cover meets 1968 protest poster. Helvetica Black 200px, hard edges |
 
 More coming. Contributions welcome.
 
-## Quick start (recommended path)
+## Quick start
 
-1. Click **[Use this template](https://github.com/tt-a1i/tokenfolio/generate)** — gets you a fresh repo with a clean history that counts toward your contribution graph.
-2. Edit `data.js` with your numbers.
-3. Click one of the deploy buttons above (or enable GitHub Pages: Settings → Pages → `main` branch, `/`).
-4. Your portfolio lives at `https://<your-handle>.github.io/<repo-name>/` (or a `*.vercel.app` / `*.netlify.app` URL).
+1. Click **[Use this template](https://github.com/tt-a1i/tokenfolio/generate)** — gets you a fresh repo with clean history that counts toward your contribution graph.
+2. Clone your new repo locally.
+3. Auto-generate `data.js` from your Claude Code usage (see CLI below). Or hand-edit it.
+4. Click a Deploy button above, or enable GitHub Pages (Settings → Pages → `main` branch, `/`).
+
+### CLI (`tokenfolio init`)
+
+```bash
+# preview without writing — recommended first run
+npx github:tt-a1i/tokenfolio init --dry
+
+# write to ./data.js (refuses to overwrite by default)
+npx github:tt-a1i/tokenfolio init --force
+
+# narrow to a specific year
+npx github:tt-a1i/tokenfolio init --year 2025 --force
+
+# override identity (defaults pull from `git config`)
+npx github:tt-a1i/tokenfolio init \
+  --name "Ada Lovelace" --handle "@ada" --location "London"
+```
+
+The CLI shells out to [`ccusage`](https://github.com/ryoppippi/ccusage) under the hood — npx fetches both on first run.
+
+**Privacy red line:** only token counts, model names, project paths, and dates are read. Prompt contents are never extracted.
+
+**Currently supported:** Claude Code (`~/.claude/projects/`).
+**Coming next:** Codex (`~/.codex/sessions/`), Cursor, Aider.
 
 ### Run locally
 
@@ -41,7 +68,7 @@ open http://localhost:8765
 
 ### Pick one template as the homepage
 
-By default the root `index.html` is a gallery of all templates. Once you've picked one, copy its files to the root or add a `<meta http-equiv="refresh" content="0; url=templates/wrapped/">` redirect.
+The root `index.html` is a gallery of all templates. Once you've picked one, copy its files to the root or add a `<meta http-equiv="refresh" content="0; url=templates/wrapped/">` redirect at the root.
 
 ## The data shape
 
@@ -63,11 +90,15 @@ Every template reads from the same data object. Switch templates with zero data 
 
 ## Roadmap
 
-- [ ] CLI to auto-extract numbers from local Claude Code / Codex usage logs (`tokenfolio init`)
-- [ ] More templates: brutalist editorial, pixel-RPG, boarding pass, synthwave, manga
-- [ ] Optional dark/light mode toggle on each template
-- [ ] PNG/PDF export for Twitter/LinkedIn sharing
-- [ ] i18n (CN/EN at minimum)
+- [x] 9 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist)
+- [x] `tokenfolio init` CLI for Claude Code (via ccusage)
+- [ ] CLI: Codex (`~/.codex/sessions/`) parser
+- [ ] CLI: Cursor / Aider / Continue.dev support (where token counts exist)
+- [ ] More templates: synthwave, manga, trading-floor
+- [ ] Per-user dynamic OG image (Vercel Edge + Satori)
+- [ ] Dark/light mode toggle on each template
+- [ ] PNG/PDF export for sharing
+- [ ] i18n (中 / EN at minimum)
 
 ## Contributing
 
