@@ -14,33 +14,45 @@
 
 import { spawnSync } from "node:child_process";
 import { writeFileSync, existsSync, statSync, readdirSync, readFileSync } from "node:fs";
-import { join, basename } from "node:path";
+import { join, basename, dirname } from "node:path";
 import { homedir } from "node:os";
+import { fileURLToPath } from "node:url";
 
 // ─── help text + arg parsing ──────────────────────────────────────────────
 
-const HELP = `tokenfolio · generate data.js from your AI tool usage
+const HELP = `tokenfolio · generate data.js / og.png from your AI tool usage
 
 USAGE
-  tokenfolio init [options]
+  tokenfolio init [options]    aggregate AI usage → data.js
+  tokenfolio og   [options]    render personalized og.png from data.js
 
-OPTIONS
+INIT OPTIONS
   --source NAME      claude | codex | all   (default: all)
-  --year YYYY        year to summarize       (default: current year)
-  --output PATH      write to PATH           (default: ./data.js)
-  --name NAME        override user.name      (else: git config user.name)
-  --handle HANDLE    override user.handle    (else: from git email)
-  --title TITLE      override user.title     (default: "AI Pair Programmer")
+  --year YYYY        year to summarize      (default: current year)
+  --output PATH      write to PATH          (default: ./data.js)
+  --name NAME        override user.name     (else: git config user.name)
+  --handle HANDLE    override user.handle   (else: from git email)
+  --title TITLE      override user.title    (default: "AI Pair Programmer")
   --location LOC     override user.location
   --force            overwrite existing output file
   --dry              print to stdout, don't write
+
+OG OPTIONS
+  --output PATH      write to PATH          (default: ./og.png)
+
+GLOBAL
   -h, --help
 
 EXAMPLES
   tokenfolio init --dry
   tokenfolio init --year 2025 --force
   tokenfolio init --source codex --year 2026 --dry
-  tokenfolio init --name "Ada Lovelace" --handle "@ada"
+  tokenfolio og                              # writes ./og.png
+  tokenfolio og --output share/og.png
+
+REQUIREMENTS
+  init: Node ≥18; ccusage (auto-fetched via npx) for Claude Code source
+  og:   Python 3.9+ with Pillow (\`pip install Pillow\`)
 
 PRIVACY
   Only numeric/path/date data is read. Prompt contents are never extracted.
@@ -55,7 +67,7 @@ function parseArgs(argv) {
     cmd: "",
     source: "all",
     year: new Date().getFullYear(),
-    output: "./data.js",
+    output: null,             // resolved per-cmd later
     force: false,
     dry: false,
     overrides: {}
@@ -63,7 +75,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "-h" || a === "--help") { console.log(HELP); process.exit(0); }
-    else if (a === "init")            o.cmd = "init";
+    else if (a === "init" || a === "og") o.cmd = a;
     else if (a === "--source")        o.source = argv[++i];
     else if (a === "--year")          o.year = +argv[++i];
     else if (a === "--output" || a === "-o") o.output = argv[++i];
@@ -76,9 +88,11 @@ function parseArgs(argv) {
     else { console.error(`unknown arg: ${a}\n${HELP}`); process.exit(2); }
   }
   if (!o.cmd) { console.error(HELP); process.exit(2); }
-  if (!["all", "claude", "codex"].includes(o.source)) {
+  if (o.cmd === "init" && !["all", "claude", "codex"].includes(o.source)) {
     console.error(`× --source must be one of: all, claude, codex`); process.exit(2);
   }
+  // resolve default output per-cmd
+  if (o.output == null) o.output = o.cmd === "og" ? "./og.png" : "./data.js";
   return o;
 }
 
@@ -597,8 +611,33 @@ function buildResumeData(args, agg) {
 
 // ─── main ─────────────────────────────────────────────────────────────────
 
+// ─── og: shell out to scripts/gen-og.py ───────────────────────────────────
+
+function runOg(args) {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const candidates = [
+    join(here, "..", "scripts", "gen-og.py"),         // installed package
+    join(process.cwd(), "scripts", "gen-og.py")       // running from clone
+  ];
+  const scriptPath = candidates.find(p => existsSync(p));
+  if (!scriptPath) {
+    console.error("× scripts/gen-og.py not found");
+    console.error("  expected at one of:\n  " + candidates.join("\n  "));
+    process.exit(1);
+  }
+  const env = { ...process.env, OG_OUT: args.output };
+  const r = spawnSync("python3", [scriptPath], { stdio: "inherit", env, cwd: process.cwd() });
+  if (r.error && r.error.code === "ENOENT") {
+    console.error("× python3 not found in PATH. Install Python 3.9+ to use `tokenfolio og`.");
+    process.exit(1);
+  }
+  process.exit(r.status || 0);
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.cmd === "og") { runOg(args); return; }
+
   const year = args.year;
   console.error(`▸ tokenfolio init · year ${year} · source ${args.source}`);
 

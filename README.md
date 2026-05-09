@@ -64,6 +64,17 @@ The CLI uses [`ccusage`](https://github.com/ryoppippi/ccusage) for Claude Code a
 
 **Privacy red line:** only token counts, model names, project paths, and dates are read. Prompt content (`response_item` lines in Codex, `message` lines in Claude JSONL) is never parsed.
 
+### Personalized OG image (`tokenfolio og`)
+
+After `tokenfolio init`, generate a `og.png` containing your numbers so social previews on X / LinkedIn / 飞书 show your stats instead of the generic brand image:
+
+```bash
+npx github:tt-a1i/tokenfolio og
+# → writes ./og.png  (1200×630, ready for og:image)
+```
+
+Requires Python 3.9+ and Pillow (`pip install Pillow`). The Python step is decoupled from `init` so the install footprint stays minimal for users who don't want OG.
+
 ### Run locally
 
 ```bash
@@ -100,9 +111,10 @@ Every template reads from the same data object. Switch templates with zero data 
 - [x] 9 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist)
 - [x] `tokenfolio init` CLI for Claude Code (via ccusage)
 - [x] CLI: Codex (`~/.codex/sessions/`) parser
+- [x] CLI: `tokenfolio og` for personalized OG image (Pillow)
 - [ ] CLI: Cursor / Aider / Continue.dev support (where token counts exist)
 - [ ] More templates: synthwave, manga, trading-floor
-- [ ] Per-user dynamic OG image (Vercel Edge + Satori)
+- [ ] Edge-rendered dynamic OG image (Vercel + Satori) for zero-install users
 - [ ] Dark/light mode toggle on each template
 - [ ] PNG/PDF export for sharing
 - [ ] i18n (中 / EN at minimum)
