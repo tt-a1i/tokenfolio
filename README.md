@@ -2,6 +2,7 @@
 
 > An AI-usage portfolio, made readable. Drop in your numbers, deploy a page, show recruiters what working with machines actually looks like.
 
+[![npm](https://img.shields.io/npm/v/tokenfolio?style=for-the-badge&color=cb3837&logo=npm)](https://www.npmjs.com/package/tokenfolio)
 [![Use this template](https://img.shields.io/badge/use_this-template-2ea44f?style=for-the-badge&logo=github)](https://github.com/tt-a1i/tokenfolio/generate)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tt-a1i/tokenfolio)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/tt-a1i/tokenfolio)
@@ -37,17 +38,17 @@ More coming. Contributions welcome.
 
 ```bash
 # preview without writing — recommended first run
-npx github:tt-a1i/tokenfolio init --dry
+npx tokenfolio init --dry
 
 # both sources merged (default)
-npx github:tt-a1i/tokenfolio init --force
+npx tokenfolio init --force
 
 # narrow to one source / one year
-npx github:tt-a1i/tokenfolio init --source codex  --year 2026 --dry
-npx github:tt-a1i/tokenfolio init --source claude --year 2025 --dry
+npx tokenfolio init --source codex  --year 2026 --dry
+npx tokenfolio init --source claude --year 2025 --dry
 
 # override identity (defaults pull from `git config`)
-npx github:tt-a1i/tokenfolio init \
+npx tokenfolio init \
   --name "Ada Lovelace" --handle "@ada" --location "London"
 ```
 
@@ -69,7 +70,7 @@ The CLI uses [`ccusage`](https://github.com/ryoppippi/ccusage) for Claude Code a
 After `tokenfolio init`, generate a `og.png` containing your numbers so social previews on X / LinkedIn / 飞书 show your stats instead of the generic brand image:
 
 ```bash
-npx github:tt-a1i/tokenfolio og
+npx tokenfolio og
 # → writes ./og.png  (1200×630, ready for og:image)
 ```
 

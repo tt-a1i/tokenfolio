@@ -26,9 +26,9 @@ Edit and post when ready. Keep it short — HN audiences punish long-form pitchi
 > - **pass** — vintage airline boarding pass
 > - **brutalist** — Wired-magazine-cover-meets-1968-poster
 >
-> A small CLI (`npx tokenfolio init`) auto-extracts your numbers from
-> `~/.claude/projects/` (via ccusage) and `~/.codex/sessions/` (built-in
-> parser). Cursor and Aider next.
+> A small CLI (`npx tokenfolio init` or `npm i -g tokenfolio`) auto-extracts
+> your numbers from `~/.claude/projects/` (via ccusage) and
+> `~/.codex/sessions/` (built-in parser). Cursor and Aider next.
 >
 > Privacy red line: only counts, models, project paths, dates. Prompt
 > contents are never parsed — the Codex parser explicitly skips
