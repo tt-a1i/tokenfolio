@@ -1,97 +1,103 @@
 # tokenfolio
 
-> An AI-usage portfolio, made readable. Drop in your numbers, deploy a page, show recruiters what working with machines actually looks like.
+> 把你的 AI 编码足迹做成一张可分享的简历页。填一份数据，部署一个网页，让 HR 看到「和机器协作」具体长什么样。
 
 [![npm](https://img.shields.io/npm/v/tokenfolio?style=for-the-badge&color=cb3837&logo=npm)](https://www.npmjs.com/package/tokenfolio)
 [![Use this template](https://img.shields.io/badge/use_this-template-2ea44f?style=for-the-badge&logo=github)](https://github.com/tt-a1i/tokenfolio/generate)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tt-a1i/tokenfolio)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/tt-a1i/tokenfolio)
 
-Pick a template. Edit one `data.js`. Deploy. Done.
+> **语言：** **中文** · [English](./README.en.md)
 
-**Live demo:** https://tt-a1i.github.io/tokenfolio/
+挑一个模板 → 改一份 `data.js` → 一键部署。三步搞定。
 
-## Templates
+**在线 Demo：** https://tt-a1i.github.io/tokenfolio/
 
-| | name | vibe |
+## 模板（9 个，更多持续加）
+
+| | 名字 | 风格 |
 |---|---|---|
-| 🟢 | **wrapped**   | Spotify-Wrapped style — bold color blocks, peak month highlighted, made to be posted |
-| 🌌 | **cosmos**    | Each month a constellation, each session a star — premium, generative, unique-per-user |
-| 📰 | **almanac**   | "The Token Almanac" — gothic masthead, monthly dispatches, classified ads — literary |
-| 💻 | **terminal**  | Black on green. Boot sequence + ASCII bar charts + Unicode boxes — hacker dense |
-| 🌈 | **aurora**    | Aurora gradients + frosted-glass cards. Apple Vision / Linear polish — HR-friendly |
-| ✨ | **holo**      | Your résumé as a holographic trading card. Mouse-tracked tilt + rainbow sheen |
-| 🎮 | **pixel**     | An 8-bit RPG character sheet. HP/MP bars, star stats, quest log, "Press A to recruit" |
-| ✈️ | **pass**      | A 1980s airline boarding pass — perforations, barcode, passport stamps per month |
-| 🟨 | **brutalist** | Wired magazine cover meets 1968 protest poster. Helvetica Black 200px, hard edges |
+| 🟢 | **wrapped**   | Spotify Wrapped 风：大色块月卡 + 高亮 peak 月，最适合发朋友圈 |
+| 🌌 | **cosmos**    | 暗夜星座时间轴：每月一个星座，每个会话一颗星，独一无二 |
+| 📰 | **almanac**   | 「Token 年鉴」：哥特刊头 + 月度叙事 + 项目分类广告，文学性最强 |
+| 💻 | **terminal**  | 黑底绿字 hacker 风：boot 序列动画 + ASCII 条形图 + Unicode 边框 |
+| 🌈 | **aurora**    | 极光渐变 + 毛玻璃卡片：Apple Vision / Linear 风，最适合给 HR 看 |
+| ✨ | **holo**      | 全息收藏卡：鼠标跟随 3D 倾斜 + 彩虹反光，传播力最强 |
+| 🎮 | **pixel**     | 8-bit RPG 角色卡：HP/MP 条 + 星级属性 + 任务日志，「按 A 招募我」 |
+| ✈️ | **pass**      | 80 年代航空登机牌：穿孔 + 条形码 + 月度护照盖章，复古收藏感 |
+| 🟨 | **brutalist** | 瑞士 + Wired 风：黄黑红三色块、Helvetica Black 200px、不对称 grid |
 
-More coming. Contributions welcome.
+欢迎 PR 新模板。
 
-## Quick start
+## 快速开始
 
-1. Click **[Use this template](https://github.com/tt-a1i/tokenfolio/generate)** — gets you a fresh repo with clean history that counts toward your contribution graph.
-2. Clone your new repo locally.
-3. Auto-generate `data.js` from your Claude Code usage (see CLI below). Or hand-edit it.
-4. Click a Deploy button above, or enable GitHub Pages (Settings → Pages → `main` branch, `/`).
+1. 点上面的 **Use this template** 按钮 → 派生一份 history 干净的新仓库（提交还会计入你的 contribution graph）
+2. clone 到本地
+3. 用下面的 CLI 自动生成 `data.js`，或者手动编辑
+4. 点上方任一 Deploy 按钮，或开 GitHub Pages（Settings → Pages → `main` 分支 / 根目录）
 
-### CLI (`tokenfolio init`)
+### CLI · `tokenfolio init`
 
 ```bash
-# preview without writing — recommended first run
+# 第一次推荐：先 dry-run 预览，不落盘
 npx tokenfolio init --dry
 
-# both sources merged (default)
+# 默认行为：同时聚合 Claude + Codex 数据
 npx tokenfolio init --force
 
-# narrow to one source / one year
+# 单源 / 指定年份
 npx tokenfolio init --source codex  --year 2026 --dry
 npx tokenfolio init --source claude --year 2025 --dry
 
-# override identity (defaults pull from `git config`)
+# 覆盖身份（默认读 git config）
 npx tokenfolio init \
   --name "Ada Lovelace" --handle "@ada" --location "London"
 ```
 
-The CLI uses [`ccusage`](https://github.com/ryoppippi/ccusage) for Claude Code and a built-in JSONL parser for Codex.
+CLI 内部用 [`ccusage`](https://github.com/ryoppippi/ccusage) 解析 Claude Code，用自带的 JSONL 解析器处理 Codex。
 
-**Currently supported sources:**
+**当前支持的数据源：**
 
-| source | location | mechanism |
+| 来源 | 位置 | 机制 |
 |---|---|---|
-| Claude Code | `~/.claude/projects/` | `ccusage` (auto-fetched via npx) |
-| Codex       | `~/.codex/sessions/`  | built-in parser |
+| Claude Code | `~/.claude/projects/` | `ccusage`（首次运行通过 npx 自动拉取） |
+| Codex       | `~/.codex/sessions/`  | 内置解析器 |
 
-**Coming next:** Cursor, Aider, Continue.dev (where token counts exist).
+**接下来要加：** Cursor / Aider / Continue.dev（如果它们暴露了 token 计数）
 
-**Privacy red line:** only token counts, model names, project paths, and dates are read. Prompt content (`response_item` lines in Codex, `message` lines in Claude JSONL) is never parsed.
+**隐私红线：** 只读取 token 数 / 模型名 / 项目路径 / 时间戳。**绝不读取 prompt 内容** —— Codex 的 `response_item` 行和 Claude JSONL 的 `message` 行都被显式跳过。
 
-### Personalized OG image (`tokenfolio og`)
+### 个性化 OG 图 · `tokenfolio og`
 
-After `tokenfolio init`, generate a `og.png` containing your numbers so social previews on X / LinkedIn / 飞书 show your stats instead of the generic brand image:
+跑完 `init` 后，再跑一次 `og`，生成一张包含你真实数字的 1200×630 og.png。链接发到 X / LinkedIn / 飞书时，预览卡显示的是你的成绩单，而不是默认占位图：
 
 ```bash
 npx tokenfolio og
-# → writes ./og.png  (1200×630, ready for og:image)
+# → 写入 ./og.png（1200×630，可直接作为 og:image）
 ```
 
-Requires Python 3.9+ and Pillow (`pip install Pillow`). The Python step is decoupled from `init` so the install footprint stays minimal for users who don't want OG.
+需要 Python 3.9+ 和 Pillow（`pip install Pillow`）。OG 这一步和 `init` 解耦——不需要 OG 图的人零额外依赖。
 
-### Run locally
+### 本地预览
 
 ```bash
-git clone https://github.com/<you>/<your-repo>.git
-cd <your-repo>
+git clone https://github.com/<你>/<你的-repo>.git
+cd <你的-repo>
 python3 -m http.server 8765
 open http://localhost:8765
 ```
 
-### Pick one template as the homepage
+### 用某个模板作为首页
 
-The root `index.html` is a gallery of all templates. Once you've picked one, copy its files to the root or add a `<meta http-equiv="refresh" content="0; url=templates/wrapped/">` redirect at the root.
+默认根 `index.html` 是 9 个模板的画廊。选定一个之后，把它的文件复制到根目录，或者在根目录的 `index.html` 里加一行重定向：
 
-## The data shape
+```html
+<meta http-equiv="refresh" content="0; url=templates/wrapped/">
+```
 
-`data.js` is a single file that defines `window.RESUME_DATA`. The shape:
+## 数据结构
+
+`data.js` 单文件，定义全局 `window.RESUME_DATA`：
 
 ```js
 window.RESUME_DATA = {
@@ -105,25 +111,26 @@ window.RESUME_DATA = {
 };
 ```
 
-Every template reads from the same data object. Switch templates with zero data changes.
+所有模板共读同一份数据。切模板不用动一行内容。
 
-## Roadmap
+## 路线图
 
-- [x] 9 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist)
-- [x] `tokenfolio init` CLI for Claude Code (via ccusage)
-- [x] CLI: Codex (`~/.codex/sessions/`) parser
-- [x] CLI: `tokenfolio og` for personalized OG image (Pillow)
-- [ ] CLI: Cursor / Aider / Continue.dev support (where token counts exist)
-- [ ] More templates: synthwave, manga, trading-floor
-- [ ] Edge-rendered dynamic OG image (Vercel + Satori) for zero-install users
-- [ ] Dark/light mode toggle on each template
-- [ ] PNG/PDF export for sharing
-- [ ] i18n (中 / EN at minimum)
+- [x] 9 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist）
+- [x] `tokenfolio init` CLI · Claude Code（通过 ccusage）
+- [x] CLI · Codex（`~/.codex/sessions/`）
+- [x] CLI · `tokenfolio og` 个性化 OG 图（Pillow）
+- [x] README 中英双语
+- [ ] CLI · Cursor / Aider / Continue.dev
+- [ ] 更多模板：synthwave / manga / trading-floor
+- [ ] 边缘节点动态 OG（Vercel + Satori），让无 Python 环境的用户也能用
+- [ ] 模板暗 / 亮模式切换
+- [ ] 模板 PNG / PDF 导出
+- [ ] CLI 输出文案 i18n
 
-## Contributing
+## 贡献
 
-Want to add a template? Drop a folder under `templates/<your-name>/` with one `index.html` that loads `../../data.js` and renders the same data shape. PRs welcome.
+想加一个新模板？在 `templates/<你的名字>/` 下放一个 `index.html`，加载 `../../data.js`，按相同的数据 shape 渲染即可。PR 欢迎。
 
 ## License
 
-MIT — do whatever, just don't sue us.
+MIT — 随便用，别拿来告我们就行。
