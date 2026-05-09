@@ -2,37 +2,46 @@
 
 > An AI-usage portfolio, made readable. Drop in your numbers, deploy a page, show recruiters what working with machines actually looks like.
 
-Pick a template. Edit one `data.js`. Push to GitHub Pages. Done.
+[![Use this template](https://img.shields.io/badge/use_this-template-2ea44f?style=for-the-badge&logo=github)](https://github.com/tt-a1i/tokenfolio/generate)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tt-a1i/tokenfolio)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/tt-a1i/tokenfolio)
+
+Pick a template. Edit one `data.js`. Deploy. Done.
+
+**Live demo:** https://tt-a1i.github.io/tokenfolio/
 
 ## Templates
 
 | | name | vibe |
 |---|---|---|
-| 🟢 | **wrapped** | Spotify-Wrapped style — bold color blocks, peak month highlighted, made to be posted |
-| 🌌 | **cosmos**  | Each month a constellation, each session a star — premium, generative, unique-per-user |
-| 📰 | **almanac** | "The Token Almanac" — gothic masthead, monthly dispatches, classified ads — literary |
+| 🟢 | **wrapped**  | Spotify-Wrapped style — bold color blocks, peak month highlighted, made to be posted |
+| 🌌 | **cosmos**   | Each month a constellation, each session a star — premium, generative, unique-per-user |
+| 📰 | **almanac**  | "The Token Almanac" — gothic masthead, monthly dispatches, classified ads — literary |
+| 💻 | **terminal** | Black on green. Boot sequence + ASCII bar charts + Unicode boxes — hacker dense |
+| 🌈 | **aurora**   | Aurora gradients + frosted-glass cards. Apple Vision / Linear polish — HR-friendly |
+| ✨ | **holo**     | Your résumé as a holographic trading card. Mouse-tracked tilt + rainbow sheen |
 
 More coming. Contributions welcome.
 
-## Quick start
+## Quick start (recommended path)
+
+1. Click **[Use this template](https://github.com/tt-a1i/tokenfolio/generate)** — gets you a fresh repo with a clean history that counts toward your contribution graph.
+2. Edit `data.js` with your numbers.
+3. Click one of the deploy buttons above (or enable GitHub Pages: Settings → Pages → `main` branch, `/`).
+4. Your portfolio lives at `https://<your-handle>.github.io/<repo-name>/` (or a `*.vercel.app` / `*.netlify.app` URL).
+
+### Run locally
 
 ```bash
-git clone https://github.com/tt-a1i/tokenfolio.git
-cd tokenfolio
+git clone https://github.com/<you>/<your-repo>.git
+cd <your-repo>
 python3 -m http.server 8765
 open http://localhost:8765
 ```
 
-Edit `data.js` with your real numbers, then deploy the folder anywhere static — GitHub Pages, Vercel, Netlify, an S3 bucket.
+### Pick one template as the homepage
 
-## Deploying to GitHub Pages
-
-1. Fork this repo (or use it as a template)
-2. Edit `data.js` with your data
-3. Settings → Pages → Source: `main` branch, `/` (root)
-4. Your portfolio lives at `https://<your-handle>.github.io/tokenfolio/`
-
-Want a different URL? Pick **one** template and copy its files to the root, or set up a small redirect from `/` to `/templates/<chosen>/`.
+By default the root `index.html` is a gallery of all templates. Once you've picked one, copy its files to the root or add a `<meta http-equiv="refresh" content="0; url=templates/wrapped/">` redirect.
 
 ## The data shape
 
@@ -55,7 +64,7 @@ Every template reads from the same data object. Switch templates with zero data 
 ## Roadmap
 
 - [ ] CLI to auto-extract numbers from local Claude Code / Codex usage logs (`tokenfolio init`)
-- [ ] More templates: holo trading card, brutalist editorial, pixel-RPG, boarding pass, synthwave, manga
+- [ ] More templates: brutalist editorial, pixel-RPG, boarding pass, synthwave, manga
 - [ ] Optional dark/light mode toggle on each template
 - [ ] PNG/PDF export for Twitter/LinkedIn sharing
 - [ ] i18n (CN/EN at minimum)

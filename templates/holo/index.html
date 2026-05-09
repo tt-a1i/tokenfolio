@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holo Card · tokenfolio</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="tokenfolio · holo card">
+<meta property="og:description" content="Your résumé as a holographic trading card. Made for screenshots.">
+<meta property="og:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<meta property="og:url" content="https://tt-a1i.github.io/tokenfolio/templates/holo/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="tokenfolio · holo card">
+<meta name="twitter:description" content="Your résumé as a holographic trading card. Made for screenshots.">
+<meta name="twitter:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: radial-gradient(ellipse at 60% 30%, #1a0a2e 0%, #0d0522 30%, #050312 70%, #020108 100%);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── HERO STRIPE ─────────────────────────────── */
+.hero-stripe {
+  text-align: center;
+  padding: 48px 24px 24px;
+  position: relative;
+}
+.hero-stripe::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(180,100,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.mythic-label {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: #f0c040;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+.hero-name {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 900;
+  background: linear-gradient(135deg, #fff 0%, #c9a0ff 50%, #80d0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.hero-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.15em;
+}
+
+/* ─── MAIN STAGE ──────────────────────────────── */
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 0 24px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ─── CARD COLUMN ─────────────────────────────── */
+.card-column {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ─── RAINBOW BORDER WRAPPER ──────────────────── */
+.card-border {
+  position: relative;
+  width: 360px;
+  height: 540px;
+  border-radius: 18px;
+  padding: 4px;
+  /* Conic rainbow border */
+  background: conic-gradient(
+    from var(--angle),
+    #ff6ec7,
+    #ffe44d,
+    #a855f7,
+    #4facff,
+    #00f5c4,
+    #ff4e6a,
+    #ff6ec7
+  );
+  animation: spin-border 6s linear infinite;
+  cursor: pointer;
+  /* 3D tilt driven by --mx / --my */
+  --mx: 0;
+  --my: 0;
+  transform: perspective(900px) rotateY(calc(var(--mx) * 18deg)) rotateX(calc(var(--my) * -18deg));
+  transition: transform 0.4s ease;
+  will-change: transform;
+}
+
+@keyframes spin-border {
+  to { --angle: 360deg; }
+}
+
+/* ─── CARD BODY ───────────────────────────────── */
+.card-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 20%, rgba(130,60,200,0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 75% 80%, rgba(40,90,200,0.4) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 55% 50%, rgba(90,20,160,0.2) 0%, transparent 60%),
+    linear-gradient(155deg, #1a0535 0%, #0a1a40 50%, #080d28 100%);
+}
+
+/* subtle noise grid overlay */
+.card-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 8px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 8px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── HOLO SHEEN LAYERS ───────────────────────── */
+.holo-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  /* driven by JS translate */
+  background: linear-gradient(
+    105deg,
+    transparent 25%,
+    rgba(255,255,255,0.25) 45%,
+    rgba(180,150,255,0.15) 50%,
+    rgba(100,220,255,0.15) 55%,
+    transparent 70%
+  );
+  mix-blend-mode: overlay;
+}
+.holo-rainbow {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  pointer-events: none;
+  z-index: 11;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: conic-gradient(
+    from 190deg at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255,110,199,0.35),
+    rgba(255,228,77,0.25),
+    rgba(168,85,247,0.3),
+    rgba(79,172,255,0.3),
+    rgba(0,245,196,0.25),
+    rgba(255,78,106,0.3),
+    rgba(255,110,199,0.35)
+  );
+  mix-blend-mode: color-dodge;
+}
+.card-border:hover .holo-sheen,
+.card-border:hover .holo-rainbow {
+  opacity: 1;
+}
+
+/* ─── CARD INNER LAYOUT ───────────────────────── */
+.card-inner {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  gap: 0;
+}
+
+/* Rarity + type header row */
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.card-class {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(240,192,64,0.3);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.card-rarity {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: #f0c040;
+  letter-spacing: 0.2em;
+  text-align: right;
+}
+
+/* Character name */
+.card-char-name {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(160,100,255,0.8), 0 0 40px rgba(80,160,255,0.4);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+/* Art window */
+.card-art {
+  flex: 0 0 auto;
+  height: 180px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid rgba(240,192,64,0.4);
+  margin-bottom: 10px;
+  background:
+    radial-gradient(ellipse 70% 60% at 35% 40%, rgba(200,80,255,0.5) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 65% at 70% 65%, rgba(40,120,255,0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 55% 25%, rgba(0,220,180,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 25% at 20% 75%, rgba(255,80,120,0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #12003a 0%, #04112b 100%);
+}
+/* star field particles */
+.card-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 60%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 85%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 55% 55%, rgba(200,160,255,0.9) 0%, transparent 100%);
+  pointer-events: none;
+}
+.card-art-avatar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 56px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.15);
+  text-shadow:
+    0 0 30px rgba(200,130,255,0.9),
+    0 0 60px rgba(100,180,255,0.7),
+    0 0 100px rgba(200,130,255,0.5);
+  z-index: 2;
+  letter-spacing: 0.1em;
+}
+/* inner gold frame edge */
+.card-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(240,192,64,0.15);
+  border-radius: 7px;
+  pointer-events: none;
+}
+
+/* HP / Level bar */
+.card-hp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.card-level {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: #f0c040;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+}
+.hp-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.hp-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #a855f7, #4facff, #00f5c4);
+  box-shadow: 0 0 8px rgba(168,85,247,0.6);
+  transition: width 1s ease;
+}
+.card-hp-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+
+/* Stats table */
+.card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
+  margin-bottom: 8px;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 5px;
+  padding: 5px 8px;
+}
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7.5px;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+.stat-value small {
+  font-size: 9px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 400;
+  margin-left: 3px;
+}
+
+/* Sparkline */
+.card-sparkline {
+  margin-bottom: 8px;
+  position: relative;
+}
+.spark-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.spark-svg {
+  width: 100%;
+  height: 28px;
+  display: block;
+}
+
+/* Card footer */
+.card-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 7px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-footer-left {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+}
+.card-footer-right {
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: rgba(240,192,64,0.5);
+  letter-spacing: 0.1em;
+  text-align: right;
+}
+
+/* ─── PANELS COLUMN ───────────────────────────── */
+.panels-column {
+  flex: 1;
+  min-width: 280px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(168,85,247,0.5), rgba(79,172,255,0.5), transparent);
+}
+
+.panel-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(240,192,64,0.75);
+  margin-bottom: 16px;
+}
+
+/* ─── MONTHLY BARS ────────────────────────────── */
+.month-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.month-bar-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 70px;
+  align-items: center;
+  gap: 10px;
+}
+.month-bar-row .m-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.1em;
+}
+.month-bar-row .m-track {
+  height: 10px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+.month-bar-row .m-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #7c3aed, #4facff);
+  position: relative;
+}
+.month-bar-row.is-peak .m-fill {
+  background: linear-gradient(90deg, #a855f7, #4facff, #00f5c4);
+  box-shadow: 0 0 10px rgba(168,85,247,0.5);
+}
+.month-bar-row.is-peak .m-label {
+  color: #f0c040;
+}
+.m-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  text-align: right;
+  line-height: 1.3;
+}
+.m-val .m-exp {
+  display: block;
+  font-size: 7.5px;
+  color: rgba(168,85,247,0.8);
+  font-weight: 400;
+}
+
+/* ─── MODEL SECTION ───────────────────────────── */
+.model-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.model-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  row-gap: 5px;
+}
+.model-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+.model-name small {
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  font-weight: 400;
+  margin-left: 6px;
+}
+.model-tokens {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+}
+.model-bar-row {
+  grid-column: 1 / -1;
+  height: 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.model-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* ─── PROJECTS ROSTER ─────────────────────────── */
+.roster-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.roster-card {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.roster-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, #a855f7, #4facff);
+  border-radius: 10px 0 0 10px;
+}
+.roster-rank {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(240,192,64,0.6);
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+.roster-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.roster-lang {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 6px;
+}
+.roster-tokens {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4facff;
+}
+.roster-tokens small {
+  font-size: 8px;
+  color: rgba(255,255,255,0.4);
+  font-weight: 400;
+}
+
+/* ─── HIGHLIGHTS BADGES ───────────────────────── */
+.hi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.hi-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px 12px;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  background: radial-gradient(ellipse at 40% 35%, rgba(168,85,247,0.25) 0%, rgba(0,0,0,0.5) 70%);
+  border: 1.5px solid rgba(168,85,247,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.hi-badge::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, rgba(168,85,247,0.5), rgba(79,172,255,0.5), rgba(0,245,196,0.4), rgba(168,85,247,0.5));
+  z-index: -1;
+  animation: spin-border 8s linear infinite;
+}
+.hi-badge::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  border-radius: 50%;
+  background: #08041a;
+  z-index: -1;
+}
+.hi-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.hi-value {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 3px;
+  text-shadow: 0 0 15px rgba(168,85,247,0.7);
+}
+.hi-detail {
+  font-size: 8px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.3;
+}
+
+/* ─── PAGE FOOTER ─────────────────────────────── */
+.page-footer {
+  text-align: center;
+  padding: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.2);
+}
+.page-footer a {
+  color: rgba(168,85,247,0.7);
+  text-decoration: none;
+}
+.page-footer a:hover { color: #a855f7; }
+
+/* ─── REDUCED MOTION ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .card-border {
+    animation: none;
+    transform: none !important;
+    transition: none;
+  }
+  .holo-sheen, .holo-rainbow { display: none; }
+  @keyframes spin-border { to { --angle: 0deg; } }
+}
+
+/* ─── RESPONSIVE ──────────────────────────────── */
+@media (max-width: 700px) {
+  .stage { padding: 0 16px 48px; }
+  .roster-grid { grid-template-columns: 1fr; }
+  .hi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero stripe -->
+<header class="hero-stripe">
+  <div class="mythic-label">★ MYTHIC ENGINEER · 1 / 1</div>
+  <div class="hero-name" id="hero-name">—</div>
+  <div class="hero-sub" id="hero-sub">—</div>
+</header>
+
+<!-- Main layout -->
+<div class="stage">
+
+  <!-- ── CARD COLUMN ── -->
+  <div class="card-column">
+    <div class="card-border" id="holo-card" tabindex="0" role="img" aria-label="Holo trading card">
+      <div class="card-body">
+        <!-- Holo overlay layers -->
+        <div class="holo-sheen" id="holo-sheen"></div>
+        <div class="holo-rainbow" id="holo-rainbow"></div>
+
+        <div class="card-inner">
+          <!-- Top row -->
+          <div class="card-top-row">
+            <div class="card-class" id="card-class">AI PAIR PROGRAMMER</div>
+            <div class="card-rarity">★ MYTHIC<br>1 / 1</div>
+          </div>
+
+          <!-- Character name -->
+          <div class="card-char-name" id="card-char-name">—</div>
+
+          <!-- Art window -->
+          <div class="card-art">
+            <div class="card-art-avatar" id="card-avatar">SK</div>
+          </div>
+
+          <!-- HP / Level -->
+          <div class="card-hp-row">
+            <div class="card-level" id="card-level">LV 47</div>
+            <div class="hp-track">
+              <div class="hp-fill" id="hp-fill" style="width:70%"></div>
+            </div>
+            <div class="card-hp-val" id="card-hp">HP 47</div>
+          </div>
+
+          <!-- Stats -->
+          <div class="card-stats" id="card-stats"></div>
+
+          <!-- Sparkline -->
+          <div class="card-sparkline">
+            <div class="spark-label">Token Trend · 12 months</div>
+            <svg class="spark-svg" id="spark-svg" viewBox="0 0 320 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="spark-grad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#7c3aed"/>
+                  <stop offset="50%" stop-color="#4facff"/>
+                  <stop offset="100%" stop-color="#00f5c4"/>
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+            </svg>
+          </div>
+
+          <!-- Footer -->
+          <div class="card-footer">
+            <div class="card-footer-left" id="card-footer-left">
+              tokenfolio · <span id="card-year">2025</span><br>
+              cards.token / 0001
+            </div>
+            <div class="card-footer-right">
+              GENERATED WITH<br>TOKENFOLIO
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PANELS COLUMN ── -->
+  <div class="panels-column">
+
+    <!-- Monthly EXP -->
+    <div class="panel">
+      <div class="panel-title">Monthly EXP — All 12 Months</div>
+      <div class="month-grid" id="month-grid"></div>
+    </div>
+
+    <!-- Model mix -->
+    <div class="panel">
+      <div class="panel-title">Model Roster</div>
+      <div class="model-list" id="model-list"></div>
+    </div>
+
+    <!-- Top projects roster -->
+    <div class="panel">
+      <div class="panel-title">Roster of Repos</div>
+      <div class="roster-grid" id="roster-grid"></div>
+    </div>
+
+    <!-- Highlights -->
+    <div class="panel">
+      <div class="panel-title">Achievements Unlocked</div>
+      <div class="hi-grid" id="hi-grid"></div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="page-footer">
+  generated with <a href="https://github.com/tt-a1i/tokenfolio" target="_blank">tokenfolio</a> · holo template
+</footer>
+
+<script src="../../data.js"></script>
+<script>
+(function () {
+  'use strict';
+  const D = window.RESUME_DATA;
+  const F = window.RESUME_FMT;
+
+  /* ── hero stripe ── */
+  document.getElementById('hero-name').textContent = D.user.name;
+  document.getElementById('hero-sub').textContent =
+    D.user.handle + ' · ' + D.user.location + ' · ' + D.year;
+
+  /* ── card top info ── */
+  document.getElementById('card-class').textContent = D.user.title.toUpperCase();
+  document.getElementById('card-char-name').textContent = D.user.name;
+  document.getElementById('card-avatar').textContent = D.user.avatar_initials;
+  document.getElementById('card-year').textContent = D.year;
+
+  /* ── level / HP ── */
+  const totalM = D.totals.tokens / 1e6;
+  const level = D.totals.sessions;
+  const hpVal = Math.round(totalM);
+  const hpMax = 100;
+  const hpPct = Math.min(100, (hpVal / hpMax) * 100);
+  document.getElementById('card-level').textContent =
+    'LV ' + level + ' · HP ' + hpVal;
+  document.getElementById('card-hp').textContent = hpVal + ' / ' + hpMax;
+  document.getElementById('hp-fill').style.width = hpPct + '%';
+
+  /* ── stats ── */
+  const topModel = D.by_model.reduce((a, b) => a.tokens > b.tokens ? a : b);
+  const statsData = [
+    { label: 'Tokens', value: F.num(D.totals.tokens) },
+    { label: 'Sessions', value: D.totals.sessions },
+    { label: 'Projects', value: D.totals.projects },
+    { label: 'Top Model', value: topModel.name.split('-')[0].toUpperCase(), note: topModel.name.split('-')[1] }
+  ];
+  document.getElementById('card-stats').innerHTML = statsData.map(s =>
+    `<div class="stat-item">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}${s.note ? `<small>${s.note}</small>` : ''}</div>
+    </div>`
+  ).join('');
+
+  /* ── sparkline ── */
+  (function buildSparkline() {
+    const vals = D.by_month.map(m => m.tokens);
+    const max = Math.max(...vals);
+    const min = Math.min(...vals);
+    const w = 320;
+    const h = 28;
+    const n = vals.length;
+    const pts = vals.map((v, i) => {
+      const x = (i / (n - 1)) * w;
+      const y = h - ((v - min) / (max - min)) * (h - 6) - 3;
+      return x + ',' + y;
+    });
+    const svg = document.getElementById('spark-svg');
+    // area fill
+    const areaPts = 'M' + pts[0] + ' L' + pts.join(' L') + ' L' + w + ',' + h + ' L0,' + h + ' Z';
+    const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    area.setAttribute('d', areaPts);
+    area.setAttribute('fill', 'url(#spark-grad)');
+    area.setAttribute('opacity', '0.18');
+    svg.appendChild(area);
+    // line
+    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    polyline.setAttribute('points', pts.join(' '));
+    polyline.setAttribute('fill', 'none');
+    polyline.setAttribute('stroke', 'url(#spark-grad)');
+    polyline.setAttribute('stroke-width', '1.8');
+    polyline.setAttribute('stroke-linecap', 'round');
+    polyline.setAttribute('stroke-linejoin', 'round');
+    polyline.setAttribute('filter', 'url(#glow)');
+    svg.appendChild(polyline);
+    // peak dot
+    const peakIdx = vals.indexOf(max);
+    const [px, py] = pts[peakIdx].split(',').map(Number);
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('cx', px);
+    dot.setAttribute('cy', py);
+    dot.setAttribute('r', '3');
+    dot.setAttribute('fill', '#f0c040');
+    dot.setAttribute('filter', 'url(#glow)');
+    svg.appendChild(dot);
+  })();
+
+  /* ── monthly bars ── */
+  const maxTok = Math.max(...D.by_month.map(m => m.tokens));
+  document.getElementById('month-grid').innerHTML = D.by_month.map(m => {
+    const pct = (m.tokens / maxTok * 100).toFixed(1);
+    const exp = '+' + F.num(m.tokens) + ' EXP';
+    return `<div class="month-bar-row${m.peak ? ' is-peak' : ''}">
+      <div class="m-label">${m.label.toUpperCase()}</div>
+      <div class="m-track"><div class="m-fill" style="width:${pct}%"></div></div>
+      <div class="m-val">${F.num(m.tokens)}<span class="m-exp">${exp}</span></div>
+    </div>`;
+  }).join('');
+
+  /* ── models ── */
+  const totModelTok = D.by_model.reduce((s, m) => s + m.tokens, 0);
+  document.getElementById('model-list').innerHTML = D.by_model.map(m => {
+    const pct = (m.tokens / totModelTok * 100).toFixed(0);
+    return `<div class="model-item">
+      <div class="model-name">${m.name}<small>${m.sessions} sessions · ${pct}%</small></div>
+      <div class="model-tokens" style="color:${m.color}">${F.num(m.tokens)}</div>
+      <div class="model-bar-row"><div class="model-bar-fill" style="width:${pct}%;background:${m.color};opacity:0.85"></div></div>
+    </div>`;
+  }).join('');
+
+  /* ── roster of repos ── */
+  document.getElementById('roster-grid').innerHTML = D.top_projects.map((p, i) =>
+    `<div class="roster-card">
+      <div class="roster-rank">#${String(i + 1).padStart(2, '0')}</div>
+      <div class="roster-name" title="${p.name}">${p.name}</div>
+      <div class="roster-lang">${p.language}</div>
+      <div class="roster-tokens">${F.num(p.tokens)}<small> · ${p.sessions} sess</small></div>
+    </div>`
+  ).join('');
+
+  /* ── highlights ── */
+  document.getElementById('hi-grid').innerHTML = D.highlights.map(h =>
+    `<div class="hi-badge">
+      <div class="hi-label">${h.label}</div>
+      <div class="hi-value">${h.value}</div>
+      <div class="hi-detail">${h.detail}</div>
+    </div>`
+  ).join('');
+
+  /* ── 3D tilt + holo interaction ── */
+  const card = document.getElementById('holo-card');
+  const sheen = document.getElementById('holo-sheen');
+  const rainbow = document.getElementById('holo-rainbow');
+  let rafId = null;
+
+  function applyTilt(mx, my, shineX, shineY) {
+    card.style.setProperty('--mx', mx);
+    card.style.setProperty('--my', my);
+    card.style.setProperty('--angle', Math.atan2(my, mx) * (180 / Math.PI) + 'deg');
+    sheen.style.transform = `translate(${mx * -30}px, ${my * -30}px)`;
+    rainbow.style.setProperty('--shine-x', shineX + '%');
+    rainbow.style.setProperty('--shine-y', shineY + '%');
+  }
+
+  card.addEventListener('mousemove', function (e) {
+    if (rafId) return;
+    rafId = requestAnimationFrame(function () {
+      rafId = null;
+      const rect = card.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width;   // 0..1
+      const ny = (e.clientY - rect.top) / rect.height;   // 0..1
+      const mx = (nx - 0.5) * 2;   // -1..1
+      const my = (ny - 0.5) * 2;   // -1..1
+      applyTilt(mx, my, nx * 100, ny * 100);
+    });
+  });
+
+  card.addEventListener('mouseleave', function () {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    card.style.setProperty('--mx', 0);
+    card.style.setProperty('--my', 0);
+    sheen.style.transform = '';
+    rainbow.style.setProperty('--shine-x', '50%');
+    rainbow.style.setProperty('--shine-y', '50%');
+  });
+
+  /* touch tilt */
+  card.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = card.getBoundingClientRect();
+    const nx = (touch.clientX - rect.left) / rect.width;
+    const ny = (touch.clientY - rect.top) / rect.height;
+    const mx = (nx - 0.5) * 2;
+    const my = (ny - 0.5) * 2;
+    applyTilt(mx, my, nx * 100, ny * 100);
+  }, { passive: false });
+
+  card.addEventListener('touchend', function () {
+    card.style.setProperty('--mx', 0);
+    card.style.setProperty('--my', 0);
+    sheen.style.transform = '';
+    rainbow.style.setProperty('--shine-x', '50%');
+    rainbow.style.setProperty('--shine-y', '50%');
+  });
+
+})();
+</script>
+</body>
+</html>

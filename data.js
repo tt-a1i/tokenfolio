@@ -1,19 +1,22 @@
 /**
- * Sample data for token-resume templates.
- * In production, this is generated from your Claude Code / Codex usage logs
- * (or hand-edited). Templates read `window.RESUME_DATA` to render.
+ * Sample data for tokenfolio templates.
+ * Replace the values below with your own — the templates read `window.RESUME_DATA`
+ * and `window.RESUME_FMT` to render. The shape is documented in README.md.
+ *
+ * In a future release, `tokenfolio init` will auto-generate this file from
+ * your local Claude Code / Codex usage logs.
  */
 window.RESUME_DATA = {
   user: {
-    name: "Shaokun Tu",
-    handle: "@shaokun",
+    name: "Ada Lovelace",
+    handle: "@ada-lovelace",
     title: "AI Pair Programmer",
-    location: "Shanghai · Remote",
+    location: "London · Remote",
     since: "2024-05",
-    avatar_initials: "SK",
+    avatar_initials: "AL",
     bio: "Building tools at the seam between humans and language models.",
     links: [
-      { label: "GitHub", url: "https://github.com/shaokun" },
+      { label: "GitHub", url: "https://github.com/ada-lovelace" },
       { label: "Site",   url: "https://example.com" }
     ]
   },
