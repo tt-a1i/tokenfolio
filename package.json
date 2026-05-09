@@ -3,12 +3,17 @@
   "version": "0.5.0",
   "description": "An AI-usage portfolio generator. Drop in your numbers, deploy a page.",
   "homepage": "https://github.com/tt-a1i/tokenfolio",
-  "repository": { "type": "git", "url": "git+https://github.com/tt-a1i/tokenfolio.git" },
-  "bugs":       { "url": "https://github.com/tt-a1i/tokenfolio/issues" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tt-a1i/tokenfolio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tt-a1i/tokenfolio/issues"
+  },
   "license": "MIT",
   "type": "module",
   "bin": {
-    "tokenfolio": "./bin/tokenfolio.js"
+    "tokenfolio": "bin/tokenfolio.js"
   },
   "files": [
     "bin/",
@@ -21,10 +26,22 @@
     "README.md",
     "LICENSE"
   ],
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "keywords": [
-    "ai", "claude", "claude-code", "codex", "portfolio", "resume",
-    "tokens", "usage", "wrapped", "ccusage", "github-pages", "template"
+    "ai",
+    "claude",
+    "claude-code",
+    "codex",
+    "portfolio",
+    "resume",
+    "tokens",
+    "usage",
+    "wrapped",
+    "ccusage",
+    "github-pages",
+    "template"
   ],
   "scripts": {
     "serve": "python3 -m http.server 8765"
