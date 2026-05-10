@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tokenfolio · synthwave</title>
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="tokenfolio · synthwave · @ada-lovelace">
+<meta property="og:description" content="A year of code, rendered in neon. Hot pink. Electric cyan. Midnight. Outrun.">
+<meta property="og:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<meta property="og:url" content="https://tt-a1i.github.io/tokenfolio/templates/synthwave/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Audiowide&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --hot:    #ff0090;
+  --cyan:   #00fff0;
+  --purple: #6a008e;
+  --night:  #0a0028;
+  --magenta:#ff00ff;
+  --yellow: #ffe600;
+  --dark:   #0d0030;
+  --glow-hot:  0 0 8px #ff0090, 0 0 20px #ff0090, 0 0 40px rgba(255,0,144,.4);
+  --glow-cyan: 0 0 8px #00fff0, 0 0 20px #00fff0, 0 0 40px rgba(0,255,240,.4);
+}
+
+html, body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--night);
+  overflow-x: hidden;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  color: var(--cyan);
+}
+
+/* ── CRT Scanlines (fixed overlay, whole page) ─────────────── */
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 2px,
+    rgba(0, 0, 0, .35) 2px 3px
+  );
+  pointer-events: none;
+  z-index: 1000;
+  will-change: transform;
+}
+
+/* ── VHS Bezel / outer frame ───────────────────────────────── */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  border: 6px solid rgba(0,0,0,.7);
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,.8),
+    inset 0 0 80px rgba(106,0,142,.2),
+    0 0 0 1px rgba(255,0,255,.15);
+}
+
+/* ── Main wrapper ──────────────────────────────────────────── */
+.stage {
+  position: relative;
+  min-height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+  overflow: hidden;
+  /* subtle vignette */
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(106,0,142,.35) 0%, transparent 70%),
+    radial-gradient(ellipse 100% 100% at 50% 0%, rgba(255,0,144,.08) 0%, transparent 50%),
+    var(--night);
+}
+
+/* ── Arcade header bar ─────────────────────────────────────── */
+.arcade-header {
+  position: relative; z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px 12px;
+  border-bottom: 1px solid var(--hot);
+  background: rgba(10,0,40,.85);
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(10px, 1.6vw, 14px);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.arcade-header .player {
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+}
+.arcade-header .hiscore {
+  color: var(--hot);
+  text-shadow: var(--glow-hot);
+}
+.arcade-header .player span,
+.arcade-header .hiscore span {
+  opacity: .6;
+  margin-right: 6px;
+}
+
+/* ── Hero zone (sky) ───────────────────────────────────────── */
+.hero {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  padding: clamp(24px, 4vh, 48px) 16px clamp(12px, 2vh, 24px);
+  min-height: 18vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.hero-name {
+  font-family: 'Audiowide', 'Orbitron', sans-serif;
+  font-size: clamp(20px, 4vw, 38px);
+  font-weight: 400;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  margin: 0;
+}
+
+.hero-year {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(13px, 2.2vw, 20px);
+  font-weight: 700;
+  color: var(--hot);
+  letter-spacing: .4em;
+  text-shadow: var(--glow-hot);
+  margin: 0;
+}
+
+/* ── Sun + horizon scene ───────────────────────────────────── */
+.horizon-scene {
+  position: relative;
+  width: 100%;
+  height: clamp(200px, 38vh, 380px);
+  overflow: hidden;
+  flex-shrink: 0;
+  z-index: 4;
+}
+
+/* Sky gradient behind everything */
+.sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #0a0028 0%,
+    #1a003a 28%,
+    #2d0060 45%,
+    #6a008e 58%,
+    #d4006a 70%,
+    #ff4500 82%,
+    #ff8c00 90%,
+    #ffcc00 100%
+  );
+}
+
+/* The sun — iconic outrun circle with horizontal band slits */
+.sun {
+  position: absolute;
+  left: 50%;
+  bottom: 38%;
+  transform: translateX(-50%);
+  width: clamp(100px, 22vw, 200px);
+  height: clamp(100px, 22vw, 200px);
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    #ffe600 0%,
+    #ff8c00 30%,
+    #ff4500 55%,
+    #ff0090 80%,
+    #cc0070 100%
+  );
+  box-shadow:
+    0 0 0 2px rgba(255,200,0,.3),
+    0 0 30px rgba(255,140,0,.6),
+    0 0 80px rgba(255,0,144,.5),
+    0 0 160px rgba(255,0,144,.25);
+  overflow: hidden;
+}
+
+/* Horizontal band slits cutting across the sun */
+.sun::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(180deg,
+      transparent 0%,   transparent calc(33% - 2px),
+      var(--dark) calc(33% - 2px), var(--dark) calc(33% + 2px),
+      transparent calc(33% + 2px), transparent calc(42% - 2px),
+      var(--dark) calc(42% - 2px), var(--dark) calc(42% + 2px),
+      transparent calc(42% + 2px), transparent calc(51% - 3px),
+      var(--dark) calc(51% - 3px), var(--dark) calc(51% + 3px),
+      transparent calc(51% + 3px), transparent calc(61% - 3px),
+      var(--dark) calc(61% - 3px), var(--dark) calc(61% + 3px),
+      transparent calc(61% + 3px), transparent calc(72% - 4px),
+      var(--dark) calc(72% - 4px), var(--dark) calc(72% + 4px),
+      transparent calc(72% + 4px), transparent 100%
+    );
+}
+
+/* Bottom-half occluder — the horizon cuts off the sun */
+.sun::after {
+  content: "";
+  position: absolute;
+  left: -5%; right: -5%;
+  bottom: -5%;
+  height: 52%;
+  background: var(--dark);
+}
+
+/* ── Stars in the sky ──────────────────────────────────────── */
+.stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.stars i {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.8);
+}
+
+/* ── Wireframe grid floor ──────────────────────────────────── */
+.grid-floor {
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  right: -10%;
+  height: 60%;
+  transform-origin: top center;
+  transform: perspective(280px) rotateX(60deg);
+  background:
+    repeating-linear-gradient(180deg, transparent 0 38px, rgba(255,0,255,.5) 38px 39px),
+    repeating-linear-gradient(90deg,  transparent 0 38px, rgba(255,0,255,.5) 38px 39px),
+    linear-gradient(180deg, transparent 0%, #1a0040 100%);
+  overflow: hidden;
+}
+
+/* Glow on the grid lines at the top (horizon line) */
+.grid-floor::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--hot);
+  box-shadow: 0 0 12px var(--hot), 0 0 30px var(--hot), 0 0 60px var(--magenta);
+  z-index: 2;
+}
+
+/* ── Big token number ──────────────────────────────────────── */
+.token-hero {
+  position: relative; z-index: 5;
+  text-align: center;
+  padding: clamp(16px, 2.5vh, 32px) 16px clamp(8px, 1.5vh, 16px);
+}
+
+.token-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(64px, 14vw, 156px);
+  font-weight: 900;
+  line-height: .95;
+  letter-spacing: -.02em;
+  color: #fff;
+  /* Chromatic aberration glow */
+  text-shadow:
+    -2px 0   #ff0090,
+     2px 0   #00fff0,
+     0 0 24px #ff00ff,
+     0 0 60px rgba(255,0,255,.4),
+     0 0 120px rgba(0,255,240,.2);
+  margin: 0;
+  display: block;
+  will-change: transform;
+}
+
+.token-tagline {
+  font-family: 'Audiowide', monospace;
+  font-size: clamp(10px, 1.8vw, 15px);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--hot);
+  text-shadow: var(--glow-hot);
+  margin: 12px 0 0;
+}
+
+/* ── Leaderboard stats panel ───────────────────────────────── */
+.leaderboard {
+  position: relative; z-index: 5;
+  margin: 0 auto;
+  max-width: 760px;
+  padding: clamp(16px, 2.5vh, 32px) clamp(16px, 4vw, 48px) clamp(24px, 4vh, 48px);
+}
+
+.lb-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(9px, 1.5vw, 12px);
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  color: var(--magenta);
+  text-shadow: 0 0 8px var(--magenta);
+  text-align: center;
+  margin: 0 0 clamp(12px, 2vh, 20px);
+}
+
+.lb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(8px, 1.5vw, 16px);
+}
+
+.lb-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: clamp(10px, 1.6vw, 16px) clamp(12px, 2vw, 20px);
+  border: 1px solid rgba(255,0,255,.35);
+  background: rgba(10,0,40,.7);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s ease;
+}
+.lb-row::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--magenta), transparent);
+  opacity: .6;
+}
+.lb-row:hover {
+  border-color: var(--cyan);
+}
+.lb-row:hover::before {
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+
+.lb-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.3vw, 11px);
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: rgba(255,0,255,.8);
+  margin: 0;
+}
+
+.lb-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(14px, 2.8vw, 24px);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0,255,240,.5);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Model bar (bonus) ─────────────────────────────────────── */
+.model-bar {
+  margin: 0 auto clamp(8px, 1.5vh, 16px);
+  max-width: 760px;
+  padding: 0 clamp(16px, 4vw, 48px);
+  position: relative; z-index: 5;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.model-chip {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.3vw, 11px);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 2px;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.model-chip .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Footer / blink ────────────────────────────────────────── */
+.insert-coin {
+  position: relative; z-index: 5;
+  text-align: center;
+  padding: clamp(10px, 2vh, 20px) 16px clamp(14px, 2.5vh, 28px);
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(10px, 1.5vw, 13px);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  text-shadow: 0 0 8px var(--yellow), 0 0 20px rgba(255,230,0,.4);
+  animation: blink 1.2s step-start infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Neon horizontal divider ───────────────────────────────── */
+.neon-div {
+  position: relative; z-index: 5;
+  height: 1px;
+  margin: 0 clamp(16px, 4vw, 48px);
+  background: linear-gradient(90deg, transparent, var(--hot), var(--cyan), var(--hot), transparent);
+  box-shadow: 0 0 8px var(--magenta), 0 0 20px rgba(255,0,255,.3);
+}
+
+/* ── Responsive tweaks ─────────────────────────────────────── */
+@media (max-width: 600px) {
+  .arcade-header { padding: 10px 14px 9px; }
+  .lb-grid { grid-template-columns: 1fr; }
+  .sun { bottom: 40%; }
+}
+
+@media (max-width: 380px) {
+  .arcade-header { flex-direction: column; gap: 4px; text-align: center; }
+}
+
+/* ── Purple ambient glow bands (atmosphere) ────────────────── */
+.atmo-band {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+  opacity: .5;
+  z-index: 3;
+  pointer-events: none;
+}
+</style>
+</head>
+<body data-tf-capture=".stage">
+
+<div class="stage" id="stage">
+
+  <!-- Arcade header bar -->
+  <header class="arcade-header">
+    <span class="player"><span>PLAYER 1 ·</span><span id="hdr-handle">@YOU</span></span>
+    <span class="hiscore"><span>HI-SCORE:</span><span id="hdr-tokens">000000</span></span>
+  </header>
+
+  <!-- Hero name + year (sky zone) -->
+  <section class="hero">
+    <h1 class="hero-name" id="hero-name">ADA LOVELACE</h1>
+    <p  class="hero-year" id="hero-year">2025</p>
+  </section>
+
+  <!-- Horizon scene: sun + grid -->
+  <div class="horizon-scene" aria-hidden="true">
+    <div class="sky"></div>
+    <div class="stars" id="stars"></div>
+    <div class="sun"></div>
+    <div class="atmo-band" style="top: 38%"></div>
+    <div class="atmo-band" style="top: 42%; opacity: .3;"></div>
+    <div class="grid-floor"></div>
+  </div>
+
+  <!-- Dominant token number -->
+  <div class="token-hero">
+    <span class="token-num" id="token-num">47.2M</span>
+    <p class="token-tagline" id="token-tagline">TOTAL · 2025 · A WORKING YEAR</p>
+  </div>
+
+  <div class="neon-div"></div>
+
+  <!-- Model chips (bonus: engine breakdown) -->
+  <div class="model-bar" id="model-bar"></div>
+
+  <!-- Arcade leaderboard stats -->
+  <section class="leaderboard">
+    <p class="lb-title">// STATS //</p>
+    <div class="lb-grid">
+      <div class="lb-row">
+        <p class="lb-label">SESSIONS</p>
+        <p class="lb-value" id="lb-sessions">312</p>
+      </div>
+      <div class="lb-row">
+        <p class="lb-label">PROJECTS</p>
+        <p class="lb-value" id="lb-projects">28</p>
+      </div>
+      <div class="lb-row">
+        <p class="lb-label">PEAK MONTH</p>
+        <p class="lb-value" id="lb-peak">MAR</p>
+      </div>
+      <div class="lb-row">
+        <p class="lb-label">TOP ENGINE</p>
+        <p class="lb-value" id="lb-engine">OPUS-4.7</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insert coin footer -->
+  <footer class="insert-coin" id="footer-coin">INSERT COIN TO CONTINUE</footer>
+
+</div><!-- /.stage -->
+
+<script src="../../data.js"></script>
+<script>
+(function () {
+  var D = window.RESUME_DATA || {};
+  var F = window.RESUME_FMT || { num: function(x) { return String(x); }, comma: function(x) { return String(x); }, pct: function() { return "0%"; } };
+
+  function esc(s) {
+    if (s == null) return "";
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function $(id) { return document.getElementById(id); }
+
+  var u       = D.user     || {};
+  var totals  = D.totals   || {};
+  var months  = D.by_month || [];
+  var models  = D.by_model || [];
+  var year    = D.year     || "";
+
+  // ── Arcade header ───────────────────────────────────────
+  var handle = esc(u.handle || u.name || "@YOU");
+  $("hdr-handle").textContent = handle.toUpperCase();
+  $("hdr-tokens").textContent = F.num(totals.tokens || 0).toUpperCase();
+
+  // ── Hero ────────────────────────────────────────────────
+  $("hero-name").textContent = (u.name || "YOUR NAME").toUpperCase();
+  $("hero-year").textContent = esc(String(year));
+
+  // ── Big number ──────────────────────────────────────────
+  var numStr = F.num(totals.tokens || 0).toUpperCase();
+  $("token-num").textContent = numStr;
+  $("token-tagline").textContent =
+    "TOTAL · " + esc(String(year)) + " · A WORKING YEAR";
+
+  // ── Peak month ──────────────────────────────────────────
+  var peak = null;
+  if (months.length > 0) {
+    peak = months.reduce(function(a, b) {
+      return (a && (a.tokens || 0) >= (b.tokens || 0)) ? a : b;
+    });
+  }
+
+  // ── Leaderboard ─────────────────────────────────────────
+  $("lb-sessions").textContent = esc(String(totals.sessions || "—"));
+  $("lb-projects").textContent = esc(String(totals.projects || "—"));
+  $("lb-peak").textContent     = peak ? esc((peak.label || "").toUpperCase()) : "—";
+
+  var topEngine = "—";
+  if (models.length > 0) {
+    topEngine = esc((models[0].name || "").toUpperCase());
+  }
+  $("lb-engine").textContent = topEngine;
+
+  // ── Model chips ─────────────────────────────────────────
+  var modelBar = $("model-bar");
+  if (models.length > 0) {
+    var total = totals.tokens || 1;
+    var COLORS = ["#c084fc", "#4facff", "#a6e22e", "#ff8c00", "#00fff0"];
+    var html = "";
+    models.slice(0, 4).forEach(function(m, i) {
+      var color = m.color || COLORS[i % COLORS.length];
+      var pct   = F.pct(m.tokens || 0, total);
+      var name  = esc((m.name || "").toUpperCase());
+      html +=
+        '<div class="model-chip" style="border-color:' + esc(color) + ';color:' + esc(color) + ';box-shadow:0 0 8px ' + esc(color) + '44;">'
+        + '<span class="dot" style="background:' + esc(color) + ';box-shadow:0 0 6px ' + esc(color) + ';"></span>'
+        + name + ' &nbsp;' + pct
+        + '</div>';
+    });
+    modelBar.innerHTML = html;
+  }
+
+  // ── Stars scatter (sky) ──────────────────────────────────
+  var starsEl = $("stars");
+  var starHtml = "";
+  // Use a simple LCG for pseudo-determinism (no seeding needed for aesthetics)
+  var sx = 0.5176;
+  function rnd() { sx = (sx * 9301 + 49297) % 233280; return sx / 233280; }
+  for (var i = 0; i < 60; i++) {
+    var x   = (rnd() * 100).toFixed(1);
+    var y   = (rnd() * 55).toFixed(1);   // only upper 55% (above horizon)
+    var op  = (0.3 + rnd() * 0.6).toFixed(2);
+    var sc  = (0.5 + rnd() * 1.8).toFixed(2);
+    var glow = rnd() > .85
+      ? ";box-shadow:0 0 4px rgba(255,255,255,.9)"
+      : "";
+    starHtml +=
+      '<i style="left:' + x + '%;top:' + y + '%;opacity:' + op + ';transform:scale(' + sc + ')' + glow + '"></i>';
+  }
+  starsEl.innerHTML = starHtml;
+
+  // ── Footer cycling ───────────────────────────────────────
+  var footerMessages = [
+    "INSERT COIN TO CONTINUE",
+    "PRESS ANY KEY",
+    "HI-SCORE: " + F.num(totals.tokens || 0).toUpperCase(),
+    "PLAYER 1 · GAME OVER · PLAY AGAIN?",
+  ];
+  var footerEl = $("footer-coin");
+  var fi = 0;
+  setInterval(function() {
+    // Only cycle when visible
+    fi = (fi + 1) % footerMessages.length;
+    footerEl.textContent = footerMessages[fi];
+  }, 4000);
+
+})();
+</script>
+<script src="../../share.js" defer></script>
+</body>
+</html>

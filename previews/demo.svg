@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 460" width="800" height="460" role="img" aria-label="tokenfolio CLI demo: npx tokenfolio init then pick a template, then deploy">
+  <title>tokenfolio CLI demo — init → pick → deploy</title>
+
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c0c14"/>
+      <stop offset="100%" stop-color="#15101e"/>
+    </linearGradient>
+    <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+
+    <style>
+      .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; font-size: 13px; }
+      .dim   { fill: #6e6e80; }
+      .fg    { fill: #d6d6dc; }
+      .ok    { fill: #6ee7b7; }
+      .num   { fill: #f0c674; }
+      .key   { fill: #c084fc; font-weight: 700; }
+      .blue  { fill: #60a5fa; }
+      .pink  { fill: #f472b6; }
+      .title { font-family: -apple-system, "SF Pro Display", system-ui, sans-serif; font-size: 13px; }
+
+      @keyframes blink {
+        0%, 49% { opacity: 1 }
+        50%, 100% { opacity: 0 }
+      }
+      .cursor { animation: blink 0.9s steps(1) infinite; }
+    </style>
+  </defs>
+
+  <!-- Window frame -->
+  <rect x="0" y="0" width="800" height="460" rx="14" fill="url(#bgGrad)" stroke="#2a2438" stroke-width="1"/>
+
+  <!-- Title bar -->
+  <rect x="0" y="0" width="800" height="34" rx="14" fill="#1a1a25"/>
+  <rect x="0" y="20" width="800" height="14" fill="#1a1a25"/>
+  <circle cx="20" cy="17" r="6" fill="#ff5f57"/>
+  <circle cx="42" cy="17" r="6" fill="#febc2e"/>
+  <circle cx="64" cy="17" r="6" fill="#28c840"/>
+  <text x="400" y="22" class="title" fill="#888" text-anchor="middle">tokenfolio · ~/code/portfolio</text>
+
+  <!-- Lines (each fades in on a schedule, building up the session) -->
+  <!-- Total loop: 18s. Lines persist after fading in (fill="freeze"). -->
+
+  <!-- t=0.2s: prompt for `init` -->
+  <g opacity="0">
+    <text x="20" y="64" class="mono">
+      <tspan class="dim">$ </tspan><tspan class="fg">npx </tspan><tspan class="key">tokenfolio init</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="0.2s" dur="0.4s" fill="freeze"/>
+  </g>
+
+  <!-- t=1.0s: header line -->
+  <g opacity="0">
+    <text x="20" y="92" class="mono fg">▸ tokenfolio init · year <tspan class="num">2025</tspan> · source <tspan class="num">all</tspan></text>
+    <animate attributeName="opacity" from="0" to="1" begin="1.0s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=1.6s: claude line -->
+  <g opacity="0">
+    <text x="20" y="116" class="mono fg">▸ aggregating Claude Code (ccusage)…</text>
+    <animate attributeName="opacity" from="0" to="1" begin="1.6s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=2.4s: claude success -->
+  <g opacity="0">
+    <text x="20" y="140" class="mono">
+      <tspan class="ok">  ✓ </tspan><tspan class="fg">claude · </tspan><tspan class="num">47,221,890</tspan><tspan class="fg"> tokens · </tspan><tspan class="num">312</tspan><tspan class="fg"> sessions · </tspan><tspan class="num">28</tspan><tspan class="fg"> projects</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="2.4s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=3.0s: codex line -->
+  <g opacity="0">
+    <text x="20" y="164" class="mono fg">▸ aggregating Codex (~/.codex/sessions)…</text>
+    <animate attributeName="opacity" from="0" to="1" begin="3.0s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=3.6s: codex success -->
+  <g opacity="0">
+    <text x="20" y="188" class="mono">
+      <tspan class="ok">  ✓ </tspan><tspan class="fg">codex · </tspan><tspan class="num">1,294,580</tspan><tspan class="fg"> tokens · </tspan><tspan class="num">68</tspan><tspan class="fg"> sessions · </tspan><tspan class="num">9</tspan><tspan class="fg"> projects</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="3.6s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=4.2s: write -->
+  <g opacity="0">
+    <text x="20" y="216" class="mono">
+      <tspan class="ok">✓ </tspan><tspan class="fg">wrote </tspan><tspan class="key">./data.js</tspan><tspan class="fg"> (</tspan><tspan class="num">8,432</tspan><tspan class="fg"> bytes)</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="4.2s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=5.4s: prompt for `pick` -->
+  <g opacity="0">
+    <text x="20" y="252" class="mono">
+      <tspan class="dim">$ </tspan><tspan class="fg">npx </tspan><tspan class="key">tokenfolio pick wrapped</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="5.4s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=6.0s: pick success -->
+  <g opacity="0">
+    <text x="20" y="276" class="mono">
+      <tspan class="ok">✓ </tspan><tspan class="fg">index.html → </tspan><tspan class="key">templates/wrapped/</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="6.0s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=7.0s: prompt for `git push` -->
+  <g opacity="0">
+    <text x="20" y="312" class="mono">
+      <tspan class="dim">$ </tspan><tspan class="fg">git add . &amp;&amp; git commit -m "tokenfolio" &amp;&amp; </tspan><tspan class="key">git push</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="7.0s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=8.4s: deploying -->
+  <g opacity="0">
+    <text x="20" y="336" class="mono dim">▸ pushing to github · enabling Pages…</text>
+    <animate attributeName="opacity" from="0" to="1" begin="8.4s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=9.4s: live URL line -->
+  <g opacity="0">
+    <text x="20" y="364" class="mono">
+      <tspan class="ok">✓ </tspan><tspan class="fg">live at </tspan><tspan class="blue" text-decoration="underline">https://you.github.io/tokenfolio/</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="9.4s" dur="0.3s" fill="freeze"/>
+  </g>
+
+  <!-- t=10.4s: branding flourish -->
+  <g opacity="0">
+    <text x="20" y="396" class="mono">
+      <tspan class="dim">▸ </tspan><tspan class="pink">11 templates</tspan><tspan class="dim"> · </tspan><tspan class="pink">PNG export</tspan><tspan class="dim"> · </tspan><tspan class="pink">README badge</tspan><tspan class="dim"> · </tspan><tspan class="pink">zero deps</tspan>
+    </text>
+    <animate attributeName="opacity" from="0" to="1" begin="10.4s" dur="0.4s" fill="freeze"/>
+  </g>
+
+  <!-- Blinking cursor — sits at the end of whichever line is freshest -->
+  <!-- Position 1: after `init` -->
+  <rect class="cursor" x="186" y="52" width="8" height="14" fill="#d6d6dc" opacity="1">
+    <animate attributeName="opacity" from="1" to="0" begin="1.0s" dur="0.1s" fill="freeze"/>
+  </rect>
+  <!-- Position 2: after `pick wrapped` -->
+  <rect class="cursor" x="240" y="240" width="8" height="14" fill="#d6d6dc" opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="5.7s" dur="0.1s" fill="freeze"/>
+    <animate attributeName="opacity" from="1" to="0" begin="6.4s" dur="0.1s" fill="freeze"/>
+  </rect>
+  <!-- Position 3: after `git push` (line end) -->
+  <rect class="cursor" x="408" y="300" width="8" height="14" fill="#d6d6dc" opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="7.4s" dur="0.1s" fill="freeze"/>
+    <animate attributeName="opacity" from="1" to="0" begin="8.6s" dur="0.1s" fill="freeze"/>
+  </rect>
+  <!-- Position 4: blinking forever after the brand line -->
+  <rect class="cursor" x="20" y="416" width="8" height="14" fill="url(#brandGrad)" opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="11.0s" dur="0.1s" fill="freeze"/>
+  </rect>
+
+  <!-- Brand pill in the corner so the asset itself is "branded" -->
+  <g transform="translate(680, 50)" opacity="0">
+    <rect x="0" y="0" width="100" height="22" rx="11" fill="rgba(15,15,20,0.85)" stroke="rgba(255,255,255,0.14)"/>
+    <circle cx="11" cy="11" r="3.5" fill="url(#brandGrad)"/>
+    <text x="20" y="15" class="title" fill="#cdcdd6" font-size="10" font-weight="700">tokenfolio</text>
+    <animate attributeName="opacity" from="0" to="1" begin="0.0s" dur="0.5s" fill="freeze"/>
+  </g>
+</svg>

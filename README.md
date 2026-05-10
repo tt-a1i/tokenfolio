@@ -13,6 +13,8 @@
 
 **在线 Demo：** https://tt-a1i.github.io/tokenfolio/
 
+<p align="center"><img src="previews/demo.svg" alt="tokenfolio CLI demo: init → pick → deploy" width="720"></p>
+
 <table>
 <tr>
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/wrapped/"><img src="previews/wrapped.jpg" alt="wrapped" width="280"></a><br><sub><b>wrapped</b> · social</sub></td>
@@ -32,14 +34,16 @@
 <tr>
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/tcg/"><img src="previews/tcg.jpg" alt="tcg" width="280"></a><br><sub><b>tcg</b> · TCG card</sub></td>
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/vinyl/"><img src="previews/vinyl.jpg" alt="vinyl" width="280"></a><br><sub><b>vinyl</b> · LP liner notes</sub></td>
-  <td align="center"><sub><i>your template here →</i><br>PRs welcome</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/synthwave/"><img src="previews/synthwave.jpg" alt="synthwave" width="280"></a><br><sub><b>synthwave</b> · 1985 arcade</sub></td>
 </tr>
 </table>
 
-> 🆕 **v0.7**：新增 **vinyl** 模板（黑胶唱片背面 liner notes 风，方形 1:1 适合发 IG），新增 `tokenfolio share` 一行命令打开 X / LinkedIn 预填好的分享窗口。
-> **v0.6**：每个模板右下角内置「截图为 PNG / 一键分享」按钮，右上角带 "Built with tokenfolio" 徽章（截图也能看到）。新增 `tokenfolio badge` 把成绩做成 SVG 直接贴到 GitHub profile README，新增 `tokenfolio pick <template>` 一行命令选首页，新增 **TCG** 模板（宝可梦风格收藏卡）。
+> 🆕 **v0.9**：第 12 个模板 **synthwave**（1985 街机厅风：透视线框格、Outrun 落日、CRT 扫描线、`INSERT COIN` 循环），README 顶部加上动图 SVG 演示 init → pick → deploy 全流程。
+> **v0.8**：11 张高清模板预览图入仓（`previews/`）+ 双语 README hero 网格 + gallery 用静态 PNG 替代 iframe（冷启动从 5-10 秒到秒开）。
+> **v0.7**：新增 **vinyl** 模板（黑胶唱片背面 liner notes，方形 1:1 适合 IG），新增 `tokenfolio share` 命令一键打开 X / LinkedIn 预填分享。
+> **v0.6**：每个模板右下角内置 PNG 导出 + 一键分享按钮，右上角永远有 "Built with tokenfolio" 徽章（截图也带得走）。新增 `tokenfolio badge` 做 SVG 贴 GitHub profile README、`tokenfolio pick` 选首页，新增 **TCG** 模板。
 
-## 模板（11 个，更多持续加）
+## 模板（12 个，更多持续加）
 
 | | 名字 | 风格 |
 |---|---|---|
@@ -53,7 +57,8 @@
 | ✈️ | **pass**      | 80 年代航空登机牌：穿孔 + 条形码 + 月度护照盖章，复古收藏感 |
 | 🟨 | **brutalist** | 瑞士 + Wired 风：黄黑红三色块、Helvetica Black 200px、不对称 grid |
 | 🃏 | **tcg**       | 宝可梦风格收藏卡：金边 + 紫色 psychic 框 + 攻击表 + 鼠标跟随 foil |
-| 💿 | **vinyl**     | 黑胶唱片背面 liner notes：方形 1:1，曲目列表 + 制作人致谢 + 真假条形码（**新**） |
+| 💿 | **vinyl**     | 黑胶唱片背面 liner notes：方形 1:1，曲目列表 + 制作人致谢 + 真假条形码 |
+| 🌆 | **synthwave** | 1985 街机厅 outrun 风：透视线框格、Outrun 落日、CRT 扫描线、`INSERT COIN` 循环（**新**） |
 
 欢迎 PR 新模板。
 
@@ -111,9 +116,20 @@ CLI 内部用 [`ccusage`](https://github.com/ryoppippi/ccusage) 解析 Claude Co
 ```bash
 npx tokenfolio og
 # → 写入 ./og.png（1200×630，可直接作为 og:image）
+
+# 强制使用 Node/Satori 渲染（无需 Python）：
+npx tokenfolio og --js
+
+# 强制使用 Python/Pillow 渲染：
+npx tokenfolio og --python
 ```
 
-需要 Python 3.9+ 和 Pillow（`pip install Pillow`）。OG 这一步和 `init` 解耦——不需要 OG 图的人零额外依赖。
+默认行为：优先尝试 Node/Satori 渲染，如果未安装 satori，则自动回退到 Python/Pillow。
+
+- **JS 路径**（推荐用于无 Python 环境）：需要 `satori` 和 `@resvg/resvg-js`（`npm i -g satori @resvg/resvg-js`）
+- **Python 路径**（已有 Pillow 的用户行为不变）：需要 Python 3.9+ 和 Pillow（`pip install Pillow`）
+
+OG 这一步和 `init` 解耦——不需要 OG 图的人零额外依赖。
 
 ### 本地预览
 
@@ -202,10 +218,10 @@ window.RESUME_DATA = {
 
 ## 路线图
 
-- [x] 11 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist / tcg / vinyl）
+- [x] 12 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist / tcg / vinyl / synthwave）
 - [x] `tokenfolio init` CLI · Claude Code（通过 ccusage）
 - [x] CLI · Codex（`~/.codex/sessions/`）
-- [x] CLI · `tokenfolio og` 个性化 OG 图（Pillow）
+- [x] CLI · `tokenfolio og` 个性化 OG 图（Pillow + Node/Satori 双引擎，`--js` / `--python`）
 - [x] CLI · `tokenfolio badge` README 徽章 + 大卡片（纯 Node，零依赖）
 - [x] CLI · `tokenfolio pick <template>` 选首页
 - [x] CLI · `tokenfolio share` 一键打开 X / LinkedIn 预填分享窗口
@@ -213,6 +229,7 @@ window.RESUME_DATA = {
 - [x] README 中英双语
 - [ ] CLI · Cursor / Aider / Continue.dev
 - [ ] 更多模板：synthwave / manga / trading-floor / vinyl
+- [x] CLI · `tokenfolio og --js` Node/Satori 渲染，无需 Python
 - [ ] 边缘节点动态 OG（Vercel + Satori），让无 Python 环境的用户也能用
 - [ ] 模板暗 / 亮模式切换
 - [ ] CLI 输出文案 i18n

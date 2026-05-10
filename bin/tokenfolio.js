@@ -18,7 +18,7 @@ import { spawnSync } from "node:child_process";
 import { writeFileSync, existsSync, statSync, readdirSync, readFileSync } from "node:fs";
 import { join, basename, dirname, resolve, isAbsolute, relative } from "node:path";
 import { homedir } from "node:os";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 
 // ─── help text + arg parsing ──────────────────────────────────────────────
@@ -47,6 +47,9 @@ INIT OPTIONS
 
 OG OPTIONS
   --output PATH      write to PATH          (default: ./og.png)
+  --input PATH       read from PATH         (default: ./data.js)
+  --js               force the Node/Satori renderer (npm i -g satori @resvg/resvg-js)
+  --python           force the Python/Pillow renderer
 
 BRAND OPTIONS
   --site-url URL     deploy URL (default: inferred from \`git remote origin\`)
@@ -79,7 +82,9 @@ EXAMPLES
 
 REQUIREMENTS
   init:  Node ≥18; ccusage (auto-fetched via npx) for Claude Code source
-  og:    Python 3.9+ with Pillow (\`pip install Pillow\`)
+  og:    JS path (default): satori + @resvg/resvg-js — npm i -g satori @resvg/resvg-js
+         Python path (--python): Python 3.9+ with Pillow (pip install Pillow)
+         Falls back to Python automatically if satori is not installed.
   brand: writes to template HTML files in cwd (idempotent)
   badge: reads ./data.js (or --input); pure Node, no extra deps
   pick:  writes ./index.html as a redirect to templates/<name>/
@@ -108,7 +113,7 @@ const CODEX_ALLOWED_PAYLOAD_TYPES = new Set(["token_count", "turn_context"]);
 const TEMPLATE_DIRS = [
   "wrapped", "cosmos", "almanac", "terminal",
   "aurora", "holo", "pixel", "pass", "brutalist",
-  "tcg", "vinyl"
+  "tcg", "vinyl", "synthwave"
 ];
 
 function parseArgs(argv) {
@@ -124,6 +129,7 @@ function parseArgs(argv) {
     template: "",             // for `pick`
     force: false,
     dry: false,
+    engine: "auto",           // "auto" | "js" | "python"  (for `og`)
     overrides: {}
   };
   for (let i = 0; i < argv.length; i++) {
@@ -147,6 +153,8 @@ function parseArgs(argv) {
     else if (a === "--site-url")      o.overrides.siteUrl = argv[++i];
     else if (a === "--force")         o.force = true;
     else if (a === "--dry")           o.dry = true;
+    else if (a === "--js")            o.engine = "js";
+    else if (a === "--python")        o.engine = "python";
     else if (o.cmd === "pick" && !o.template && !a.startsWith("-")) o.template = a;
     else { console.error(`unknown arg: ${a}\n${HELP}`); process.exit(2); }
   }
@@ -671,9 +679,35 @@ function buildResumeData(args, agg) {
   return { user, year: args.year, totals, by_month: fullYearMonths, by_model, top_projects, highlights };
 }
 
-// ─── og: shell out to scripts/gen-og.py ───────────────────────────────────
+// ─── og: JS renderer (Satori) or Python renderer (Pillow) ────────────────────
 
-function runOg(args) {
+/**
+ * Attempt OG generation via the Node/Satori path (scripts/gen-og.js).
+ * Returns { ok: true } on success; { ok: false, reason } on failure.
+ * Never calls process.exit() — the caller decides whether to fall back.
+ */
+async function runOgJs(args) {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const candidates = [
+    join(here, "..", "scripts", "gen-og.js"),
+    join(process.cwd(), "scripts", "gen-og.js")
+  ];
+  const scriptPath = candidates.find(p => existsSync(p));
+  if (!scriptPath) {
+    return { ok: false, reason: "scripts/gen-og.js not found (package may be incomplete)" };
+  }
+  try {
+    const { runOgJs: render } = await import(pathToFileURL(scriptPath).href);
+    return await render({ output: args.output, input: args.input });
+  } catch (e) {
+    return { ok: false, reason: `JS renderer threw: ${e.message}` };
+  }
+}
+
+/**
+ * Run the Python/Pillow path. Exits the process (legacy behavior preserved).
+ */
+function runOgPython(args) {
   const here = dirname(fileURLToPath(import.meta.url));
   const candidates = [
     join(here, "..", "scripts", "gen-og.py"),
@@ -687,10 +721,52 @@ function runOg(args) {
   }
   const r = spawnSync("python3", [scriptPath, "--output", args.output], { stdio: "inherit", cwd: process.cwd() });
   if (r.error && r.error.code === "ENOENT") {
-    console.error("× python3 not found in PATH. Install Python 3.9+ to use `tokenfolio og`.");
+    console.error("× python3 not found in PATH. Install Python 3.9+ to use `tokenfolio og --python`.");
     process.exit(1);
   }
   process.exit(r.status || 0);
+}
+
+/**
+ * Entry point for `tokenfolio og`. Chooses between JS and Python renderers.
+ *
+ * Engine selection:
+ *   --js      force JS/Satori path; exit 1 if satori not installed
+ *   --python  force Python/Pillow path
+ *   (auto)    try JS first; fall back to Python; if both fail, exit 1 with hints
+ */
+async function runOg(args) {
+  const engine = args.engine || "auto";
+  const wantJs = engine === "js"   || engine === "auto";
+  const wantPy = engine === "python" || engine === "auto";
+
+  if (wantJs) {
+    const result = await runOgJs(args);
+    if (result.ok) return;
+    // JS path failed.
+    if (engine === "js") {
+      // User explicitly asked for --js; don't fall back, just error.
+      console.error("× JS renderer failed: " + result.reason);
+      process.exit(1);
+    }
+    // Auto mode: silently note the failure and fall through to Python.
+    if (wantPy) {
+      console.error(`  JS renderer unavailable (${result.reason.split("\n")[0]}); trying Python…`);
+    }
+  }
+
+  if (wantPy) {
+    // Check python3 availability before deferring to runOgPython.
+    const pyCheck = spawnSync("python3", ["--version"], { stdio: "ignore" });
+    if (pyCheck.error && pyCheck.error.code === "ENOENT") {
+      // Both paths failed.
+      console.error("× Neither renderer is available.");
+      console.error("  JS path:     npm i -g satori @resvg/resvg-js  then retry");
+      console.error("  Python path: install Python 3.9+ and `pip install Pillow`  then retry with --python");
+      process.exit(1);
+    }
+    runOgPython(args);  // exits the process
+  }
 }
 
 // ─── brand: rewrite hardcoded site URL in template HTMLs ──────────────────
@@ -1031,11 +1107,11 @@ function checkOutputPath(p) {
 
 // ─── main ─────────────────────────────────────────────────────────────────
 
-function main() {
+async function main() {
   const args = parseArgs(process.argv.slice(2));
 
   if (args.cmd === "brand") { runBrand(args); return; }
-  if (args.cmd === "og")    { checkOutputPath(args.output); runOg(args); return; }
+  if (args.cmd === "og")    { checkOutputPath(args.output); await runOg(args); return; }
   if (args.cmd === "badge") { runBadge(args); return; }
   if (args.cmd === "pick")  { runPick(args); return; }
   if (args.cmd === "share") { runShare(args); return; }
@@ -1121,4 +1197,4 @@ window.RESUME_FMT = {
   }
 }
 
-main();
+main().catch(e => { console.error("× " + e.message); process.exit(1); });

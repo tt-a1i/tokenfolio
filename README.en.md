@@ -13,6 +13,8 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 
 **Live demo:** https://tt-a1i.github.io/tokenfolio/
 
+<p align="center"><img src="previews/demo.svg" alt="tokenfolio CLI demo: init → pick → deploy" width="720"></p>
+
 <table>
 <tr>
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/wrapped/"><img src="previews/wrapped.jpg" alt="wrapped" width="280"></a><br><sub><b>wrapped</b> · social</sub></td>
@@ -32,12 +34,14 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 <tr>
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/tcg/"><img src="previews/tcg.jpg" alt="tcg" width="280"></a><br><sub><b>tcg</b> · TCG card</sub></td>
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/vinyl/"><img src="previews/vinyl.jpg" alt="vinyl" width="280"></a><br><sub><b>vinyl</b> · LP liner notes</sub></td>
-  <td align="center"><sub><i>your template here →</i><br>PRs welcome</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/synthwave/"><img src="previews/synthwave.jpg" alt="synthwave" width="280"></a><br><sub><b>synthwave</b> · 1985 arcade</sub></td>
 </tr>
 </table>
 
-> 🆕 **v0.7** — new **vinyl** template (back-of-an-LP-sleeve liner notes, square 1:1, made for IG screenshots) and new `tokenfolio share` one-liner that opens X / LinkedIn pre-filled with your stats.
-> **v0.6** — every template ships with a one-tap **PNG export + Web Share** button (bottom-right) and a "Built with tokenfolio" chip (top-right) that survives screenshot crops. `tokenfolio badge` mints an SVG for your GitHub profile README. `tokenfolio pick <template>` picks your homepage. **TCG** template added (Pokémon-style trading card).
+> 🆕 **v0.9** — 12th template **synthwave** (1985 arcade: wireframe-grid horizon, banded Outrun sun, CRT scanlines, cycling `INSERT COIN`). Animated SVG demo at the top of the README walks the init → pick → deploy flow.
+> **v0.8** — 11 high-quality JPEG previews under `previews/` + bilingual README hero grid + iframe gallery replaced with static images (cold-load 5–10 s → instant).
+> **v0.7** — **vinyl** template (back of an LP sleeve, square 1:1, IG-ready) and `tokenfolio share` one-liner that opens X / LinkedIn pre-filled with your stats.
+> **v0.6** — every template ships a one-tap **PNG export + Web Share** button + "Built with tokenfolio" chip top-right that survives screenshot crops. `tokenfolio badge` mints an SVG for your GitHub profile README. `tokenfolio pick` picks your homepage. **TCG** template added (Pokémon-style trading card).
 
 ## Templates
 
@@ -53,7 +57,8 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 | ✈️ | **pass**      | A 1980s airline boarding pass — perforations, barcode, passport stamps per month |
 | 🟨 | **brutalist** | Wired magazine cover meets 1968 protest poster. Helvetica Black 200px, hard edges |
 | 🃏 | **tcg**       | A Pokémon-style trading card. Gold border, psychic frame, attacks, mouse-tracked foil |
-| 💿 | **vinyl**     | Back of a vinyl LP sleeve — square 1:1, track listing, "Produced by" credits, barcode (**new**) |
+| 💿 | **vinyl**     | Back of a vinyl LP sleeve — square 1:1, track listing, "Produced by" credits, barcode |
+| 🌆 | **synthwave** | 1985 arcade outrun — wireframe horizon, banded sun, CRT scanlines, cycling `INSERT COIN` (**new**) |
 
 More coming. Contributions welcome.
 
@@ -111,9 +116,20 @@ After `tokenfolio init`, generate a `og.png` containing your numbers so social p
 ```bash
 npx tokenfolio og
 # → writes ./og.png  (1200×630, ready for og:image)
+
+# Force the Node/Satori renderer (no Python needed):
+npx tokenfolio og --js
+
+# Force the Python/Pillow renderer:
+npx tokenfolio og --python
 ```
 
-Requires Python 3.9+ and Pillow (`pip install Pillow`). The Python step is decoupled from `init` so the install footprint stays minimal for users who don't want OG.
+Default behavior: the JS/Satori renderer is tried first; if `satori` is not installed, it falls back to Python/Pillow automatically.
+
+- **JS path** (preferred for users without Python): requires `satori` and `@resvg/resvg-js` — `npm i -g satori @resvg/resvg-js`
+- **Python path** (no behavior change for users with Pillow installed): requires Python 3.9+ and Pillow (`pip install Pillow`)
+
+The OG step is decoupled from `init` so the install footprint stays minimal for users who don't want an OG image.
 
 ### Run locally
 
@@ -202,10 +218,10 @@ Every template reads from the same data object. Switch templates with zero data 
 
 ## Roadmap
 
-- [x] 11 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist, tcg, vinyl)
+- [x] 12 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist, tcg, vinyl, synthwave)
 - [x] `tokenfolio init` CLI for Claude Code (via ccusage)
 - [x] CLI: Codex (`~/.codex/sessions/`) parser
-- [x] CLI: `tokenfolio og` for personalized OG image (Pillow)
+- [x] CLI: `tokenfolio og` for personalized OG image (Pillow + Node/Satori dual-engine, `--js` / `--python`)
 - [x] CLI: `tokenfolio badge` README badge + sparkline card (pure Node, zero deps)
 - [x] CLI: `tokenfolio pick <template>` for homepage redirect
 - [x] CLI: `tokenfolio share` opens browser with pre-filled X / LinkedIn intent
@@ -213,6 +229,7 @@ Every template reads from the same data object. Switch templates with zero data 
 - [x] Bilingual README (中 / EN)
 - [ ] CLI: Cursor / Aider / Continue.dev support (where token counts exist)
 - [ ] More templates: synthwave, manga, trading-floor, vinyl
+- [x] CLI: `tokenfolio og --js` Node/Satori renderer, no Python required
 - [ ] Edge-rendered dynamic OG image (Vercel + Satori) for zero-install users
 - [ ] Dark/light mode toggle on each template
 - [ ] CLI output i18n

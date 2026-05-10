@@ -42,13 +42,19 @@ jobs:
           echo "✓ pick wrapped wrote redirect"
           cd .. && rm -rf _ci-tmp
 
-      - name: All 11 templates serve 200
+      - name: Demo SVG present and well-formed
+        run: |
+          test -s previews/demo.svg || (echo "× previews/demo.svg missing" && exit 1)
+          head -1 previews/demo.svg | grep -q '<svg' || (echo "× demo.svg not SVG" && exit 1)
+          echo "✓ previews/demo.svg present"
+
+      - name: All 12 templates serve 200
         run: |
           python3 -m http.server 8765 &
           server_pid=$!
           sleep 1
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8765/templates/$t/")
             if [ "$code" != "200" ]; then
               echo "✗ $t failed: HTTP $code"
@@ -72,16 +78,16 @@ jobs:
       - name: Every template has a preview JPEG
         run: |
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave; do
             f=previews/$t.jpg
             test -s "$f" || { echo "✗ $f missing or empty"; fail=1; }
           done
-          [ $fail = 0 ] && echo "✓ all 11 previews present" || exit 1
+          [ $fail = 0 ] && echo "✓ all 12 previews present" || exit 1
 
       - name: Every template loads share.js + has data-tf-capture
         run: |
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave; do
             f=templates/$t/index.html
             grep -q 'share.js' "$f"        || { echo "✗ $t missing share.js"; fail=1; }
             grep -q 'data-tf-capture' "$f" || { echo "✗ $t missing data-tf-capture"; fail=1; }
@@ -106,3 +112,23 @@ jobs:
       - name: og.py syntax checks
         run: |
           python3 -m py_compile scripts/gen-og.py
+
+      - name: OG JS renderer (Satori path) emits a valid PNG
+        run: |
+          npm install -g satori @resvg/resvg-js
+          cp data.js /tmp/test-data.js
+          node bin/tokenfolio.js og --js --input /tmp/test-data.js --output /tmp/test-og.png
+          # assert file exists and is > 10 KB
+          size=$(wc -c < /tmp/test-og.png)
+          [ "$size" -gt 10240 ] || (echo "× og.png too small: $size bytes" && exit 1)
+          # assert PNG magic bytes: 89 50 4e 47 0d 0a 1a 0a
+          python3 -c "
+          import sys
+          data = open('/tmp/test-og.png','rb').read(8)
+          expected = bytes([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])
+          if data != expected:
+              print(f'PNG magic mismatch: {data.hex()}')
+              sys.exit(1)
+          print('OK: PNG magic bytes correct')
+          "
+          echo "✓ JS renderer produced a valid PNG ($size bytes)"
