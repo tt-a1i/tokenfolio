@@ -16,15 +16,12 @@
  *   const result = await runOgJs({ output: "./og.png", input: "./data.js" });
  */
 
-import { existsSync, readFileSync, writeFileSync, statSync, mkdirSync } from "node:fs";
-import { join, resolve, dirname } from "node:path";
+import { existsSync, readFileSync, writeFileSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { tmpdir, homedir } from "node:os";
-import { createRequire } from "node:module";
+import { tmpdir } from "node:os";
 import { execSync } from "node:child_process";
 import vm from "node:vm";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 

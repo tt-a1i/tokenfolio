@@ -48,13 +48,13 @@ jobs:
           head -1 previews/demo.svg | grep -q '<svg' || (echo "× demo.svg not SVG" && exit 1)
           echo "✓ previews/demo.svg present"
 
-      - name: All 12 templates serve 200
+      - name: All 13 templates serve 200
         run: |
           python3 -m http.server 8765 &
           server_pid=$!
           sleep 1
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave receipt; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8765/templates/$t/")
             if [ "$code" != "200" ]; then
               echo "✗ $t failed: HTTP $code"
@@ -78,16 +78,16 @@ jobs:
       - name: Every template has a preview JPEG
         run: |
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave receipt; do
             f=previews/$t.jpg
             test -s "$f" || { echo "✗ $f missing or empty"; fail=1; }
           done
-          [ $fail = 0 ] && echo "✓ all 12 previews present" || exit 1
+          [ $fail = 0 ] && echo "✓ all 13 previews present" || exit 1
 
       - name: Every template loads share.js + has data-tf-capture
         run: |
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl synthwave receipt; do
             f=templates/$t/index.html
             grep -q 'share.js' "$f"        || { echo "✗ $t missing share.js"; fail=1; }
             grep -q 'data-tf-capture' "$f" || { echo "✗ $t missing data-tf-capture"; fail=1; }

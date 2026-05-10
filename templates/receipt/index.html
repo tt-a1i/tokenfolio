@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tokenfolio · receipt</title>
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="tokenfolio · receipt · @ada-lovelace">
+<meta property="og:description" content="A working year, itemized. 47.2M tokens. Tax 0% (open source). Tokens are non-refundable.">
+<meta property="og:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<meta property="og:url" content="https://tt-a1i.github.io/tokenfolio/templates/receipt/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --paper:        #fdf8ea;
+    --paper-edge:   #f1e6c8;
+    --ink:          #1a1714;
+    --ink-2:        #3a342e;
+    --ink-faint:    #8b8478;
+    --ink-stamp:    #861d11;
+    --table-1:      #1f140c;
+    --table-2:      #3a2615;
+    --table-3:      #271a10;
+  }
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(120% 80% at 50% 30%, rgba(133,82,38,0.30) 0%, transparent 60%),
+      radial-gradient(80% 80% at 30% 100%, rgba(0,0,0,0.55) 0%, transparent 60%),
+      linear-gradient(135deg, var(--table-1) 0%, var(--table-2) 50%, var(--table-3) 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: 'Courier Prime', 'Courier New', Courier, ui-monospace, monospace;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Wood / counter texture overlay */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      repeating-linear-gradient(91deg, transparent 0 60px, rgba(255,210,160,0.025) 60px 61px, transparent 61px 140px, rgba(0,0,0,0.05) 140px 142px),
+      repeating-linear-gradient(89deg, transparent 0 80px, rgba(0,0,0,0.04) 80px 81px),
+      radial-gradient(ellipse at 70% 30%, rgba(255,200,140,0.04) 0%, transparent 50%);
+  }
+
+  main {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: start center;
+    padding: 36px 16px 64px;
+  }
+
+  /* ── Receipt body ───────────────────────────────────────── */
+  .receipt {
+    position: relative;
+    width: clamp(320px, 88vw, 388px);
+    background: var(--paper);
+    color: var(--ink);
+    padding: 22px 22px 18px;
+    font-size: 12px;
+    line-height: 1.5;
+    box-shadow:
+      0 28px 60px rgba(0,0,0,0.55),
+      0 6px 14px rgba(0,0,0,0.30),
+      inset 0 0 0 1px rgba(120,80,40,0.05);
+    /* very subtle paper grain via layered radial gradients */
+    background-image:
+      radial-gradient(120% 60% at 50% 0%, rgba(133,82,38,0.05) 0%, transparent 55%),
+      radial-gradient(80% 60% at 0% 50%, rgba(0,0,0,0.025) 0%, transparent 50%),
+      radial-gradient(80% 60% at 100% 50%, rgba(0,0,0,0.025) 0%, transparent 50%),
+      radial-gradient(circle at 18% 28%, rgba(0,0,0,0.025) 0%, transparent 18%),
+      radial-gradient(circle at 78% 72%, rgba(133,82,38,0.04) 0%, transparent 18%);
+    background-color: var(--paper);
+    isolation: isolate;
+  }
+
+  /* Jagged tear edges (top + bottom). Two stacked triangle strips,
+     in paper colour, masking past the receipt edge. */
+  .receipt::before,
+  .receipt::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 14px;
+    background:
+      conic-gradient(from -45deg at 50% 100%, var(--paper) 0deg 90deg, transparent 90deg 360deg);
+    background-size: 14px 14px;
+    background-repeat: repeat-x;
+    pointer-events: none;
+  }
+  .receipt::before {
+    top: -13px;
+    transform: scaleY(-1);
+  }
+  .receipt::after {
+    bottom: -13px;
+  }
+
+  /* faint print fade — subtle, not gimmicky */
+  .receipt > * { position: relative; }
+
+  /* Subtle thermal-print drop in contrast at the very top + bottom */
+  .receipt-fade-top, .receipt-fade-bottom {
+    position: absolute; left: 0; right: 0;
+    height: 60px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .receipt-fade-top    { top: 0;    background: linear-gradient(180deg, rgba(253,248,234,0.25) 0%, transparent 100%); }
+  .receipt-fade-bottom { bottom: 0; background: linear-gradient(0deg,   rgba(253,248,234,0.25) 0%, transparent 100%); }
+
+  /* ── Sections / typography ──────────────────────────────── */
+  header {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  header h1 {
+    margin: 0 0 4px;
+    font: 700 17px/1.15 inherit;
+    letter-spacing: 0.22em;
+  }
+  header h1 .dot { color: var(--ink-stamp); }
+  header .est { font-size: 10px; letter-spacing: 0.18em; color: var(--ink-2); margin-top: 2px; }
+  header p { margin: 1px 0; font-size: 10.5px; color: var(--ink-2); letter-spacing: 0.04em; }
+  header .url { margin-top: 6px; font-size: 10px; color: var(--ink-2); }
+  header .stamp {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border: 1.5px solid var(--ink-stamp);
+    color: var(--ink-stamp);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    transform: rotate(-2deg);
+    border-radius: 2px;
+    opacity: 0.85;
+  }
+
+  section {
+    margin: 8px 0;
+  }
+  .meta .row {
+    display: flex; gap: 8px; align-items: baseline;
+    margin: 1px 0;
+  }
+  .meta .row .label  { flex: 0 0 92px; color: var(--ink-2); font-size: 11px; letter-spacing: 0.04em; }
+  .meta .row .value  { flex: 1; text-align: right; font-weight: 700; font-size: 11px; }
+
+  /* horizontal rules — dotted (decorative) and solid (totals) */
+  hr.dotted {
+    border: none;
+    height: 0;
+    border-top: 2px dotted var(--ink-faint);
+    opacity: 0.55;
+    margin: 8px 0;
+  }
+  hr.solid {
+    border: none; height: 0;
+    border-top: 1.5px solid var(--ink);
+    margin: 6px 0;
+  }
+  hr.double {
+    border: none; height: 0;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+    height: 5px;
+    margin: 6px 0;
+  }
+
+  /* Items: leader-dot rows */
+  .items .head, .bundles .head {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--ink-faint); letter-spacing: 0.14em;
+    margin-bottom: 4px;
+  }
+  .item {
+    margin: 5px 0 7px;
+  }
+  .item-line {
+    display: flex; align-items: baseline; gap: 4px;
+  }
+  .item-name {
+    flex: 0 0 auto;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 12px;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .item-dots {
+    flex: 1; overflow: hidden;
+    color: var(--ink-faint);
+    letter-spacing: 0.18em;
+    align-self: end;
+    margin-bottom: 1px;
+    font-size: 11px;
+  }
+  .item-dots::before { content: ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ."; }
+  .item-price {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .item-meta {
+    margin: 1px 0 0 14px;
+    font-size: 10px;
+    color: var(--ink-faint);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Bundles: simpler row, no leader-dot */
+  .bundle-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 2px 0;
+    font-size: 11.5px;
+  }
+  .bundle-row .name { letter-spacing: 0.04em; }
+  .bundle-row .name .x { color: var(--ink-faint); margin: 0 4px; }
+  .bundle-row .price { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+  /* Subtotal block */
+  .subtotals .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 2px 0;
+    font-size: 11.5px;
+  }
+  .subtotals .row .label { letter-spacing: 0.06em; }
+  .subtotals .row .value { font-variant-numeric: tabular-nums; font-weight: 700; }
+  .subtotals .row.muted .value { color: var(--ink-faint); }
+
+  /* Grand total */
+  .total-block {
+    margin: 2px -2px;
+    padding: 6px 6px;
+  }
+  .total-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .total-row .num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  .total-unit {
+    text-align: right;
+    font-size: 10px;
+    color: var(--ink-2);
+    letter-spacing: 0.18em;
+    margin-top: 1px;
+  }
+
+  /* Payment / change */
+  .pay .row { display: flex; justify-content: space-between; align-items: baseline; margin: 2px 0; font-size: 11.5px; }
+  .pay .row .label { letter-spacing: 0.06em; }
+  .pay .row .value { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+  /* Cashier note (peak month quote) */
+  .note { text-align: left; }
+  .note .label {
+    font-size: 10px; color: var(--ink-faint); letter-spacing: 0.16em; margin: 0;
+  }
+  .note .quote {
+    font-style: italic;
+    font-family: 'Courier Prime', monospace;
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--ink);
+  }
+
+  /* Stats block (sessions / avg / peak) */
+  .stats .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 11px; margin: 1px 0;
+  }
+  .stats .row .label { color: var(--ink-2); letter-spacing: 0.06em; }
+  .stats .row .value { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+  /* Barcode (CSS-only, varied widths) */
+  .barcode {
+    text-align: center;
+    margin: 14px 0 8px;
+  }
+  .bars {
+    display: inline-flex;
+    align-items: stretch;
+    height: 48px;
+    gap: 0;
+  }
+  .bars i {
+    display: block;
+    background: var(--ink);
+  }
+  .barcode .digits {
+    margin: 4px 0 0;
+    font-size: 10.5px;
+    letter-spacing: 0.32em;
+    color: var(--ink);
+  }
+
+  /* Footer messages */
+  .footer-block {
+    text-align: center;
+    margin-top: 8px;
+  }
+  .footer-block .policy {
+    margin: 6px 0;
+    font-size: 9.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+  }
+  .footer-block .thanks {
+    margin: 10px 0 4px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+  }
+  .footer-block .visit {
+    margin: 2px 0;
+    font-style: italic;
+    font-size: 10px;
+    color: var(--ink-2);
+  }
+  .footer-block .qr {
+    display: inline-block;
+    margin-top: 8px;
+    width: 56px; height: 56px;
+    background:
+      linear-gradient(0deg, var(--paper) 0 8%, var(--ink) 8% 12%, var(--paper) 12% 22%, var(--ink) 22% 28%, var(--paper) 28% 36%, var(--ink) 36% 44%, var(--paper) 44% 56%, var(--ink) 56% 64%, var(--paper) 64% 72%, var(--ink) 72% 80%, var(--paper) 80% 88%, var(--ink) 88% 96%, var(--paper) 96% 100%),
+      linear-gradient(90deg, var(--paper) 0 8%, var(--ink) 8% 12%, var(--paper) 12% 22%, var(--ink) 22% 26%, var(--paper) 26% 38%, var(--ink) 38% 42%, var(--paper) 42% 56%, var(--ink) 56% 60%, var(--paper) 60% 72%, var(--ink) 72% 76%, var(--paper) 76% 88%, var(--ink) 88% 92%, var(--paper) 92% 100%);
+    background-blend-mode: multiply;
+    image-rendering: pixelated;
+    border: 4px solid var(--paper);
+    box-shadow: 0 0 0 1.5px var(--ink);
+  }
+  .footer-block .qr-cap {
+    display: block; margin-top: 4px;
+    font-size: 9.5px; letter-spacing: 0.18em; color: var(--ink-faint);
+  }
+
+  /* Caption below the receipt */
+  .caption {
+    margin: 28px auto 0;
+    max-width: 380px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255,235,215,0.55);
+    text-align: center;
+  }
+  .caption code {
+    font-family: 'Courier Prime', monospace;
+    background: rgba(0,0,0,0.45);
+    color: rgba(255,235,215,0.92);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  @media (max-width: 420px) {
+    .receipt { width: 92vw; padding: 18px 16px 14px; }
+    header h1 { font-size: 15px; letter-spacing: 0.18em; }
+    .total-row { font-size: 17px; }
+  }
+</style>
+</head>
+<body data-tf-capture=".receipt">
+
+<main>
+  <article class="receipt" id="receipt">
+    <div class="receipt-fade-top"  aria-hidden="true"></div>
+
+    <header>
+      <h1>TOKENFOLIO<span class="dot"> · </span>STORE</h1>
+      <p class="est">EST. 2024  ·  REG #1</p>
+      <p id="storeLine">LONDON · REMOTE · ONLINE</p>
+      <p>OPEN 24 / 7  ·  365 / YEAR</p>
+      <p class="url">tt-a1i.github.io/tokenfolio</p>
+      <span class="stamp">PAID IN FULL</span>
+    </header>
+
+    <hr class="dotted">
+
+    <section class="meta" aria-label="receipt metadata">
+      <div class="row"><span class="label">RECEIPT NO.</span><span class="value" id="rcpt-no">TF-2025-00000</span></div>
+      <div class="row"><span class="label">DATE</span>      <span class="value" id="rcpt-date">2025-12-31  23:59</span></div>
+      <div class="row"><span class="label">CASHIER</span>   <span class="value" id="rcpt-cashier">YOU</span></div>
+      <div class="row"><span class="label">MEMBER</span>    <span class="value" id="rcpt-handle">@you</span></div>
+      <div class="row"><span class="label">DEPT.</span>     <span class="value">AI ENGINEERING</span></div>
+    </section>
+
+    <hr class="dotted">
+
+    <section class="items" aria-label="line items">
+      <div class="head"><span>ITEM × SESSIONS</span><span>TOKENS</span></div>
+      <div id="items-list"></div>
+    </section>
+
+    <hr class="dotted">
+
+    <section class="bundles" aria-label="model bundles">
+      <div class="head"><span>BUNDLE DISCOUNTS</span><span>SUB</span></div>
+      <div id="bundles-list"></div>
+    </section>
+
+    <hr class="dotted">
+
+    <section class="subtotals">
+      <div class="row"><span class="label">SUBTOTAL</span><span class="value" id="sub-total">0</span></div>
+      <div class="row muted"><span class="label">DISCOUNTS</span><span class="value">0</span></div>
+      <div class="row muted"><span class="label">COUPONS APPLIED</span><span class="value">0</span></div>
+      <div class="row"><span class="label">TAX RATE (OSS)</span><span class="value">0.00%</span></div>
+      <div class="row"><span class="label">TAX</span><span class="value">0</span></div>
+    </section>
+
+    <hr class="double">
+
+    <section class="total-block" aria-label="total">
+      <div class="total-row"><span>TOTAL</span><span class="num" id="grand-total">0</span></div>
+      <div class="total-unit">TOKENS  ·  <span id="grand-year">2025</span></div>
+    </section>
+
+    <hr class="double">
+
+    <section class="pay">
+      <div class="row"><span class="label">TENDER</span><span class="value">HOURS &amp; ATTN</span></div>
+      <div class="row"><span class="label">CHANGE DUE</span><span class="value">— · KEEP THE TIME</span></div>
+      <div class="row"><span class="label">AUTH</span><span class="value" id="auth-code">XXXXXX</span></div>
+    </section>
+
+    <hr class="dotted">
+
+    <section class="stats">
+      <div class="row"><span class="label">SESSIONS</span>      <span class="value" id="stat-sessions">0</span></div>
+      <div class="row"><span class="label">PROJECTS</span>      <span class="value" id="stat-projects">0</span></div>
+      <div class="row"><span class="label">AVG / SESSION</span> <span class="value" id="stat-avg">0</span></div>
+      <div class="row"><span class="label">PEAK MONTH</span>    <span class="value" id="stat-peak">—</span></div>
+    </section>
+
+    <hr class="dotted">
+
+    <section class="note" aria-label="cashier note">
+      <p class="label">/ / CASHIER NOTE / /</p>
+      <p class="quote" id="cashier-quote">"Steady, careful work throughout."</p>
+    </section>
+
+    <hr class="dotted">
+
+    <section class="barcode" aria-label="barcode">
+      <div class="bars" id="bars"></div>
+      <p class="digits" id="bar-digits">000  47221890  2025</p>
+    </section>
+
+    <section class="footer-block">
+      <p class="policy">RETURN POLICY:<br>Tokens are final sale. Hours spent are non-refundable, non-exchangeable, and cannot be redeemed for sleep.</p>
+      <p class="thanks">★  THANK YOU  ★</p>
+      <p class="visit">come back soon. another year is starting.</p>
+      <span class="qr" aria-hidden="true"></span>
+      <span class="qr-cap" id="qr-cap">SCAN TO REPLAY 2025</span>
+    </section>
+
+    <div class="receipt-fade-bottom" aria-hidden="true"></div>
+  </article>
+
+  <p class="caption">A working year, itemized. Run <code>npx tokenfolio init</code> to print yours.</p>
+</main>
+
+<script src="../../data.js"></script>
+<script>
+(function () {
+  const D = window.RESUME_DATA || {};
+  const F = window.RESUME_FMT  || { num: x => String(x), comma: x => String(x), pct: () => "0%" };
+
+  function esc(s) {
+    if (s == null) return "";
+    return String(s).replace(/[&<>"']/g, c => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+    ));
+  }
+  const $ = id => document.getElementById(id);
+
+  const u        = D.user || {};
+  const totals   = D.totals || {};
+  const months   = D.by_month || [];
+  const models   = D.by_model || [];
+  const projects = D.top_projects || [];
+
+  // ── Header / metadata ────────────────────────────────
+  const year    = D.year || new Date().getFullYear();
+  const since   = u.since || (year + "-01");
+
+  $("storeLine").textContent = (u.location || "REMOTE · ONLINE").toUpperCase();
+  $("rcpt-no").textContent   = "TF-" + year + "-" + String((totals.sessions || 0) % 100000).padStart(5, "0");
+  $("rcpt-date").textContent = year + "-12-31  23:59:" + String((totals.sessions || 0) % 60).padStart(2, "0");
+  $("rcpt-cashier").textContent = (u.name || "You").toUpperCase();
+  $("rcpt-handle").textContent  = u.handle || "@you";
+  $("grand-year").textContent   = year;
+
+  // Auth code: deterministic-looking hash of the year + total
+  const authSeed = String((totals.tokens || 0) ^ year);
+  let authCode = "";
+  for (let i = 0; i < 6; i++) {
+    const c = (authSeed.charCodeAt(i % authSeed.length) + i * 31) & 0xff;
+    authCode += "0123456789ABCDEF"[(c >> 4) & 0xf] + "0123456789ABCDEF"[c & 0xf];
+  }
+  $("auth-code").textContent = authCode.slice(0, 8);
+
+  // ── Item list (top projects) ─────────────────────────
+  const itemsEl = $("items-list");
+  if (projects.length === 0) {
+    itemsEl.innerHTML =
+      '<div class="item"><div class="item-line">' +
+      '<span class="item-name">No items yet</span>' +
+      '<span class="item-dots"></span>' +
+      '<span class="item-price">0</span>' +
+      '</div><p class="item-meta">Run npx tokenfolio init to itemize your year.</p></div>';
+  } else {
+    const rows = projects.slice(0, 8).map(p => {
+      const lang = p.language || "";
+      const sessions = p.sessions || 0;
+      return ''
+        + '<div class="item">'
+        +   '<div class="item-line">'
+        +     '<span class="item-name">' + esc((p.name || "—").toUpperCase()) + '</span>'
+        +     '<span class="item-dots" aria-hidden="true"></span>'
+        +     '<span class="item-price">' + esc(F.comma(p.tokens || 0)) + '</span>'
+        +   '</div>'
+        +   '<p class="item-meta">' + sessions + ' sess'
+        +     (lang ? ' · ' + esc(lang) : '')
+        +   '</p>'
+        + '</div>';
+    });
+    itemsEl.innerHTML = rows.join("");
+  }
+
+  // ── Model bundles ────────────────────────────────────
+  const bundlesEl = $("bundles-list");
+  if (models.length === 0) {
+    bundlesEl.innerHTML = '<div class="bundle-row"><span class="name">—</span><span class="price">0</span></div>';
+  } else {
+    bundlesEl.innerHTML = models.slice(0, 5).map(m => ''
+      + '<div class="bundle-row">'
+      +   '<span class="name">' + esc((m.name || "—").toUpperCase())
+      +     '<span class="x">×</span>' + (m.sessions || 0)
+      +   '</span>'
+      +   '<span class="price">' + esc(F.comma(m.tokens || 0)) + '</span>'
+      + '</div>'
+    ).join("");
+  }
+
+  // ── Totals ───────────────────────────────────────────
+  const grand = totals.tokens || 0;
+  $("sub-total").textContent   = F.comma(grand);
+  $("grand-total").textContent = F.comma(grand);
+
+  // ── Stats ────────────────────────────────────────────
+  $("stat-sessions").textContent = (totals.sessions || 0).toLocaleString("en-US");
+  $("stat-projects").textContent = (totals.projects || projects.length || 0);
+  $("stat-avg").textContent      = F.comma(totals.avg_session_tokens || 0);
+
+  const peak = months.reduce((a, b) => (a?.tokens || 0) > (b?.tokens || 0) ? a : b, months[0] || { tokens: 0 });
+  if (peak && (peak.tokens || 0) > 0) {
+    $("stat-peak").textContent = (peak.label || "").toUpperCase() + "  ·  " + F.num(peak.tokens || 0);
+    if (peak.note) $("cashier-quote").textContent = '"' + peak.note + '"';
+  }
+
+  // ── Barcode (varied-width bars) ──────────────────────
+  // Deterministic from year + total so it stays stable across renders.
+  const bars = $("bars");
+  const seed0 = ((totals.tokens || 0) ^ year ^ 0x5a5a) >>> 0;
+  let s = seed0;
+  function rng() { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; }
+  const widths = [];
+  let totalW = 0;
+  // 56 bars with widths 1–4 px, alternating ink/paper
+  for (let i = 0; i < 56; i++) {
+    let w = 1 + Math.floor(rng() * 3.4);
+    // Occasional taller "guard" bars at fixed positions
+    widths.push(w);
+    totalW += w;
+  }
+  const FRAG = document.createDocumentFragment();
+  let toggle = true;
+  widths.forEach((w, i) => {
+    const el = document.createElement("i");
+    el.style.width = w + "px";
+    if (toggle) {
+      el.style.background = "var(--ink)";
+      // every 13th bar is slightly taller — guard-bar simulation
+      if (i % 13 === 0 || i === widths.length - 1) el.style.height = "108%";
+    } else {
+      el.style.background = "transparent";
+    }
+    toggle = !toggle;
+    FRAG.appendChild(el);
+  });
+  bars.appendChild(FRAG);
+
+  $("bar-digits").textContent =
+    String((totals.sessions || 0) % 1000).padStart(3, "0") +
+    "   " + (grand % 100000000) +
+    "   " + year;
+
+  $("qr-cap").textContent = "SCAN TO REPLAY " + year;
+})();
+</script>
+<script src="../../share.js" defer></script>
+</body>
+</html>

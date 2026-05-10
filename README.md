@@ -36,14 +36,20 @@
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/vinyl/"><img src="previews/vinyl.jpg" alt="vinyl" width="280"></a><br><sub><b>vinyl</b> · LP liner notes</sub></td>
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/synthwave/"><img src="previews/synthwave.jpg" alt="synthwave" width="280"></a><br><sub><b>synthwave</b> · 1985 arcade</sub></td>
 </tr>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/receipt/"><img src="previews/receipt.jpg" alt="receipt" width="280"></a><br><sub><b>receipt</b> · thermal print</sub></td>
+  <td align="center"><sub><i>your template here →</i><br>PRs welcome</sub></td>
+  <td align="center"><sub>13 in total · more coming</sub></td>
+</tr>
 </table>
 
-> 🆕 **v0.9**：第 12 个模板 **synthwave**（1985 街机厅风：透视线框格、Outrun 落日、CRT 扫描线、`INSERT COIN` 循环），README 顶部加上动图 SVG 演示 init → pick → deploy 全流程。
+> 🆕 **v0.10**：第 13 个模板 **receipt**（长条热敏纸购物小票：courier 字体、leader 点线、模型套餐 bundle、`TAX 0% (OSS)`、收银员备注、CSS 条形码、`Tokens are final sale`），冷幽默到位。
+> **v0.9**：第 12 个模板 **synthwave**（1985 街机厅风：透视线框格、Outrun 落日、CRT 扫描线、`INSERT COIN` 循环），README 顶部加上动图 SVG 演示 init → pick → deploy 全流程。
 > **v0.8**：11 张高清模板预览图入仓（`previews/`）+ 双语 README hero 网格 + gallery 用静态 PNG 替代 iframe（冷启动从 5-10 秒到秒开）。
 > **v0.7**：新增 **vinyl** 模板（黑胶唱片背面 liner notes，方形 1:1 适合 IG），新增 `tokenfolio share` 命令一键打开 X / LinkedIn 预填分享。
 > **v0.6**：每个模板右下角内置 PNG 导出 + 一键分享按钮，右上角永远有 "Built with tokenfolio" 徽章（截图也带得走）。新增 `tokenfolio badge` 做 SVG 贴 GitHub profile README、`tokenfolio pick` 选首页，新增 **TCG** 模板。
 
-## 模板（12 个，更多持续加）
+## 模板（13 个，更多持续加）
 
 | | 名字 | 风格 |
 |---|---|---|
@@ -58,7 +64,8 @@
 | 🟨 | **brutalist** | 瑞士 + Wired 风：黄黑红三色块、Helvetica Black 200px、不对称 grid |
 | 🃏 | **tcg**       | 宝可梦风格收藏卡：金边 + 紫色 psychic 框 + 攻击表 + 鼠标跟随 foil |
 | 💿 | **vinyl**     | 黑胶唱片背面 liner notes：方形 1:1，曲目列表 + 制作人致谢 + 真假条形码 |
-| 🌆 | **synthwave** | 1985 街机厅 outrun 风：透视线框格、Outrun 落日、CRT 扫描线、`INSERT COIN` 循环（**新**） |
+| 🌆 | **synthwave** | 1985 街机厅 outrun 风：透视线框格、Outrun 落日、CRT 扫描线、`INSERT COIN` 循环 |
+| 🧾 | **receipt**   | 长条热敏纸购物小票：leader 点线 + 模型 bundle + `TAX 0% (OSS)` + 真假条形码（**新**） |
 
 欢迎 PR 新模板。
 
@@ -218,7 +225,7 @@ window.RESUME_DATA = {
 
 ## 路线图
 
-- [x] 12 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist / tcg / vinyl / synthwave）
+- [x] 13 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist / tcg / vinyl / synthwave / receipt）
 - [x] `tokenfolio init` CLI · Claude Code（通过 ccusage）
 - [x] CLI · Codex（`~/.codex/sessions/`）
 - [x] CLI · `tokenfolio og` 个性化 OG 图（Pillow + Node/Satori 双引擎，`--js` / `--python`）

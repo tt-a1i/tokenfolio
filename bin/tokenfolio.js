@@ -113,7 +113,7 @@ const CODEX_ALLOWED_PAYLOAD_TYPES = new Set(["token_count", "turn_context"]);
 const TEMPLATE_DIRS = [
   "wrapped", "cosmos", "almanac", "terminal",
   "aurora", "holo", "pixel", "pass", "brutalist",
-  "tcg", "vinyl", "synthwave"
+  "tcg", "vinyl", "synthwave", "receipt"
 ];
 
 function parseArgs(argv) {

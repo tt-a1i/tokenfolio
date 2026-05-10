@@ -36,9 +36,15 @@ Pick a template. Edit one `data.js`. Deploy. Done.
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/vinyl/"><img src="previews/vinyl.jpg" alt="vinyl" width="280"></a><br><sub><b>vinyl</b> · LP liner notes</sub></td>
   <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/synthwave/"><img src="previews/synthwave.jpg" alt="synthwave" width="280"></a><br><sub><b>synthwave</b> · 1985 arcade</sub></td>
 </tr>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/receipt/"><img src="previews/receipt.jpg" alt="receipt" width="280"></a><br><sub><b>receipt</b> · thermal print</sub></td>
+  <td align="center"><sub><i>your template here →</i><br>PRs welcome</sub></td>
+  <td align="center"><sub>13 in total · more coming</sub></td>
+</tr>
 </table>
 
-> 🆕 **v0.9** — 12th template **synthwave** (1985 arcade: wireframe-grid horizon, banded Outrun sun, CRT scanlines, cycling `INSERT COIN`). Animated SVG demo at the top of the README walks the init → pick → deploy flow.
+> 🆕 **v0.10** — 13th template **receipt** (long thermal-paper receipt, courier monospace, leader-dot line items, model bundle subtotals, `TAX 0% (OSS)`, peak-month cashier note, real-looking CSS barcode, "tokens are final sale" footer). Deadpan humor, polished.
+> **v0.9** — 12th template **synthwave** (1985 arcade: wireframe-grid horizon, banded Outrun sun, CRT scanlines, cycling `INSERT COIN`). Animated SVG demo at the top of the README walks the init → pick → deploy flow.
 > **v0.8** — 11 high-quality JPEG previews under `previews/` + bilingual README hero grid + iframe gallery replaced with static images (cold-load 5–10 s → instant).
 > **v0.7** — **vinyl** template (back of an LP sleeve, square 1:1, IG-ready) and `tokenfolio share` one-liner that opens X / LinkedIn pre-filled with your stats.
 > **v0.6** — every template ships a one-tap **PNG export + Web Share** button + "Built with tokenfolio" chip top-right that survives screenshot crops. `tokenfolio badge` mints an SVG for your GitHub profile README. `tokenfolio pick` picks your homepage. **TCG** template added (Pokémon-style trading card).
@@ -58,7 +64,8 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 | 🟨 | **brutalist** | Wired magazine cover meets 1968 protest poster. Helvetica Black 200px, hard edges |
 | 🃏 | **tcg**       | A Pokémon-style trading card. Gold border, psychic frame, attacks, mouse-tracked foil |
 | 💿 | **vinyl**     | Back of a vinyl LP sleeve — square 1:1, track listing, "Produced by" credits, barcode |
-| 🌆 | **synthwave** | 1985 arcade outrun — wireframe horizon, banded sun, CRT scanlines, cycling `INSERT COIN` (**new**) |
+| 🌆 | **synthwave** | 1985 arcade outrun — wireframe horizon, banded sun, CRT scanlines, cycling `INSERT COIN` |
+| 🧾 | **receipt**   | Long thermal-paper receipt — courier mono, leader-dot items, model bundles, `TAX 0% (OSS)`, CSS barcode (**new**) |
 
 More coming. Contributions welcome.
 
@@ -218,7 +225,7 @@ Every template reads from the same data object. Switch templates with zero data 
 
 ## Roadmap
 
-- [x] 12 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist, tcg, vinyl, synthwave)
+- [x] 13 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist, tcg, vinyl, synthwave, receipt)
 - [x] `tokenfolio init` CLI for Claude Code (via ccusage)
 - [x] CLI: Codex (`~/.codex/sessions/`) parser
 - [x] CLI: `tokenfolio og` for personalized OG image (Pillow + Node/Satori dual-engine, `--js` / `--python`)
