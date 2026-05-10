@@ -89,11 +89,24 @@ open http://localhost:8765
 
 ### 用某个模板作为首页
 
-默认根 `index.html` 是 9 个模板的画廊。选定一个之后，把它的文件复制到根目录，或者在根目录的 `index.html` 里加一行重定向：
+默认根 `index.html` 是 9 个模板的画廊。选定一个之后，**最简单**的方法是在根目录 `index.html` 用一行重定向：
 
 ```html
 <meta http-equiv="refresh" content="0; url=templates/wrapped/">
 ```
+
+> ⚠️ **不要直接把模板文件复制到根目录** — 模板里的 `<script src="../../data.js">` 是相对路径，复制到根后会变成 404。如果非要复制，记得把所有 `../../data.js` 改成 `./data.js`。
+
+### 不用 Claude / Codex？手填 `data.js`
+
+如果你的 AI 工具不在 CLI 支持列表里，可以手动填 `data.js`，结构见下面。token 数据从哪儿找：
+
+- **Cursor**：Settings → Usage（按月看 prompt / completion tokens）
+- **GitHub Copilot**：[github.com/settings/billing](https://github.com/settings/billing) → Plans and usage（季度账单可见 token 用量）
+- **Aider**：每次会话结束 Aider 会打印 `Tokens: X sent, Y received`，自己加和
+- **Continue.dev**：暂无聚合视图，用 VS Code 扩展的 logs 翻
+
+填完后跑 `tokenfolio og`（或不跑）→ 部署。CLI 接入 PR 欢迎。
 
 ## 数据结构
 

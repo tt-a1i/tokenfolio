@@ -331,6 +331,12 @@
 (function() {
   const D = window.RESUME_DATA;
   const F = window.RESUME_FMT;
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
   const colors = ['', 'gold', 'green', 'blue', 'pink'];
 
   // background stars
@@ -377,7 +383,7 @@
         <div class="m">${m.label.toUpperCase()}</div>
         <div>
           <div class="stars">${stars}</div>
-          <div class="desc">${m.note}</div>
+          <div class="desc">${esc(m.note)}</div>
         </div>
         <div class="num">${F.num(m.tokens)}${m.peak ? ' ★' : ''}</div>
       </div>`;
@@ -391,7 +397,7 @@
     return `
       <div class="model-card">
         <div class="model-orb" style="background: radial-gradient(circle, ${m.color}, transparent); border-color: ${m.color}; box-shadow: 0 0 30px ${m.color}66"></div>
-        <div class="nm">${m.name}</div>
+        <div class="nm">${esc(m.name)}</div>
         <div class="pct" style="color: ${m.color}">${pct}%</div>
         <div class="v">${F.num(m.tokens)} tokens · ${m.sessions} sessions</div>
       </div>`;
@@ -402,9 +408,9 @@
     <div class="proj-row">
       <div class="rank">${String(i + 1).padStart(2, '0')}</div>
       <div>
-        <div class="nm">${p.name}</div>
-        <div class="desc">${p.description}</div>
-        <span class="lang">${p.language}</span>
+        <div class="nm">${esc(p.name)}</div>
+        <div class="desc">${esc(p.description)}</div>
+        <span class="lang">${esc(p.language)}</span>
       </div>
       <div class="v">${F.num(p.tokens)}<small>${p.sessions} sessions</small></div>
     </div>
@@ -413,9 +419,9 @@
   // highlights
   document.getElementById('hi-grid').innerHTML = D.highlights.map(h => `
     <div class="hi-card">
-      <div class="l">${h.label}</div>
-      <div class="v">${h.value}</div>
-      <div class="d">${h.detail}</div>
+      <div class="l">${esc(h.label)}</div>
+      <div class="v">${esc(h.value)}</div>
+      <div class="d">${esc(h.detail)}</div>
     </div>
   `).join('');
 })();

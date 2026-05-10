@@ -1,8 +1,8 @@
 {
   "name": "tokenfolio",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "An AI-usage portfolio generator. Drop in your numbers, deploy a page.",
-  "homepage": "https://github.com/tt-a1i/tokenfolio",
+  "homepage": "https://tt-a1i.github.io/tokenfolio/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tt-a1i/tokenfolio.git"

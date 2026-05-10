@@ -1258,6 +1258,12 @@ body::after {
 (function () {
   const D = window.RESUME_DATA;
   const F = window.RESUME_FMT;
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
   /* ── helpers ─────────────────────────────────────────── */
   function $(id) { return document.getElementById(id); }
@@ -1359,7 +1365,7 @@ body::after {
   $('model-bars').innerHTML = D.by_model.map(m => {
     const pct = ((m.tokens / totModelTok) * 100).toFixed(0);
     return `<div class="model-row">
-      <span class="mr-name">${m.name}</span>
+      <span class="mr-name">${esc(m.name)}</span>
       <div class="mr-bar-wrap"><div class="mr-bar" style="width:${pct}%"></div></div>
       <span class="mr-pct">${pct}%</span>
     </div>`;
@@ -1369,10 +1375,10 @@ body::after {
   $('tag-dest').textContent = D.year + ' ∞';
   $('projects-grid').innerHTML = D.top_projects.map((p, i) => `
     <div class="proj-item">
-      <div class="pi-name">${p.name}</div>
-      <div class="pi-lang">${p.language} · #${i + 1}</div>
+      <div class="pi-name">${esc(p.name)}</div>
+      <div class="pi-lang">${esc(p.language)} · #${i + 1}</div>
       <div class="pi-tokens">${F.num(p.tokens)}</div>
-      <div class="pi-desc">${p.description}</div>
+      <div class="pi-desc">${esc(p.description)}</div>
     </div>
   `).join('');
 
@@ -1404,7 +1410,7 @@ body::after {
         <div class="mb-bar${isPeak ? ' peak-bar' : ''}" style="width:${pct}%"></div>
       </div>
       <span class="mb-val">${F.num(m.tokens)}</span>
-      <span class="mb-note">${m.note}</span>
+      <span class="mb-note">${esc(m.note)}</span>
     </div>`;
   }).join('');
 
@@ -1414,9 +1420,9 @@ body::after {
 
   $('visa-grid').innerHTML = D.highlights.map((h, i) => `
     <div class="visa-stamp" style="--vrot: ${visaRots[i] || 0}deg;">
-      <div class="visa-label">${h.label.toUpperCase()}</div>
-      <div class="visa-value">${h.value}</div>
-      <div class="visa-detail">${h.detail}</div>
+      <div class="visa-label">${esc(h.label.toUpperCase())}</div>
+      <div class="visa-value">${esc(h.value)}</div>
+      <div class="visa-detail">${esc(h.detail)}</div>
       <div class="visa-serial">${visaSerials[i]}</div>
     </div>
   `).join('');

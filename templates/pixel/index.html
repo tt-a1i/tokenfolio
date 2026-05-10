@@ -666,6 +666,12 @@ body {
   'use strict';
   var D = window.RESUME_DATA;
   var F = window.RESUME_FMT;
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
   /* ── Helpers ─────────────────────────────────── */
   function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
@@ -727,7 +733,7 @@ body {
 
   /* ── Render: TOP BAR ──────────────────────────── */
   document.getElementById('topbar-title').innerHTML =
-    '&#9733;&nbsp;&nbsp;' + D.user.name.toUpperCase() + '&nbsp;&nbsp;&#9733;';
+    '&#9733;&nbsp;&nbsp;' + esc(D.user.name.toUpperCase()) + '&nbsp;&nbsp;&#9733;';
   document.getElementById('topbar-sub').textContent =
     D.user.title + '  ·  LV.' + level;
 
@@ -785,8 +791,8 @@ body {
     return '<div class="proj-item ' + rankClass + '">'
       + '<div class="proj-icon">' + (projIcons[i] || '&#9632;') + '</div>'
       + '<div>'
-        + '<div class="proj-name">' + p.name + '</div>'
-        + '<div class="proj-desc">' + p.description.slice(0, 38) + '</div>'
+        + '<div class="proj-name">' + esc(p.name) + '</div>'
+        + '<div class="proj-desc">' + esc(p.description.slice(0, 38)) + '</div>'
       + '</div>'
       + '<div class="proj-tokens">' + F.num(p.tokens) + '<br><span style="font-size:13px;color:var(--white);opacity:.5;">' + p.sessions + ' sess</span></div>'
       + '<div class="proj-rarity" style="color:var(--gold);">' + rarity + '</div>'
@@ -805,7 +811,7 @@ body {
         + (isPeak ? '<span class="quest-peak-star">&#9733;</span>' : '')
       + '</div>'
       + '<div class="quest-exp">+' + F.num(m.tokens) + '<span style="font-size:12px;opacity:.6;"> EXP</span></div>'
-      + '<div class="quest-proj">' + m.top_project + '</div>'
+      + '<div class="quest-proj">' + esc(m.top_project) + '</div>'
       + '</div>';
   }).join('');
 
@@ -818,7 +824,7 @@ body {
     var pct = ((m.tokens / totalModelTok) * 100).toFixed(0);
     return '<div class="model-card ' + (modelTierClass[i] || '') + '">'
       + '<div class="model-avatar">' + (modelEmoji[i] || '?') + '</div>'
-      + '<div class="model-name">' + m.name + '</div>'
+      + '<div class="model-name">' + esc(m.name) + '</div>'
       + '<div class="model-pct">' + pct + '%</div>'
       + '<div class="model-sessions">' + m.sessions + ' sess</div>'
       + '</div>';
@@ -830,9 +836,9 @@ body {
     return '<div class="ach-badge">'
       + '<div class="ach-icon" style="font-size:20px;">' + (achIcons[i] || '&#9733;') + '</div>'
       + '<div class="ach-text">'
-        + '<div class="ach-label">' + h.label.toUpperCase() + '</div>'
-        + '<div class="ach-value">' + h.value + '</div>'
-        + '<div class="ach-detail">' + h.detail + '</div>'
+        + '<div class="ach-label">' + esc(h.label.toUpperCase()) + '</div>'
+        + '<div class="ach-value">' + esc(h.value) + '</div>'
+        + '<div class="ach-detail">' + esc(h.detail) + '</div>'
       + '</div>'
       + '</div>';
   }).join('');

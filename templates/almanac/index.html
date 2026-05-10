@@ -378,6 +378,12 @@
 (function() {
   const D = window.RESUME_DATA;
   const F = window.RESUME_FMT;
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
   // masthead
   document.getElementById('since').textContent = D.user.since;
@@ -405,8 +411,8 @@
     <div class="month-row${m.peak ? ' peak' : ''}">
       <div class="mn">${m.label}</div>
       <div class="body">
-        ${m.note}
-        <div class="meta">${m.sessions} sessions · top model ${m.top_model} · ${m.top_project}</div>
+        ${esc(m.note)}
+        <div class="meta">${m.sessions} sessions · top model ${esc(m.top_model)} · ${esc(m.top_project)}</div>
       </div>
       <div class="num">${F.num(m.tokens)}</div>
     </div>
@@ -415,9 +421,9 @@
   // classifieds
   document.getElementById('proj-list').innerHTML = D.top_projects.map((p, i) => `
     <div class="ad">
-      <div class="ad-h">${p.name} <em>${F.num(p.tokens)}</em></div>
-      <div class="ad-b">${p.description}</div>
-      <div class="ad-meta">${p.language} · ${p.sessions} sessions · #${i + 1} this year</div>
+      <div class="ad-h">${esc(p.name)} <em>${F.num(p.tokens)}</em></div>
+      <div class="ad-b">${esc(p.description)}</div>
+      <div class="ad-meta">${esc(p.language)} · ${p.sessions} sessions · #${i + 1} this year</div>
     </div>
   `).join('');
 
@@ -427,7 +433,7 @@
     const pct = (m.tokens / totModelTok * 100).toFixed(0);
     return `
       <div class="row">
-        <div class="nm">${m.name}<small>${m.sessions} sessions</small></div>
+        <div class="nm">${esc(m.name)}<small>${m.sessions} sessions</small></div>
         <div class="v">${F.num(m.tokens)}<small>${pct}%</small></div>
       </div>`;
   }).join('');
@@ -435,9 +441,9 @@
   // highlights
   document.getElementById('hi-row').innerHTML = D.highlights.map(h => `
     <div>
-      <div class="hi-l">${h.label}</div>
-      <div class="hi-v">${h.value}</div>
-      <div class="hi-d">${h.detail}</div>
+      <div class="hi-l">${esc(h.label)}</div>
+      <div class="hi-v">${esc(h.value)}</div>
+      <div class="hi-d">${esc(h.detail)}</div>
     </div>
   `).join('');
 })();

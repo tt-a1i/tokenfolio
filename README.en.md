@@ -89,7 +89,24 @@ open http://localhost:8765
 
 ### Pick one template as the homepage
 
-The root `index.html` is a gallery of all templates. Once you've picked one, copy its files to the root or add a `<meta http-equiv="refresh" content="0; url=templates/wrapped/">` redirect at the root.
+The root `index.html` is a gallery of all templates. **Easiest way** to feature one: add a redirect line in the root `index.html`:
+
+```html
+<meta http-equiv="refresh" content="0; url=templates/wrapped/">
+```
+
+> ⚠️ **Don't copy template files to the root directly** — they reference `<script src="../../data.js">` with a relative path. Copying to the root turns that into a 404. If you really must copy, also rewrite every `../../data.js` to `./data.js`.
+
+### Hand-editing `data.js` (when you don't use Claude / Codex)
+
+If your AI tool isn't in the CLI's supported list, fill `data.js` by hand using the shape below. Where to find your token counts:
+
+- **Cursor**: Settings → Usage (monthly prompt / completion breakdown)
+- **GitHub Copilot**: [github.com/settings/billing](https://github.com/settings/billing) → Plans and usage (quarterly statements show token usage)
+- **Aider**: prints `Tokens: X sent, Y received` at the end of each session — sum them up
+- **Continue.dev**: no aggregate view yet — read the VS Code extension logs
+
+Then run `tokenfolio og` (or skip it) and deploy. PRs adding new sources to the CLI are welcome.
 
 ## The data shape
 

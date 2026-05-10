@@ -3,16 +3,19 @@
 Generate a personalized og.png (1200x630) from ./data.js.
 
 Reads the data shape produced by `tokenfolio init` and renders a social
-preview card. Output goes to ./og.png by default; override with $OG_OUT.
+preview card. Output goes to ./og.png by default; override with --output PATH.
 
 Requires: Python 3.9+, Pillow (`pip install Pillow`).
 
 Run:
     python3 scripts/gen-og.py
+    python3 scripts/gen-og.py --output share/preview.png
 or via the CLI:
     tokenfolio og
+    tokenfolio og --output share/preview.png
 """
 
+import argparse
 import json
 import os
 import re
@@ -27,15 +30,20 @@ except ImportError:
 
 
 def find_data_js() -> Path:
-    """Look for data.js in the cwd, then the package root."""
-    candidates = [
-        Path.cwd() / "data.js",
-        Path(__file__).resolve().parent.parent / "data.js",
-    ]
-    for p in candidates:
-        if p.exists():
-            return p
-    print("× data.js not found in cwd or package root", file=sys.stderr)
+    """
+    Look for data.js in the current working directory ONLY.
+
+    Earlier versions fell back to the package's bundled demo data, which
+    silently produced a personalized-looking og.png filled with the demo
+    persona's numbers — making users believe they had succeeded when they
+    were actually publishing someone else's stats. Hard fail instead.
+    """
+    p = Path.cwd() / "data.js"
+    if p.exists():
+        return p
+    print("× ./data.js not found in cwd.", file=sys.stderr)
+    print("  run `tokenfolio init` first, or cd into a directory containing data.js.",
+          file=sys.stderr)
     sys.exit(1)
 
 
@@ -173,10 +181,17 @@ def render(data: dict, out_path: Path) -> None:
 
 
 def main() -> int:
-    data_js = find_data_js()
-    data = parse_resume_data(data_js.read_text())
+    parser = argparse.ArgumentParser(description="Generate og.png from ./data.js")
+    parser.add_argument("--output", "-o", default="./og.png",
+                        help="output path (default: ./og.png)")
+    args = parser.parse_args()
 
-    out = Path(os.environ.get("OG_OUT", "./og.png"))
+    data_js = find_data_js()
+    # explicit utf-8 — Path.read_text uses platform default which on Windows
+    # is cp1252 and chokes on non-ASCII in user.name / location / etc.
+    data = parse_resume_data(data_js.read_text(encoding="utf-8"))
+
+    out = Path(args.output)
     render(data, out)
 
     user = data.get("user", {})

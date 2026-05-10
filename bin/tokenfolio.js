@@ -2,19 +2,21 @@
 /**
  * tokenfolio · auto-extract your AI usage and write data.js
  *
- * Sources:
+ * Sources (init):
  *   --source claude   Claude Code (~/.claude/projects/) — via ccusage
  *   --source codex    Codex       (~/.codex/sessions/)  — own JSONL parser
  *   --source all      both        (default)
  *
  * Privacy: only token counts, model names, project paths, and dates are read.
- * Prompt contents and assistant messages are NEVER extracted — the Codex
- * parser explicitly skips `response_item` lines.
+ * The Codex parser uses an explicit allowlist on `event_msg.payload.type`
+ * (token_count + turn_context only) — `user_message`, `agent_message`,
+ * `agent_reasoning`, and `response_item` lines are all dropped before any
+ * field access happens.
  */
 
 import { spawnSync } from "node:child_process";
 import { writeFileSync, existsSync, statSync, readdirSync, readFileSync } from "node:fs";
-import { join, basename, dirname } from "node:path";
+import { join, basename, dirname, resolve, isAbsolute, relative } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
 
@@ -23,8 +25,9 @@ import { fileURLToPath } from "node:url";
 const HELP = `tokenfolio · generate data.js / og.png from your AI tool usage
 
 USAGE
-  tokenfolio init [options]    aggregate AI usage → data.js
-  tokenfolio og   [options]    render personalized og.png from data.js
+  tokenfolio init  [options]    aggregate AI usage → data.js
+  tokenfolio og    [options]    render personalized og.png from data.js
+  tokenfolio brand [options]    point templates' og:meta at your deploy URL
 
 INIT OPTIONS
   --source NAME      claude | codex | all   (default: all)
@@ -34,11 +37,15 @@ INIT OPTIONS
   --handle HANDLE    override user.handle   (else: from git email)
   --title TITLE      override user.title    (default: "AI Pair Programmer")
   --location LOC     override user.location
+  --bio TEXT         override user.bio      (default: a sensible placeholder)
   --force            overwrite existing output file
   --dry              print to stdout, don't write
 
 OG OPTIONS
   --output PATH      write to PATH          (default: ./og.png)
+
+BRAND OPTIONS
+  --site-url URL     deploy URL (default: inferred from \`git remote origin\`)
 
 GLOBAL
   -h, --help
@@ -47,19 +54,39 @@ EXAMPLES
   tokenfolio init --dry
   tokenfolio init --year 2025 --force
   tokenfolio init --source codex --year 2026 --dry
-  tokenfolio og                              # writes ./og.png
-  tokenfolio og --output share/og.png
+  tokenfolio og                                                    # writes ./og.png
+  tokenfolio brand                                                 # auto-detect
+  tokenfolio brand --site-url https://you.github.io/tokenfolio/    # explicit
 
 REQUIREMENTS
-  init: Node ≥18; ccusage (auto-fetched via npx) for Claude Code source
-  og:   Python 3.9+ with Pillow (\`pip install Pillow\`)
+  init:  Node ≥18; ccusage (auto-fetched via npx) for Claude Code source
+  og:    Python 3.9+ with Pillow (\`pip install Pillow\`)
+  brand: writes to template HTML files in cwd (idempotent)
 
 PRIVACY
-  Only numeric/path/date data is read. Prompt contents are never extracted.
+  Only numeric / path / date fields are read. Prompt content is never extracted.
+  See top-of-file comment for the explicit allowlist.
 `;
 
 const MONTH_LABELS = [
   "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
+];
+
+// The original deploy URL hardcoded in template <meta> tags. `tokenfolio brand`
+// rewrites away from this. Pinning the prefix here means we have one source of
+// truth for "what we replace from".
+const ORIGINAL_SITE = "https://tt-a1i.github.io/tokenfolio";
+
+// Pinned ccusage major. Bump deliberately when a new schema lands.
+const CCUSAGE_SPEC = "ccusage@^18";
+
+// Codex `event_msg.payload.type` values we'll ever read. Anything else is
+// dropped without field access — this is the privacy red line, structurally.
+const CODEX_ALLOWED_PAYLOAD_TYPES = new Set(["token_count", "turn_context"]);
+
+const TEMPLATE_DIRS = [
+  "wrapped", "cosmos", "almanac", "terminal",
+  "aurora", "holo", "pixel", "pass", "brutalist"
 ];
 
 function parseArgs(argv) {
@@ -75,14 +102,16 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "-h" || a === "--help") { console.log(HELP); process.exit(0); }
-    else if (a === "init" || a === "og") o.cmd = a;
+    else if (["init", "og", "brand"].includes(a)) o.cmd = a;
     else if (a === "--source")        o.source = argv[++i];
-    else if (a === "--year")          o.year = +argv[++i];
+    else if (a === "--year")          o.year = parseYearArg(argv[++i]);
     else if (a === "--output" || a === "-o") o.output = argv[++i];
     else if (a === "--name")          o.overrides.name = argv[++i];
     else if (a === "--handle")        o.overrides.handle = argv[++i];
     else if (a === "--title")         o.overrides.title = argv[++i];
     else if (a === "--location")      o.overrides.location = argv[++i];
+    else if (a === "--bio")           o.overrides.bio = argv[++i];
+    else if (a === "--site-url")      o.overrides.siteUrl = argv[++i];
     else if (a === "--force")         o.force = true;
     else if (a === "--dry")           o.dry = true;
     else { console.error(`unknown arg: ${a}\n${HELP}`); process.exit(2); }
@@ -96,6 +125,15 @@ function parseArgs(argv) {
   return o;
 }
 
+function parseYearArg(raw) {
+  const n = +raw;
+  if (!Number.isInteger(n) || n < 2000 || n > 2200) {
+    console.error(`× --year must be a 4-digit year (got: ${raw})`);
+    process.exit(2);
+  }
+  return n;
+}
+
 // ─── shared helpers ───────────────────────────────────────────────────────
 
 function gitConf(key) {
@@ -103,9 +141,12 @@ function gitConf(key) {
   return r.status === 0 ? r.stdout.trim() : "";
 }
 
+function gitRemoteUrl() {
+  const r = spawnSync("git", ["remote", "get-url", "origin"], { encoding: "utf8" });
+  return r.status === 0 ? r.stdout.trim() : "";
+}
+
 function simplifyClaudeModel(name) {
-  // claude-opus-4-7              → opus-4.7
-  // claude-haiku-4-5-20251001    → haiku-4.5
   let m = (name || "").replace(/^claude-/, "");
   m = m.replace(/-\d{8}$/, "");
   m = m.replace(/-(\d+)-(\d+)$/, "-$1.$2");
@@ -113,7 +154,6 @@ function simplifyClaudeModel(name) {
 }
 
 function simplifyCodexModel(name) {
-  // gpt-5-codex → gpt-5-codex (already short); strip provider prefix if any
   return (name || "").replace(/^openai\//, "") || "openai";
 }
 
@@ -145,7 +185,7 @@ function* walkJsonlFiles(root) {
 function ccusage(sub) {
   for (const [cmd, args] of [
     ["ccusage", [sub, "--json"]],
-    ["npx",     ["--yes", "ccusage@latest", sub, "--json"]]
+    ["npx",     ["--yes", CCUSAGE_SPEC, sub, "--json"]]
   ]) {
     const r = spawnSync(cmd, args, {
       encoding: "utf8",
@@ -163,8 +203,6 @@ function decodeClaudeProject(sessionId) {
   if (!sessionId || sessionId === "Unknown Project") {
     return { name: "unknown", path: "" };
   }
-  // ccusage encodes cwd by replacing `/` with `-`. Best-effort decode —
-  // breaks for paths with literal hyphens, but the basename stays close.
   const path = "/" + sessionId.replace(/^-/, "").replace(/-/g, "/");
   return { name: basename(path) || "root", path };
 }
@@ -178,7 +216,6 @@ function aggregateClaude(year) {
     typeof m.month === "string" && m.month.startsWith(`${year}-`)
   );
 
-  // count real conversations from .jsonl files
   const root = join(homedir(), ".claude", "projects");
   const conv = { total: 0, byMonth: {}, byProject: {} };
   for (const f of walkJsonlFiles(root)) {
@@ -192,7 +229,6 @@ function aggregateClaude(year) {
 
   if (monthsInYear.length === 0 && conv.total === 0) return null;
 
-  // by_month
   const by_month = monthsInYear.map(m => {
     const i = +m.month.slice(5, 7) - 1;
     return {
@@ -205,7 +241,6 @@ function aggregateClaude(year) {
     };
   });
 
-  // top projects
   const top_projects = (session.sessions || [])
     .filter(s => +(s.lastActivity || "").slice(0, 4) === year)
     .map(s => {
@@ -220,7 +255,6 @@ function aggregateClaude(year) {
     })
     .filter(p => p.tokens > 0 && p.name && p.name !== "unknown");
 
-  // by_model
   const modelMap = new Map();
   for (const m of monthsInYear) {
     for (const mb of (m.modelBreakdowns || [])) {
@@ -255,7 +289,6 @@ function aggregateClaude(year) {
 
 function* walkCodexFiles(root, year) {
   if (!existsSync(root)) return;
-  // Structure: <root>/YYYY/MM/DD/rollout-*.jsonl
   let years;
   try { years = readdirSync(root, { withFileTypes: true }); } catch { return; }
   for (const yEnt of years) {
@@ -288,31 +321,23 @@ function* walkCodexFiles(root, year) {
 }
 
 function parseCodexFile(filePath) {
-  // Read minimally:
-  //   - line 1 (session_meta)             → cwd
-  //   - any turn_context lines            → model
-  //   - the LAST token_count event_msg    → cumulative tokens
-  // Skip every `response_item` line — those carry prompt / assistant content.
+  // Privacy contract: this function reads ONLY four kinds of payloads
+  //   - top-level type === "session_meta"        → cwd, model
+  //   - top-level type === "turn_context"        → model
+  //   - event_msg with payload.type === "turn_context"  → model
+  //   - event_msg with payload.type === "token_count"   → numeric counts
+  // Every other line — including `response_item`, `event_msg.user_message`,
+  // `event_msg.agent_message`, `event_msg.agent_reasoning` — is dropped
+  // before any field access. No prompt or completion content is ever read
+  // beyond an integer counter.
   let content;
   try { content = readFileSync(filePath, "utf8"); } catch { return null; }
 
   const lines = content.split("\n");
   let cwd = "", model = "";
-  // Codex's `total_token_usage` schema (v0.130+):
-  //   input_tokens              ← INCLUDES cached_input_tokens (unlike Claude!)
-  //   cached_input_tokens       ← subset of input that was a cache hit
-  //   output_tokens             ← model-generated answer tokens
-  //   reasoning_output_tokens   ← thinking tokens
-  //   total_tokens              ← input + output + reasoning (cached already in input)
-  // For "real generation work" (comparable to Claude's input+output excl. cache):
-  //   real_input = input - cached_input
-  //   meaningful = real_input + output + reasoning
-  // Track the MAX value across token_count events (some sessions emit a
-  // zeroed-out cleanup event at the end that would otherwise overwrite real numbers).
   let bestRealInput = 0, bestOutput = 0, bestReasoning = 0, bestCached = 0;
   let bestSum = 0;
 
-  // session_meta is on line 1
   if (lines[0]) {
     try {
       const m = JSON.parse(lines[0]);
@@ -323,20 +348,27 @@ function parseCodexFile(filePath) {
     } catch {}
   }
 
-  // walk lines, skipping `response_item` for privacy + speed
   for (const line of lines) {
     if (!line) continue;
-    // fast-path: only parse lines that look like the events we want
-    if (line.includes('"response_item"')) continue;
     if (!line.includes('"type"')) continue;
     let obj; try { obj = JSON.parse(line); } catch { continue; }
 
-    if (obj.type === "turn_context" && obj.payload?.model) {
-      model = obj.payload.model;
-    } else if (obj.type === "event_msg" && obj.payload?.type === "turn_context") {
+    // top-level allowlist
+    if (obj.type === "session_meta") continue;       // already handled above
+    if (obj.type === "turn_context") {
+      if (obj.payload?.model) model = obj.payload.model;
+      continue;
+    }
+    if (obj.type !== "event_msg") continue;          // anything else (response_item, …) — drop
+
+    // event_msg payload allowlist — explicit, structurally enforced
+    const ptype = obj.payload?.type;
+    if (!CODEX_ALLOWED_PAYLOAD_TYPES.has(ptype)) continue;
+
+    if (ptype === "turn_context") {
       const m = obj.payload?.model || obj.payload?.context?.model;
       if (m) model = m;
-    } else if (obj.type === "event_msg" && obj.payload?.type === "token_count") {
+    } else if (ptype === "token_count") {
       const t = obj.payload?.info?.total_token_usage || {};
       const cached    = t.cached_input_tokens     || 0;
       const realInput = Math.max(0, (t.input_tokens || 0) - cached);
@@ -370,10 +402,9 @@ function aggregateCodex(year) {
   const root = join(homedir(), ".codex", "sessions");
   if (!existsSync(root)) return null;
 
-  // bucket-by-month containers
-  const monthBucket = new Map(); // ym → { tokens, sessions, models, projects: Map<name, tokens> }
-  const projectBucket = new Map(); // name → { tokens, sessions, path, models }
-  const modelBucket = new Map();   // simpleName → { tokens, sessions, color }
+  const monthBucket = new Map();
+  const projectBucket = new Map();
+  const modelBucket = new Map();
   let totalTokens = 0, totalInput = 0, totalOutput = 0, totalSessions = 0;
 
   for (const f of walkCodexFiles(root, year)) {
@@ -385,7 +416,6 @@ function aggregateCodex(year) {
     totalOutput   += s.outputTokens;
     totalSessions += 1;
 
-    // month
     const mb = monthBucket.get(f.ym) || {
       tokens: 0, sessions: 0, models: new Set(), projects: new Map()
     };
@@ -395,7 +425,6 @@ function aggregateCodex(year) {
     mb.projects.set(s.project, (mb.projects.get(s.project) || 0) + s.tokens);
     monthBucket.set(f.ym, mb);
 
-    // project
     const pb = projectBucket.get(s.project) || {
       name: s.project, tokens: 0, sessions: 0, path: s.cwd, models: new Set()
     };
@@ -404,7 +433,6 @@ function aggregateCodex(year) {
     if (s.model) pb.models.add(s.model);
     projectBucket.set(s.project, pb);
 
-    // model
     const key = simplifyCodexModel(s.model);
     const mod = modelBucket.get(key) || { name: key, tokens: 0, sessions: 0, color: modelColor(key) };
     mod.tokens   += s.tokens;
@@ -414,11 +442,9 @@ function aggregateCodex(year) {
 
   if (totalSessions === 0) return null;
 
-  // build by_month
   const by_month = [];
   for (const [ym, mb] of [...monthBucket.entries()].sort()) {
     const i = +ym.slice(5, 7) - 1;
-    // top project for this month
     let topProj = "", topProjTokens = 0;
     for (const [p, t] of mb.projects.entries()) {
       if (t > topProjTokens) { topProj = p; topProjTokens = t; }
@@ -452,7 +478,7 @@ function aggregateCodex(year) {
       input_tokens: totalInput,
       output_tokens: totalOutput,
       sessions: totalSessions,
-      cost_usd: 0  // not available in Codex logs
+      cost_usd: 0
     },
     source: "codex"
   };
@@ -463,7 +489,6 @@ function aggregateCodex(year) {
 function mergeAggregates(sources) {
   if (sources.length === 1) return sources[0];
 
-  // by_month: sum tokens/sessions per ym, keep first non-empty top_*
   const ymMap = new Map();
   for (const s of sources) {
     for (const m of s.by_month) {
@@ -481,7 +506,6 @@ function mergeAggregates(sources) {
   }
   const by_month = [...ymMap.values()].sort((a, b) => a.month.localeCompare(b.month));
 
-  // by_model: keep all distinct (Claude opus-4.7 != Codex gpt-5-codex)
   const modelMap = new Map();
   for (const s of sources) {
     for (const m of s.by_model) {
@@ -493,7 +517,6 @@ function mergeAggregates(sources) {
   }
   const by_model = [...modelMap.values()];
 
-  // top_projects: dedupe by name, sum
   const projMap = new Map();
   for (const s of sources) {
     for (const p of s.top_projects) {
@@ -522,7 +545,14 @@ function mergeAggregates(sources) {
 function buildResumeData(args, agg) {
   const fullName = args.overrides.name || gitConf("user.name") || "Your Name";
   const email    = gitConf("user.email") || "you@example.com";
-  const handle   = args.overrides.handle || `@${email.split("@")[0]}`;
+  const emailHandle = email.split("@")[0];
+  const handle   = args.overrides.handle || `@${emailHandle}`;
+
+  // Friendly nudge: numeric-only handles are usually QQ/163 numeric prefixes
+  // and look weird on a public résumé. Mention it once, non-fatal.
+  if (!args.overrides.handle && /^\d+$/.test(emailHandle)) {
+    console.error(`  hint: handle "${handle}" looks numeric — pass --handle "@yourname" to override.`);
+  }
 
   const user = {
     name: fullName,
@@ -531,11 +561,10 @@ function buildResumeData(args, agg) {
     location: args.overrides.location || "",
     since:    agg.by_month[0]?.month || `${args.year}-01`,
     avatar_initials: fullName.split(/\s+/).map(p => p[0] || "").join("").slice(0, 2).toUpperCase() || "AL",
-    bio: "Building tools at the seam between humans and language models.",
+    bio: args.overrides.bio ?? "Building tools at the seam between humans and language models.",
     links: []
   };
 
-  // pad by_month to all 12 calendar months for the year
   const ymMap = new Map(agg.by_month.map(m => [m.month, m]));
   const fullYearMonths = [];
   for (let i = 0; i < 12; i++) {
@@ -548,13 +577,10 @@ function buildResumeData(args, agg) {
       note: ""
     });
   }
-  // mark peak
   const peak = fullYearMonths.reduce((a, b) => a.tokens > b.tokens ? a : b);
   if (peak.tokens > 0) peak.peak = true;
-  // ensure each entry has `note`
   fullYearMonths.forEach(m => { if (m.note === undefined) m.note = ""; });
 
-  // top projects: sort and trim
   const top_projects = agg.top_projects
     .sort((a, b) => b.tokens - a.tokens)
     .slice(0, 8)
@@ -566,10 +592,8 @@ function buildResumeData(args, agg) {
       description: p.path || "—"
     }));
 
-  // by_model: sort
   const by_model = agg.by_model.sort((a, b) => b.tokens - a.tokens);
 
-  // totals + derived
   const totals = {
     ...agg.totals,
     projects: top_projects.length,
@@ -578,7 +602,6 @@ function buildResumeData(args, agg) {
       : 0
   };
 
-  // highlights
   const highlights = [
     {
       label: "Peak month",
@@ -609,15 +632,13 @@ function buildResumeData(args, agg) {
   return { user, year: args.year, totals, by_month: fullYearMonths, by_model, top_projects, highlights };
 }
 
-// ─── main ─────────────────────────────────────────────────────────────────
-
 // ─── og: shell out to scripts/gen-og.py ───────────────────────────────────
 
 function runOg(args) {
   const here = dirname(fileURLToPath(import.meta.url));
   const candidates = [
-    join(here, "..", "scripts", "gen-og.py"),         // installed package
-    join(process.cwd(), "scripts", "gen-og.py")       // running from clone
+    join(here, "..", "scripts", "gen-og.py"),
+    join(process.cwd(), "scripts", "gen-og.py")
   ];
   const scriptPath = candidates.find(p => existsSync(p));
   if (!scriptPath) {
@@ -625,8 +646,7 @@ function runOg(args) {
     console.error("  expected at one of:\n  " + candidates.join("\n  "));
     process.exit(1);
   }
-  const env = { ...process.env, OG_OUT: args.output };
-  const r = spawnSync("python3", [scriptPath], { stdio: "inherit", env, cwd: process.cwd() });
+  const r = spawnSync("python3", [scriptPath, "--output", args.output], { stdio: "inherit", cwd: process.cwd() });
   if (r.error && r.error.code === "ENOENT") {
     console.error("× python3 not found in PATH. Install Python 3.9+ to use `tokenfolio og`.");
     process.exit(1);
@@ -634,10 +654,84 @@ function runOg(args) {
   process.exit(r.status || 0);
 }
 
+// ─── brand: rewrite hardcoded site URL in template HTMLs ──────────────────
+
+function detectSiteUrl() {
+  const remote = gitRemoteUrl();
+  if (!remote) return "";
+  // Match either git@github.com:user/repo(.git) or https://github.com/user/repo(.git)
+  const m = remote.match(/[:/]([^/:]+)\/([^/]+?)(?:\.git)?\/?$/);
+  if (!m) return "";
+  return `https://${m[1]}.github.io/${m[2]}/`;
+}
+
+function rebrandTemplates(siteUrl) {
+  const newBase = siteUrl.replace(/\/$/, "");
+  const cwd = process.cwd();
+  const targets = [
+    join(cwd, "index.html"),
+    ...TEMPLATE_DIRS.map(n => join(cwd, "templates", n, "index.html"))
+  ];
+  let touched = 0;
+  for (const file of targets) {
+    if (!existsSync(file)) continue;
+    const text = readFileSync(file, "utf8");
+    if (!text.includes(ORIGINAL_SITE)) continue;
+    const next = text.split(ORIGINAL_SITE).join(newBase);
+    if (next === text) continue;
+    writeFileSync(file, next, "utf8");
+    touched++;
+  }
+  return touched;
+}
+
+function runBrand(args) {
+  let siteUrl = args.overrides.siteUrl || detectSiteUrl();
+  if (!siteUrl) {
+    console.error("× could not detect site URL.");
+    console.error("  pass it explicitly:");
+    console.error("    tokenfolio brand --site-url https://you.github.io/tokenfolio/");
+    process.exit(1);
+  }
+  if (!siteUrl.endsWith("/")) siteUrl += "/";
+  const newBase = siteUrl.replace(/\/$/, "");
+  if (newBase === ORIGINAL_SITE) {
+    console.error(`▸ already pointing at ${siteUrl} — nothing to do.`);
+    return;
+  }
+  console.error(`▸ rebrand template og:meta → ${siteUrl}`);
+  const touched = rebrandTemplates(siteUrl);
+  if (touched === 0) {
+    console.error(`  no template files in cwd (or no \`${ORIGINAL_SITE}\` references found).`);
+  } else {
+    console.error(`✓ rewrote ${touched} file(s)`);
+  }
+}
+
+// ─── output safety ────────────────────────────────────────────────────────
+
+function checkOutputPath(p) {
+  // Default cwd-only output. If user passes anything outside cwd or absolute,
+  // print a warning so a copy-pasted command can't silently scribble over
+  // ~/.zshrc etc. We don't refuse — the user might genuinely want it.
+  const abs = isAbsolute(p) ? p : resolve(process.cwd(), p);
+  const rel = relative(process.cwd(), abs);
+  if (rel.startsWith("..") || isAbsolute(p)) {
+    console.error(`! warning: --output "${p}" resolves outside the current directory:`);
+    console.error(`  → ${abs}`);
+    console.error(`  proceed only if you trust the source of this command.`);
+  }
+}
+
+// ─── main ─────────────────────────────────────────────────────────────────
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (args.cmd === "og") { runOg(args); return; }
 
+  if (args.cmd === "brand") { runBrand(args); return; }
+  if (args.cmd === "og")    { checkOutputPath(args.output); runOg(args); return; }
+
+  // === init ===
   const year = args.year;
   console.error(`▸ tokenfolio init · year ${year} · source ${args.source}`);
 
@@ -695,6 +789,8 @@ window.RESUME_FMT = {
     process.stdout.write(js);
     return;
   }
+
+  checkOutputPath(args.output);
   if (existsSync(args.output) && !args.force) {
     console.error(`× ${args.output} exists. Use --force to overwrite.`);
     process.exit(1);
@@ -702,6 +798,18 @@ window.RESUME_FMT = {
   writeFileSync(args.output, js, "utf8");
   console.error(`✓ wrote ${args.output} (${js.length} bytes)`);
   console.error(`  ${data.totals.tokens.toLocaleString("en-US")} tokens · ${data.totals.sessions} sessions · ${data.top_projects.length} projects`);
+
+  // Best-effort auto-rebrand: if the user has a git remote and it's not
+  // pointing at the upstream tt-a1i repo, also rewrite the templates'
+  // hardcoded og:meta so social shares show the user's deploy URL.
+  const inferred = detectSiteUrl();
+  if (inferred && !inferred.startsWith(ORIGINAL_SITE)) {
+    const touched = rebrandTemplates(inferred);
+    if (touched > 0) {
+      console.error(`▸ also rebranded ${touched} template og:meta → ${inferred}`);
+      console.error(`  (run \`tokenfolio brand --site-url …\` to override)`);
+    }
+  }
 }
 
 main();

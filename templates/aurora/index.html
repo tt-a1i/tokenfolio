@@ -543,6 +543,12 @@
 (function () {
   const D = window.RESUME_DATA;
   const F = window.RESUME_FMT;
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
   // ── Year
   document.getElementById('year').textContent = D.year;
@@ -586,7 +592,7 @@
         <div class="mini-bar-wrap">
           <div class="mini-bar" style="width:${pct}%"></div>
         </div>
-        <div class="month-note">${m.note}</div>
+        <div class="month-note">${esc(m.note)}</div>
         <div class="month-sessions">${m.sessions} sessions</div>
       </div>`;
   }).join('');
@@ -603,7 +609,7 @@
             box-shadow: 0 0 28px ${m.color}99, 0 0 56px ${m.color}44;
           "></div>
         </div>
-        <div class="model-name">${m.name}</div>
+        <div class="model-name">${esc(m.name)}</div>
         <div class="model-pct" style="color:${m.color}">${pct}%</div>
         <div class="model-meta">${F.num(m.tokens)} · ${m.sessions} sessions</div>
       </div>`;
@@ -615,11 +621,11 @@
   }
   document.getElementById('projects-list').innerHTML = D.top_projects.map((p, i) => `
     <div class="glass proj-card">
-      <div class="proj-icon">${projInitial(p.name)}</div>
+      <div class="proj-icon">${esc(projInitial(p.name))}</div>
       <div class="proj-body">
-        <div class="proj-name">${p.name}</div>
-        <div class="proj-desc">${p.description}</div>
-        <span class="proj-lang">${p.language}</span>
+        <div class="proj-name">${esc(p.name)}</div>
+        <div class="proj-desc">${esc(p.description)}</div>
+        <span class="proj-lang">${esc(p.language)}</span>
       </div>
       <div class="proj-stats">
         <div class="proj-tokens">${F.num(p.tokens)}</div>
@@ -631,9 +637,9 @@
   // ── Highlights
   document.getElementById('hi-grid').innerHTML = D.highlights.map(h => `
     <div class="glass hi-card">
-      <div class="hi-label">${h.label}</div>
-      <div class="hi-value">${h.value}</div>
-      <div class="hi-detail">${h.detail}</div>
+      <div class="hi-label">${esc(h.label)}</div>
+      <div class="hi-value">${esc(h.value)}</div>
+      <div class="hi-detail">${esc(h.detail)}</div>
     </div>
   `).join('');
 

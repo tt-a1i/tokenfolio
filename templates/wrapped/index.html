@@ -291,6 +291,12 @@
 (function() {
   const D = window.RESUME_DATA;
   const F = window.RESUME_FMT;
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
   // hero
   document.getElementById('hero-num').innerHTML =
@@ -318,7 +324,7 @@
   const peak = D.by_month.find(m => m.peak) || D.by_month.reduce((a,b) => a.tokens > b.tokens ? a : b);
   document.getElementById('peak-h').textContent = peak.label + '.';
   document.getElementById('peak-body').innerHTML =
-    `Your busiest month — <em>${F.num(peak.tokens)}</em> tokens across <em>${peak.sessions}</em> sessions, mostly on <em>${peak.top_project}</em>.`;
+    `Your busiest month — <em>${F.num(peak.tokens)}</em> tokens across <em>${peak.sessions}</em> sessions, mostly on <em>${esc(peak.top_project)}</em>.`;
 
   // models
   const totModelTok = D.by_model.reduce((s, m) => s + m.tokens, 0);
@@ -326,7 +332,7 @@
     const pct = (m.tokens / totModelTok * 100).toFixed(0);
     return `
       <div class="model-row">
-        <div class="nm">${m.name}<small>${m.sessions} sessions</small></div>
+        <div class="nm">${esc(m.name)}<small>${m.sessions} sessions</small></div>
         <div class="v">${F.num(m.tokens)}<small>${pct}%</small></div>
         <div class="model-bar"><div style="width:${pct}%"></div></div>
       </div>`;
@@ -337,8 +343,8 @@
     <div class="proj-row">
       <div class="rank">${String(i + 1).padStart(2, '0')}</div>
       <div>
-        <div class="nm">${p.name}</div>
-        <div class="desc">${p.description}</div>
+        <div class="nm">${esc(p.name)}</div>
+        <div class="desc">${esc(p.description)}</div>
       </div>
       <div class="v">${F.num(p.tokens)}<small>${p.sessions} sess</small></div>
     </div>
@@ -347,9 +353,9 @@
   // highlights
   document.getElementById('hi-grid').innerHTML = D.highlights.map(h => `
     <div class="hi-card">
-      <div class="l">${h.label}</div>
-      <div class="v">${h.value}</div>
-      <div class="d">${h.detail}</div>
+      <div class="l">${esc(h.label)}</div>
+      <div class="v">${esc(h.value)}</div>
+      <div class="d">${esc(h.detail)}</div>
     </div>
   `).join('');
 })();

@@ -1,10 +1,17 @@
 /**
- * Sample data for tokenfolio templates.
- * Replace the values below with your own — the templates read `window.RESUME_DATA`
- * and `window.RESUME_FMT` to render. The shape is documented in README.md.
+ * Sample data for tokenfolio templates (the persona below — Ada Lovelace —
+ * is fictional; replace it with your own).
  *
- * In a future release, `tokenfolio init` will auto-generate this file from
- * your local Claude Code / Codex usage logs.
+ * Three ways to populate this file:
+ *   1.  `tokenfolio init`         — auto-extract from local Claude Code +
+ *                                    Codex logs (recommended)
+ *   2.  Hand-edit                  — keep the same shape as below
+ *   3.  Use a different AI tool    — see README "Hand-editing" section for
+ *                                    where token counts live in Cursor /
+ *                                    GitHub Copilot / Aider
+ *
+ * Templates read `window.RESUME_DATA` and `window.RESUME_FMT`. The shape
+ * is documented in README.md.
  */
 window.RESUME_DATA = {
   user: {

@@ -826,6 +826,12 @@ body {
   'use strict';
   const D = window.RESUME_DATA;
   const F = window.RESUME_FMT;
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
   /* ── hero stripe ── */
   document.getElementById('hero-name').textContent = D.user.name;
@@ -859,8 +865,8 @@ body {
   ];
   document.getElementById('card-stats').innerHTML = statsData.map(s =>
     `<div class="stat-item">
-      <div class="stat-label">${s.label}</div>
-      <div class="stat-value">${s.value}${s.note ? `<small>${s.note}</small>` : ''}</div>
+      <div class="stat-label">${esc(s.label)}</div>
+      <div class="stat-value">${esc(s.value)}${s.note ? `<small>${esc(s.note)}</small>` : ''}</div>
     </div>`
   ).join('');
 
@@ -924,7 +930,7 @@ body {
   document.getElementById('model-list').innerHTML = D.by_model.map(m => {
     const pct = (m.tokens / totModelTok * 100).toFixed(0);
     return `<div class="model-item">
-      <div class="model-name">${m.name}<small>${m.sessions} sessions · ${pct}%</small></div>
+      <div class="model-name">${esc(m.name)}<small>${m.sessions} sessions · ${pct}%</small></div>
       <div class="model-tokens" style="color:${m.color}">${F.num(m.tokens)}</div>
       <div class="model-bar-row"><div class="model-bar-fill" style="width:${pct}%;background:${m.color};opacity:0.85"></div></div>
     </div>`;
@@ -934,8 +940,8 @@ body {
   document.getElementById('roster-grid').innerHTML = D.top_projects.map((p, i) =>
     `<div class="roster-card">
       <div class="roster-rank">#${String(i + 1).padStart(2, '0')}</div>
-      <div class="roster-name" title="${p.name}">${p.name}</div>
-      <div class="roster-lang">${p.language}</div>
+      <div class="roster-name" title="${esc(p.name)}">${esc(p.name)}</div>
+      <div class="roster-lang">${esc(p.language)}</div>
       <div class="roster-tokens">${F.num(p.tokens)}<small> · ${p.sessions} sess</small></div>
     </div>`
   ).join('');
@@ -943,9 +949,9 @@ body {
   /* ── highlights ── */
   document.getElementById('hi-grid').innerHTML = D.highlights.map(h =>
     `<div class="hi-badge">
-      <div class="hi-label">${h.label}</div>
-      <div class="hi-value">${h.value}</div>
-      <div class="hi-detail">${h.detail}</div>
+      <div class="hi-label">${esc(h.label)}</div>
+      <div class="hi-value">${esc(h.value)}</div>
+      <div class="hi-detail">${esc(h.detail)}</div>
     </div>`
   ).join('');
 

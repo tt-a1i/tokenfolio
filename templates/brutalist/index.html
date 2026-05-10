@@ -1083,6 +1083,12 @@ body {
 (function () {
   const D = window.RESUME_DATA;
   const F = window.RESUME_FMT;
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
 
   /* ── HERO ── */
   const tokM = Math.round(D.totals.tokens / 1e6);
@@ -1158,7 +1164,7 @@ body {
     return '<div class="model-row">' +
       '<div class="model-rank">0' + (i + 1) + '</div>' +
       '<div class="model-info">' +
-        '<div class="model-name">' + m.name.toUpperCase() + '</div>' +
+        '<div class="model-name">' + esc(m.name.toUpperCase()) + '</div>' +
         '<div class="model-bar-track"><div class="model-bar-fill" style="width:' + pct + '%"></div></div>' +
         '<div class="model-sessions">' + m.sessions + ' SESSIONS · ' + F.num(m.tokens) + '</div>' +
       '</div>' +
@@ -1176,9 +1182,9 @@ body {
     return '<div class="project-card">' +
       '<div class="project-rank">0' + (i + 1) + '</div>' +
       '<div class="project-info">' +
-        '<div class="proj-name">' + p.name.toUpperCase() + '</div>' +
-        '<div class="proj-desc">' + p.description + '</div>' +
-        '<span class="proj-lang">' + p.language + '</span>' +
+        '<div class="proj-name">' + esc(p.name.toUpperCase()) + '</div>' +
+        '<div class="proj-desc">' + esc(p.description) + '</div>' +
+        '<span class="proj-lang">' + esc(p.language) + '</span>' +
       '</div>' +
       '<div class="project-tokens">' +
         '<div class="proj-tok">' + F.num(p.tokens) + '</div>' +
@@ -1191,10 +1197,10 @@ body {
   document.getElementById('highlight-list').innerHTML = D.highlights.map(function (h) {
     return '<div class="highlight-item">' +
       '<div class="hl-slogan">' +
-        h.label.toUpperCase() + ': ' +
-        '<span class="hl-value">' + h.value.toUpperCase() + '.</span>' +
+        esc(h.label.toUpperCase()) + ': ' +
+        '<span class="hl-value">' + esc(h.value.toUpperCase()) + '.</span>' +
       '</div>' +
-      '<div class="hl-detail">' + h.detail + '</div>' +
+      '<div class="hl-detail">' + esc(h.detail) + '</div>' +
       '</div>';
   }).join('');
 
