@@ -132,11 +132,11 @@
   }
   .hero-num {
     font-family: 'Fraunces', Georgia, serif;
-    font-weight: 200;
+    font-weight: 300;
     font-size: clamp(72px, 14vw, 136px);
     line-height: 0.88;
     letter-spacing: -0.04em;
-    background: linear-gradient(150deg, #fff 10%, var(--violet) 55%, var(--blue) 90%);
+    background: linear-gradient(150deg, #fff 10%, var(--violet) 55%, #fff 90%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -157,6 +157,7 @@
     align-items: center;
     gap: 6px;
     padding: 20px 36px;
+    border: 1px solid rgba(192,132,252,0.35);
   }
   .hero-name {
     font-size: 17px;
@@ -474,7 +475,7 @@
   }
 </style>
 </head>
-<body>
+<body data-tf-capture="main">
 
 <div class="aurora-bg"></div>
 
@@ -645,5 +646,6 @@
 
 })();
 </script>
+<script src="../../share.js" defer></script>
 </body>
 </html>

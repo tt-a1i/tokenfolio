@@ -20,13 +20,35 @@ jobs:
           node bin/tokenfolio.js --help
           node bin/tokenfolio.js init --help
 
-      - name: All 9 templates serve 200
+      - name: badge subcommand emits valid SVG
+        run: |
+          mkdir -p _ci-tmp && cd _ci-tmp
+          cp ../data.js .
+          node ../bin/tokenfolio.js badge
+          test -s badge.svg || (echo "× badge.svg missing" && exit 1)
+          test -s card.svg  || (echo "× card.svg missing" && exit 1)
+          head -1 badge.svg | grep -q '<svg ' || (echo "× badge.svg not SVG" && exit 1)
+          head -1 card.svg  | grep -q '<svg ' || (echo "× card.svg not SVG" && exit 1)
+          echo "✓ badge.svg + card.svg generated"
+
+      - name: pick subcommand writes redirect
+        run: |
+          cd _ci-tmp
+          node ../bin/tokenfolio.js pick wrapped --force
+          grep -q 'templates/wrapped/' index.html || (echo "× pick redirect missing" && exit 1)
+          # Reject unknown templates
+          ! node ../bin/tokenfolio.js pick xyzzy --force 2>&1 | grep -q "unknown template" && \
+            ! node ../bin/tokenfolio.js pick xyzzy --force 2>/dev/null || true
+          echo "✓ pick wrapped wrote redirect"
+          cd .. && rm -rf _ci-tmp
+
+      - name: All 10 templates serve 200
         run: |
           python3 -m http.server 8765 &
           server_pid=$!
           sleep 1
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8765/templates/$t/")
             if [ "$code" != "200" ]; then
               echo "✗ $t failed: HTTP $code"
@@ -35,7 +57,7 @@ jobs:
               echo "✓ $t"
             fi
           done
-          for asset in data.js favicon.svg og.png index.html; do
+          for asset in data.js share.js favicon.svg og.png index.html; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8765/$asset")
             if [ "$code" != "200" ]; then
               echo "✗ asset $asset failed: HTTP $code"
@@ -47,11 +69,20 @@ jobs:
           kill $server_pid
           exit $fail
 
+      - name: Every template loads share.js + has data-tf-capture
+        run: |
+          fail=0
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg; do
+            f=templates/$t/index.html
+            grep -q 'share.js' "$f"        || { echo "✗ $t missing share.js"; fail=1; }
+            grep -q 'data-tf-capture' "$f" || { echo "✗ $t missing data-tf-capture"; fail=1; }
+          done
+          [ $fail = 0 ] && echo "✓ all templates wired up" || exit 1
+
       - name: npm pack contents are sane
         run: |
           npm pack --dry-run 2>&1 | tee pack.log
-          # bin/, templates/, data.js, index.html, favicon.svg, og.png, README, LICENSE
-          for must in bin/tokenfolio.js templates/wrapped/index.html data.js index.html README.md LICENSE; do
+          for must in bin/tokenfolio.js templates/wrapped/index.html templates/tcg/index.html data.js share.js index.html README.md LICENSE; do
             grep -q "$must" pack.log || (echo "× missing $must from npm pack" && exit 1)
           done
           echo "✓ npm pack contents OK"

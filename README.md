@@ -13,7 +13,9 @@
 
 **在线 Demo：** https://tt-a1i.github.io/tokenfolio/
 
-## 模板（9 个，更多持续加）
+> 🆕 **v0.6**：每个模板右下角内置「截图为 PNG / 一键分享」按钮，右上角带 "Built with tokenfolio" 徽章（截图也能看到）。新增 `tokenfolio badge` 把成绩做成 SVG 直接贴到 GitHub profile README，新增 `tokenfolio pick <template>` 一行命令选首页，新增第 10 个模板 **TCG**（宝可梦风格收藏卡）。
+
+## 模板（10 个，更多持续加）
 
 | | 名字 | 风格 |
 |---|---|---|
@@ -26,8 +28,18 @@
 | 🎮 | **pixel**     | 8-bit RPG 角色卡：HP/MP 条 + 星级属性 + 任务日志，「按 A 招募我」 |
 | ✈️ | **pass**      | 80 年代航空登机牌：穿孔 + 条形码 + 月度护照盖章，复古收藏感 |
 | 🟨 | **brutalist** | 瑞士 + Wired 风：黄黑红三色块、Helvetica Black 200px、不对称 grid |
+| 🃏 | **tcg**       | 宝可梦风格收藏卡：金边 + 紫色 psychic 框 + 攻击表 + 鼠标跟随 foil（**新**） |
 
 欢迎 PR 新模板。
+
+## 内置分享（v0.6 起）
+
+每个模板都自带：
+
+- **右下角 FAB**：💾 Save as PNG（用 html2canvas 把当前页面导出为 PNG，文件名自动带你的 handle）+ 🔗 Share（移动端调起原生分享面板，桌面端弹 X intent）
+- **右上角徽章**：`● Built with tokenfolio`，截图后也带得走，等于每张分享图都是一个「源链接」
+
+不喜欢可以在 `<body>` 上加 `data-tf-fab="false"` / `data-tf-chip="false"` 关掉。
 
 ## 快速开始
 
@@ -87,15 +99,38 @@ python3 -m http.server 8765
 open http://localhost:8765
 ```
 
-### 用某个模板作为首页
+### 用某个模板作为首页 · `tokenfolio pick`
 
-默认根 `index.html` 是 9 个模板的画廊。选定一个之后，**最简单**的方法是在根目录 `index.html` 用一行重定向：
+默认根 `index.html` 是 10 个模板的画廊。挑一个作为正式首页：
 
-```html
-<meta http-equiv="refresh" content="0; url=templates/wrapped/">
+```bash
+npx tokenfolio pick wrapped --force
+# 写入根 index.html，重定向到 templates/wrapped/
+# git add index.html && git commit -m "pick wrapped"
 ```
 
-> ⚠️ **不要直接把模板文件复制到根目录** — 模板里的 `<script src="../../data.js">` 是相对路径，复制到根后会变成 404。如果非要复制，记得把所有 `../../data.js` 改成 `./data.js`。
+可选模板：`wrapped` / `cosmos` / `almanac` / `terminal` / `aurora` / `holo` / `pixel` / `pass` / `brutalist` / `tcg`。
+
+> ⚠️ **不要直接把模板文件复制到根目录** — 模板里的 `<script src="../../data.js">` 是相对路径，复制到根后会变成 404。`tokenfolio pick` 用重定向规避了这个问题。
+
+### GitHub Profile 徽章 · `tokenfolio badge`
+
+跑完 `init` 后，把成绩做成 SVG，贴到你的 GitHub profile README：
+
+```bash
+npx tokenfolio badge
+# → 写入 ./badge.svg（shields 风小徽章）+ ./card.svg（github-readme-stats 风大卡片，带月度 sparkline）
+# CLI 会输出可直接粘贴的 markdown 片段
+```
+
+效果（贴在你 profile 顶部）：
+
+```markdown
+[![tokenfolio](https://raw.githubusercontent.com/<you>/<your-repo>/main/badge.svg)](https://<you>.github.io/<your-repo>/)
+[![tokenfolio card](https://raw.githubusercontent.com/<you>/<your-repo>/main/card.svg)](https://<you>.github.io/<your-repo>/)
+```
+
+每次重新 `tokenfolio init && tokenfolio badge && git push`，徽章和卡片就刷新一次。纯静态、零服务端、零依赖。
 
 ### 不用 Claude / Codex？手填 `data.js`
 
@@ -128,17 +163,20 @@ window.RESUME_DATA = {
 
 ## 路线图
 
-- [x] 9 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist）
+- [x] 10 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist / tcg）
 - [x] `tokenfolio init` CLI · Claude Code（通过 ccusage）
 - [x] CLI · Codex（`~/.codex/sessions/`）
 - [x] CLI · `tokenfolio og` 个性化 OG 图（Pillow）
+- [x] CLI · `tokenfolio badge` README 徽章 + 大卡片（纯 Node，零依赖）
+- [x] CLI · `tokenfolio pick <template>` 选首页
+- [x] 模板 PNG 导出 + 一键社交分享（v0.6 内置）
 - [x] README 中英双语
 - [ ] CLI · Cursor / Aider / Continue.dev
-- [ ] 更多模板：synthwave / manga / trading-floor
+- [ ] 更多模板：synthwave / manga / trading-floor / vinyl
 - [ ] 边缘节点动态 OG（Vercel + Satori），让无 Python 环境的用户也能用
 - [ ] 模板暗 / 亮模式切换
-- [ ] 模板 PNG / PDF 导出
 - [ ] CLI 输出文案 i18n
+- [ ] GitHub Action：每月自动 `tokenfolio init` + commit + push
 
 ## 贡献
 

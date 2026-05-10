@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tokenfolio · trading card</title>
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="tokenfolio · trading card · @ada-lovelace">
+<meta property="og:description" content="A trading-card portrait of one engineer's year with the machine. 1 of 1.">
+<meta property="og:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<meta property="og:url" content="https://tt-a1i.github.io/tokenfolio/templates/tcg/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&family=Crimson+Pro:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --gold: #d4a437;
+    --gold-light: #f1c75c;
+    --gold-deep: #8a6620;
+    --psy: #6b1fa6;
+    --psy-deep: #2d0a4d;
+    --psy-light: #b78ff0;
+    --paper: #f4ecd8;
+    --table: #1c1410;
+    --table2: #34201a;
+  }
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--paper);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(120% 100% at 50% 0%, rgba(214,164,55,.08) 0%, transparent 60%),
+      radial-gradient(150% 100% at 50% 100%, rgba(45,10,77,.55) 0%, transparent 70%),
+      linear-gradient(180deg, var(--table) 0%, var(--table2) 60%, var(--table) 100%);
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(244,236,216,.04) 1px, transparent 1px);
+    background-size: 14px 14px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  main {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 36px 16px 60px;
+    perspective: 1500px;
+  }
+
+  /* ── Card outer (gold border) ───────────────────────────── */
+  .card {
+    width: clamp(340px, 46vw, 460px);
+    aspect-ratio: 2.5 / 3.5;
+    border-radius: 14px;
+    padding: 11px;
+    background:
+      linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-deep) 100%);
+    box-shadow:
+      0 30px 60px rgba(0,0,0,.55),
+      0 1px 0 rgba(255,255,255,.18) inset,
+      0 -1px 0 rgba(0,0,0,.3) inset;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform .22s ease;
+    isolation: isolate;
+    will-change: transform;
+  }
+
+  /* ── Card inner (psychic frame) ─────────────────────────── */
+  .inner {
+    width: 100%; height: 100%;
+    border-radius: 6px;
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.07), transparent 50%),
+      linear-gradient(180deg, #4a1880 0%, #2d0a4d 50%, #14082a 100%);
+    border: 1px solid rgba(0,0,0,.4);
+    padding: 10px 11px 9px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto auto auto;
+    gap: 7px;
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── Name bar ───────────────────────────────────────────── */
+  .name-bar {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; padding: 0 2px;
+  }
+  .name-bar .left { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .stage-tag {
+    flex: 0 0 auto;
+    font: 700 8px/1 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    color: rgba(244,236,216,.65);
+    border: 1px solid rgba(244,236,216,.22);
+    padding: 3px 5px;
+    border-radius: 3px;
+  }
+  .card-name {
+    margin: 0;
+    font: 700 clamp(18px, 4.4vw, 22px) / 1 'Cinzel', serif;
+    color: #fff;
+    letter-spacing: .01em;
+    text-shadow: 0 1px 0 rgba(0,0,0,.55);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .hp { display: flex; align-items: baseline; gap: 4px; flex: 0 0 auto; }
+  .hp b {
+    color: var(--gold-light);
+    font: 800 clamp(18px, 4.6vw, 22px) / 1 'Inter', sans-serif;
+    letter-spacing: -.01em;
+    text-shadow: 0 1px 0 rgba(0,0,0,.55);
+  }
+  .hp small {
+    font-size: 10px; font-weight: 800; letter-spacing: .12em;
+    color: rgba(244,236,216,.7);
+  }
+
+  /* ── Art frame ──────────────────────────────────────────── */
+  .art-frame {
+    position: relative;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #06081a 0%, #11052f 100%);
+    border: 2px solid rgba(0,0,0,.5);
+    box-shadow: inset 0 0 0 1px rgba(244,236,216,.06), 0 0 0 1px rgba(0,0,0,.3);
+    overflow: hidden;
+  }
+  .art-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(60% 50% at 50% 50%, rgba(183,143,240,.5) 0%, transparent 60%),
+      radial-gradient(40% 30% at 24% 30%, rgba(214,164,55,.3) 0%, transparent 55%),
+      radial-gradient(40% 30% at 76% 70%, rgba(56,189,248,.3) 0%, transparent 55%);
+    filter: blur(8px);
+  }
+  .art-orbit {
+    position: absolute;
+    border: 1px solid rgba(244,236,216,.16);
+    border-radius: 50%;
+  }
+  .art-orbit:nth-child(2) { inset: 8% -2%; transform: rotate(-12deg); }
+  .art-orbit:nth-child(3) { inset: 18% 8%;  transform: rotate(22deg);  border-color: rgba(214,164,55,.22); }
+  .art-orbit:nth-child(4) { inset: 30% 18%; transform: rotate(-40deg); border-color: rgba(56,189,248,.18); }
+  .art-stars { position: absolute; inset: 0; }
+  .art-stars i {
+    position: absolute;
+    width: 2px; height: 2px;
+    border-radius: 50%;
+    background: rgba(244,236,216,.7);
+    box-shadow: 0 0 4px rgba(244,236,216,.5);
+  }
+  .art-core {
+    position: absolute; left: 50%; top: 50%;
+    width: 38%; aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, #fff 0%, var(--psy-light) 28%, var(--psy) 60%, transparent 78%);
+    box-shadow: 0 0 40px rgba(183,143,240,.6);
+  }
+  .art-core::after {
+    content: "{ }";
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    color: rgba(20,8,42,.85);
+    font: 800 18px/1 'JetBrains Mono', monospace;
+    letter-spacing: .04em;
+  }
+  .art-glyph {
+    position: absolute; bottom: 6px; right: 8px;
+    font: 700 10px/1 'JetBrains Mono', monospace;
+    color: rgba(244,236,216,.55);
+    letter-spacing: .14em;
+  }
+  .art-illust {
+    position: absolute; bottom: 4px; left: 8px;
+    font: 500 8px/1 'Inter', sans-serif;
+    color: rgba(244,236,216,.4);
+    text-transform: uppercase; letter-spacing: .14em;
+  }
+
+  /* ── Meta line ──────────────────────────────────────────── */
+  .meta-line {
+    display: flex; justify-content: space-between; gap: 8px;
+    padding: 5px 6px;
+    background: linear-gradient(90deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.22) 100%);
+    border-top: 1px solid rgba(244,236,216,.08);
+    border-bottom: 1px solid rgba(244,236,216,.08);
+    font: 500 9px/1.2 'Inter', sans-serif;
+    color: rgba(244,236,216,.78);
+    letter-spacing: .04em;
+  }
+  .meta-line em { font-style: italic; color: rgba(244,236,216,.55); }
+
+  /* ── Attacks ────────────────────────────────────────────── */
+  .attacks { display: flex; flex-direction: column; gap: 6px; }
+  .attack {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 9px; align-items: center;
+    padding: 5px 4px;
+    border-bottom: 1px dashed rgba(244,236,216,.16);
+  }
+  .attack:last-child { border-bottom: none; }
+  .attack-cost { display: flex; gap: 2px; }
+  .energy {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,.4);
+    box-shadow: inset 0 0 4px rgba(0,0,0,.55), 0 0 0 1px rgba(244,236,216,.08);
+  }
+  .energy.opus      { background: radial-gradient(closest-side, #e0c0ff 0%, #c084fc 70%); }
+  .energy.sonnet    { background: radial-gradient(closest-side, #cfe5ff 0%, #4facff 70%); }
+  .energy.haiku     { background: radial-gradient(closest-side, #d8f0a0 0%, #a6e22e 70%); }
+  .energy.codex     { background: radial-gradient(closest-side, #80e0c0 0%, #10a37f 70%); }
+  .energy.colorless { background: radial-gradient(closest-side, #fff 0%, #b8b3c0 70%); }
+  .attack-body { min-width: 0; }
+  .attack-name {
+    font: 700 13px/1.2 'Inter', sans-serif;
+    color: #fff;
+    margin: 0 0 2px;
+  }
+  .attack-text {
+    font: 400 10px/1.4 'Inter', sans-serif;
+    color: rgba(244,236,216,.78);
+    margin: 0;
+  }
+  .attack-text b { color: var(--gold-light); font-weight: 700; }
+  .attack-power {
+    font: 800 18px/1 'Inter', sans-serif;
+    color: var(--gold-light);
+    text-shadow: 0 1px 0 rgba(0,0,0,.55);
+    letter-spacing: -.01em;
+    flex: 0 0 auto;
+  }
+
+  /* ── Stats row ──────────────────────────────────────────── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    padding: 5px 6px;
+    background: linear-gradient(90deg, rgba(0,0,0,.45), rgba(0,0,0,.22));
+    border-top: 1px solid rgba(244,236,216,.08);
+    border-bottom: 1px solid rgba(244,236,216,.08);
+  }
+  .stat { display: flex; flex-direction: column; gap: 2px; text-align: center; }
+  .stat span {
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: rgba(244,236,216,.55);
+    font: 700 8px/1 'Inter', sans-serif;
+  }
+  .stat b { color: #fff; font: 600 11px/1 'Inter', sans-serif; }
+
+  /* ── Flavor + footer ────────────────────────────────────── */
+  .flavor {
+    margin: 0;
+    padding: 4px 6px 0;
+    font: italic 500 9.5px/1.4 'Crimson Pro', serif;
+    color: rgba(244,236,216,.72);
+  }
+  .footer-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 4px 0;
+    font: 500 8px/1 'Inter', sans-serif;
+    color: rgba(244,236,216,.5);
+    letter-spacing: .04em;
+  }
+  .set-symbol {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--gold-light) 0%, var(--gold) 60%, transparent 80%);
+    box-shadow: inset 0 0 4px rgba(0,0,0,.4);
+  }
+  .footer-bar .number {
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(244,236,216,.78);
+    text-align: center;
+  }
+  .footer-bar .illustrator {
+    font-style: italic;
+    color: rgba(244,236,216,.45);
+    text-align: right;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* ── Foil overlay (mouse-driven) ────────────────────────── */
+  .foil {
+    position: absolute; inset: 0;
+    border-radius: 14px;
+    pointer-events: none;
+    background:
+      conic-gradient(
+        from var(--angle, 0deg),
+        transparent 0deg,
+        rgba(255,255,255,.08) 60deg,
+        transparent 140deg,
+        rgba(183,143,240,.06) 220deg,
+        transparent 320deg,
+        rgba(214,164,55,.05) 360deg
+      );
+    mix-blend-mode: screen;
+    opacity: .65;
+    z-index: 2;
+  }
+  .glare {
+    position: absolute; inset: 0;
+    border-radius: 14px;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        220px 180px at var(--mx, 50%) var(--my, 30%),
+        rgba(255,255,255,.18) 0%,
+        rgba(255,255,255,.05) 35%,
+        transparent 70%
+      );
+    mix-blend-mode: overlay;
+    opacity: 0;
+    transition: opacity .25s ease;
+    z-index: 3;
+  }
+  .card:hover .glare { opacity: 1; }
+
+  /* ── Caption / context ──────────────────────────────────── */
+  .caption {
+    margin: 24px 0 0;
+    font: 500 12px/1.4 'Inter', sans-serif;
+    color: rgba(244,236,216,.55);
+    text-align: center;
+  }
+  .caption code {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold-light);
+    background: rgba(0,0,0,.35);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  @media (max-width: 540px) {
+    .card { width: 92vw; }
+    .card-name { font-size: 18px; }
+  }
+</style>
+</head>
+<body data-tf-capture=".card">
+
+<main>
+  <article class="card" id="card">
+    <div class="foil" id="foil"></div>
+    <div class="glare" id="glare"></div>
+
+    <div class="inner">
+      <header class="name-bar">
+        <div class="left">
+          <span class="stage-tag" id="stage">STAGE 2</span>
+          <h1 class="card-name" id="name"></h1>
+        </div>
+        <span class="hp"><b id="hp"></b><small>HP</small></span>
+      </header>
+
+      <div class="art-frame">
+        <div class="art-bg"></div>
+        <div class="art-orbit"></div>
+        <div class="art-orbit"></div>
+        <div class="art-orbit"></div>
+        <div class="art-stars" id="stars"></div>
+        <div class="art-core"></div>
+        <span class="art-illust" id="illust">CSS · ONE TAKE</span>
+        <span class="art-glyph"  id="glyph">SCRY · 12</span>
+      </div>
+
+      <div class="meta-line">
+        <span id="evolves"></span>
+        <em id="weight"></em>
+      </div>
+
+      <div class="attacks" id="attacks"></div>
+
+      <div class="stats-row">
+        <div class="stat"><span>weakness</span><b id="weakness">⚡ ×2</b></div>
+        <div class="stat"><span>resistance</span><b id="resistance">🜄 −30</b></div>
+        <div class="stat"><span>retreat</span><b id="retreat">○ ○</b></div>
+      </div>
+
+      <p class="flavor"><span id="flavor"></span></p>
+
+      <footer class="footer-bar">
+        <span class="set-symbol" aria-hidden="true"></span>
+        <span class="number" id="number">001 / 001 ★</span>
+        <span class="illustrator" id="byline">illus. tokenfolio</span>
+      </footer>
+    </div>
+  </article>
+
+  <p class="caption">Hover to foil. Drag, screenshot, share. Run <code>npx tokenfolio init</code> to mint yours.</p>
+</main>
+
+<script src="../../data.js"></script>
+<script>
+(function () {
+  const D = window.RESUME_DATA || {};
+  const F = window.RESUME_FMT || { num: x => String(x), pct: () => "0%" };
+
+  function esc(s) {
+    if (s == null) return "";
+    return String(s).replace(/[&<>"']/g, c => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+    ));
+  }
+
+  function pickEnergy(model) {
+    const m = (model || "").toLowerCase();
+    if (m.includes("opus"))   return "opus";
+    if (m.includes("sonnet")) return "sonnet";
+    if (m.includes("haiku"))  return "haiku";
+    if (m.includes("codex") || m.includes("gpt") || /(^|\W)o[134]/.test(m)) return "codex";
+    return "colorless";
+  }
+
+  function $(id) { return document.getElementById(id); }
+
+  const u = D.user || {};
+  const totals = D.totals || {};
+  const months = D.by_month || [];
+  const models = D.by_model || [];
+  const projects = D.top_projects || [];
+
+  // Header
+  $("name").textContent = u.name || "Untitled";
+  $("hp").textContent = F.num(totals.tokens || 0);
+  const sessions = totals.sessions || 0;
+  $("stage").textContent =
+    sessions >= 250 ? "STAGE 2"
+    : sessions >= 80 ? "STAGE 1"
+    : "BASIC";
+
+  // Meta line
+  $("evolves").textContent = "Evolves from " + (u.title || "Junior Engineer").toUpperCase();
+  $("weight").textContent =
+    "WT. " + sessions + " SESSIONS · " + (projects.length || 0) + " PROJECTS";
+
+  // Art glyph: peak month sigil
+  const peak = months.reduce((a, b) => (a?.tokens || 0) > (b?.tokens || 0) ? a : b, months[0] || { tokens: 0, label: "—" });
+  $("glyph").textContent = "PEAK · " + (peak.label || "").toUpperCase();
+  $("illust").textContent = (D.year || "") + " · ONE OF ONE";
+
+  // Attacks (top 2 models drive cost colors)
+  const attacks = $("attacks");
+  if (models.length === 0) {
+    attacks.innerHTML =
+      '<div class="attack"><div class="attack-cost"><span class="energy colorless"></span></div>' +
+      '<div class="attack-body"><h3 class="attack-name">No moves yet</h3>' +
+      '<p class="attack-text">Run <b>npx tokenfolio init</b> to evolve.</p></div></div>';
+  } else {
+    const m1 = models[0], m2 = models[1] || models[0];
+    const c1 = pickEnergy(m1.name), c2 = pickEnergy(m2.name);
+    const topProj = (projects[0] && projects[0].name) || "a project";
+    const totalFmt = F.num(totals.tokens || 0);
+    const avgFmt   = F.num(totals.avg_session_tokens || 0);
+
+    function dot(cls) { return '<span class="energy ' + cls + '" aria-label="' + esc(cls) + ' energy"></span>'; }
+
+    attacks.innerHTML =
+        '<div class="attack">'
+      +   '<div class="attack-cost">' + dot(c1) + dot(c1) + dot(c1) + '</div>'
+      +   '<div class="attack-body">'
+      +     '<h3 class="attack-name">Token Burst</h3>'
+      +     '<p class="attack-text">Deal damage equal to all your tokens this year. Inflict <b>FOMO</b> on every viewer.</p>'
+      +   '</div>'
+      +   '<span class="attack-power">' + esc(totalFmt) + '</span>'
+      + '</div>'
+      + '<div class="attack">'
+      +   '<div class="attack-cost">' + dot(c2) + dot(c2) + '</div>'
+      +   '<div class="attack-body">'
+      +     '<h3 class="attack-name">Sustained Build</h3>'
+      +     '<p class="attack-text">Heal <b>' + esc(avgFmt) + '</b> tokens per session. Move <b>' + esc(topProj) + '</b> one step closer to ship.</p>'
+      +   '</div>'
+      +   '<span class="attack-power">+' + esc(avgFmt) + '</span>'
+      + '</div>';
+  }
+
+  // Stats row — use top 2 model classes for thematic weakness/resistance icons
+  const w = pickEnergy(models[0]?.name);
+  const r = pickEnergy(models[models.length - 1]?.name || models[0]?.name);
+  const ICON = { opus: "⚛", sonnet: "♪", haiku: "✿", codex: "✦", colorless: "○" };
+  $("weakness").textContent   = (ICON[w] || "⚡") + " ×2";
+  $("resistance").textContent = (ICON[r] || "○") + " −30";
+  $("retreat").textContent    = "○ ○";
+
+  // Flavor: peak month note when present, otherwise a synthesized line
+  const flavor = peak && peak.note
+    ? "“" + peak.note + "”"
+    : "A monument to one engineer's working year, struck in " + (D.year || "");
+  $("flavor").textContent = flavor;
+
+  // Footer
+  $("number").textContent = "001 / 001 ★ · " + (D.year || "");
+  $("byline").textContent = "illus. tokenfolio · " + (u.handle || "@you");
+
+  // Stars in art zone (random scatter, deterministic-ish)
+  const stars = $("stars");
+  const html = [];
+  for (let i = 0; i < 22; i++) {
+    const x = (Math.random() * 100).toFixed(1);
+    const y = (Math.random() * 100).toFixed(1);
+    const o = (0.3 + Math.random() * 0.6).toFixed(2);
+    const sc = (0.6 + Math.random() * 1.4).toFixed(2);
+    html.push('<i style="left:' + x + '%;top:' + y + '%;opacity:' + o + ';transform:scale(' + sc + ')"></i>');
+  }
+  stars.innerHTML = html.join("");
+
+  // Mouse-tracked tilt + foil shine
+  const card = $("card");
+  const foil = $("foil");
+  const glare = $("glare");
+  const mainEl = document.querySelector("main");
+  let raf = null;
+
+  function onMove(e) {
+    const r = card.getBoundingClientRect();
+    const cx = (e.clientX - r.left) / r.width  - 0.5;
+    const cy = (e.clientY - r.top)  / r.height - 0.5;
+    const tiltX = (-cy * 10).toFixed(2);
+    const tiltY = ( cx * 12).toFixed(2);
+    const angle = ((Math.atan2(cy, cx) * 180 / Math.PI + 360) % 360).toFixed(0);
+    const mx = (((e.clientX - r.left) / r.width) * 100).toFixed(1);
+    const my = (((e.clientY - r.top)  / r.height) * 100).toFixed(1);
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      card.style.transform = "rotateX(" + tiltX + "deg) rotateY(" + tiltY + "deg)";
+      foil.style.setProperty("--angle", angle + "deg");
+      glare.style.setProperty("--mx", mx + "%");
+      glare.style.setProperty("--my", my + "%");
+    });
+  }
+  function onLeave() {
+    card.style.transform = "";
+    foil.style.setProperty("--angle", "0deg");
+  }
+  mainEl.addEventListener("mousemove", onMove);
+  mainEl.addEventListener("mouseleave", onLeave);
+})();
+</script>
+<script src="../../share.js" defer></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 {
   "name": "tokenfolio",
-  "version": "0.5.1",
-  "description": "An AI-usage portfolio generator. Drop in your numbers, deploy a page.",
+  "version": "0.6.0",
+  "description": "An AI-usage portfolio generator. 10 templates, one-tap PNG share, README SVG badges.",
   "homepage": "https://tt-a1i.github.io/tokenfolio/",
   "repository": {
     "type": "git",
@@ -20,10 +20,12 @@
     "scripts/",
     "templates/",
     "data.js",
+    "share.js",
     "index.html",
     "favicon.svg",
     "og.png",
     "README.md",
+    "README.en.md",
     "LICENSE"
   ],
   "engines": {

@@ -13,6 +13,8 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 
 **Live demo:** https://tt-a1i.github.io/tokenfolio/
 
+> 🆕 **v0.6** — every template now ships with a one-tap **PNG export + Web Share** button (bottom-right) and a "Built with tokenfolio" chip (top-right) that survives screenshot crops. New `tokenfolio badge` mints an SVG for your GitHub profile README. New `tokenfolio pick <template>` picks your homepage. New 10th template: **TCG** (Pokémon-style trading card).
+
 ## Templates
 
 | | name | vibe |
@@ -26,8 +28,18 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 | 🎮 | **pixel**     | An 8-bit RPG character sheet. HP/MP bars, star stats, quest log, "Press A to recruit" |
 | ✈️ | **pass**      | A 1980s airline boarding pass — perforations, barcode, passport stamps per month |
 | 🟨 | **brutalist** | Wired magazine cover meets 1968 protest poster. Helvetica Black 200px, hard edges |
+| 🃏 | **tcg**       | A Pokémon-style trading card. Gold border, psychic frame, attacks, mouse-tracked foil (**new**) |
 
 More coming. Contributions welcome.
+
+## Built-in sharing (v0.6+)
+
+Every template ships with:
+
+- **Bottom-right floating buttons**: 💾 Save as PNG (uses html2canvas to export the current view, filename includes your handle) + 🔗 Share (Web Share API on mobile, X intent fallback on desktop)
+- **Top-right chip**: `● Built with tokenfolio` — survives screenshot crops, so every shared image carries the source link
+
+Opt out by setting `data-tf-fab="false"` or `data-tf-chip="false"` on `<body>`.
 
 ## Quick start
 
@@ -87,15 +99,38 @@ python3 -m http.server 8765
 open http://localhost:8765
 ```
 
-### Pick one template as the homepage
+### Pick one template as the homepage (`tokenfolio pick`)
 
-The root `index.html` is a gallery of all templates. **Easiest way** to feature one: add a redirect line in the root `index.html`:
+The root `index.html` ships as a gallery of all 10 templates. To make one of them your real homepage:
 
-```html
-<meta http-equiv="refresh" content="0; url=templates/wrapped/">
+```bash
+npx tokenfolio pick wrapped --force
+# rewrites ./index.html as a redirect to templates/wrapped/
+# git add index.html && git commit -m "pick wrapped"
 ```
 
-> ⚠️ **Don't copy template files to the root directly** — they reference `<script src="../../data.js">` with a relative path. Copying to the root turns that into a 404. If you really must copy, also rewrite every `../../data.js` to `./data.js`.
+Available: `wrapped` / `cosmos` / `almanac` / `terminal` / `aurora` / `holo` / `pixel` / `pass` / `brutalist` / `tcg`.
+
+> ⚠️ **Don't copy template files to the root directly** — they reference `<script src="../../data.js">` with a relative path. Copying to the root turns that into a 404. `tokenfolio pick` uses a redirect to sidestep this.
+
+### GitHub profile badge (`tokenfolio badge`)
+
+After `init`, mint an SVG badge for your GitHub profile README:
+
+```bash
+npx tokenfolio badge
+# → writes ./badge.svg (shields-style) and ./card.svg (github-readme-stats-style with monthly sparkline)
+# CLI prints a markdown snippet ready to paste into your profile README
+```
+
+Effect (paste into your profile README):
+
+```markdown
+[![tokenfolio](https://raw.githubusercontent.com/<you>/<your-repo>/main/badge.svg)](https://<you>.github.io/<your-repo>/)
+[![tokenfolio card](https://raw.githubusercontent.com/<you>/<your-repo>/main/card.svg)](https://<you>.github.io/<your-repo>/)
+```
+
+Re-run `tokenfolio init && tokenfolio badge && git push` to refresh. Pure static, zero server, zero dependencies.
 
 ### Hand-editing `data.js` (when you don't use Claude / Codex)
 
@@ -128,17 +163,20 @@ Every template reads from the same data object. Switch templates with zero data 
 
 ## Roadmap
 
-- [x] 9 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist)
+- [x] 10 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist, tcg)
 - [x] `tokenfolio init` CLI for Claude Code (via ccusage)
 - [x] CLI: Codex (`~/.codex/sessions/`) parser
 - [x] CLI: `tokenfolio og` for personalized OG image (Pillow)
+- [x] CLI: `tokenfolio badge` README badge + sparkline card (pure Node, zero deps)
+- [x] CLI: `tokenfolio pick <template>` for homepage redirect
+- [x] In-page PNG export + one-tap social sharing (v0.6)
 - [x] Bilingual README (中 / EN)
 - [ ] CLI: Cursor / Aider / Continue.dev support (where token counts exist)
-- [ ] More templates: synthwave, manga, trading-floor
+- [ ] More templates: synthwave, manga, trading-floor, vinyl
 - [ ] Edge-rendered dynamic OG image (Vercel + Satori) for zero-install users
 - [ ] Dark/light mode toggle on each template
-- [ ] PNG/PDF export for sharing
 - [ ] CLI output i18n
+- [ ] GitHub Action: monthly auto `tokenfolio init` + commit + push
 
 ## Contributing
 

@@ -30,9 +30,9 @@
   body::before {
     content: ''; position: fixed; inset: 0;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(120,80,30,0.04) 1px, transparent 1px),
-      radial-gradient(circle at 70% 60%, rgba(120,80,30,0.04) 1px, transparent 1px),
-      radial-gradient(circle at 50% 80%, rgba(120,80,30,0.03) 1px, transparent 1px);
+      radial-gradient(circle at 20% 30%, rgba(120,80,30,0.09) 1px, transparent 1px),
+      radial-gradient(circle at 70% 60%, rgba(120,80,30,0.09) 1px, transparent 1px),
+      radial-gradient(circle at 50% 80%, rgba(120,80,30,0.09) 1px, transparent 1px);
     background-size: 7px 7px, 11px 11px, 5px 5px;
     pointer-events: none; z-index: 0;
   }
@@ -92,9 +92,10 @@
   }
   .lead h1 {
     font-family: 'Playfair Display', serif;
-    font-weight: 900; font-size: 70px;
+    font-weight: 900; font-size: clamp(72px, 12vw, 120px);
     line-height: 0.95;
     letter-spacing: -0.02em;
+    color: #8b0000;
   }
   .lead h1 em {
     font-style: italic; font-weight: 700;
@@ -315,7 +316,7 @@
   .colophon a { color: #1a1a1a; border-bottom: 1px solid #1a1a1a; text-decoration: none; }
 </style>
 </head>
-<body>
+<body data-tf-capture=".paper">
   <article class="paper">
 
     <header class="masthead">
@@ -448,5 +449,6 @@
   `).join('');
 })();
 </script>
+<script src="../../share.js" defer></script>
 </body>
 </html>

@@ -19,15 +19,18 @@ import { writeFileSync, existsSync, statSync, readdirSync, readFileSync } from "
 import { join, basename, dirname, resolve, isAbsolute, relative } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 
 // ─── help text + arg parsing ──────────────────────────────────────────────
 
-const HELP = `tokenfolio · generate data.js / og.png from your AI tool usage
+const HELP = `tokenfolio · generate data.js / og.png / svg badges from your AI tool usage
 
 USAGE
-  tokenfolio init  [options]    aggregate AI usage → data.js
-  tokenfolio og    [options]    render personalized og.png from data.js
-  tokenfolio brand [options]    point templates' og:meta at your deploy URL
+  tokenfolio init  [options]            aggregate AI usage → data.js
+  tokenfolio og    [options]            render personalized og.png from data.js
+  tokenfolio brand [options]            point templates' og:meta at your deploy URL
+  tokenfolio badge [options]            emit badge.svg + card.svg for your README
+  tokenfolio pick  <template> [--force] make <template> the homepage (rewrites index.html)
 
 INIT OPTIONS
   --source NAME      claude | codex | all   (default: all)
@@ -47,21 +50,33 @@ OG OPTIONS
 BRAND OPTIONS
   --site-url URL     deploy URL (default: inferred from \`git remote origin\`)
 
+BADGE OPTIONS
+  --input PATH       read from PATH         (default: ./data.js)
+  --output PATH      write badge to PATH    (default: ./badge.svg)
+  --card-output PATH write card  to PATH    (default: ./card.svg)
+  --no-card          skip the larger card.svg
+  --color HEX        accent colour          (default: #8b5cf6)
+
+PICK OPTIONS
+  --force            overwrite existing index.html
+
 GLOBAL
   -h, --help
 
 EXAMPLES
   tokenfolio init --dry
   tokenfolio init --year 2025 --force
-  tokenfolio init --source codex --year 2026 --dry
   tokenfolio og                                                    # writes ./og.png
   tokenfolio brand                                                 # auto-detect
-  tokenfolio brand --site-url https://you.github.io/tokenfolio/    # explicit
+  tokenfolio badge                                                 # writes badge.svg + card.svg
+  tokenfolio pick wrapped                                          # make wrapped your homepage
 
 REQUIREMENTS
   init:  Node ≥18; ccusage (auto-fetched via npx) for Claude Code source
   og:    Python 3.9+ with Pillow (\`pip install Pillow\`)
   brand: writes to template HTML files in cwd (idempotent)
+  badge: reads ./data.js (or --input); pure Node, no extra deps
+  pick:  writes ./index.html as a redirect to templates/<name>/
 
 PRIVACY
   Only numeric / path / date fields are read. Prompt content is never extracted.
@@ -86,7 +101,8 @@ const CODEX_ALLOWED_PAYLOAD_TYPES = new Set(["token_count", "turn_context"]);
 
 const TEMPLATE_DIRS = [
   "wrapped", "cosmos", "almanac", "terminal",
-  "aurora", "holo", "pixel", "pass", "brutalist"
+  "aurora", "holo", "pixel", "pass", "brutalist",
+  "tcg"
 ];
 
 function parseArgs(argv) {
@@ -95,6 +111,11 @@ function parseArgs(argv) {
     source: "all",
     year: new Date().getFullYear(),
     output: null,             // resolved per-cmd later
+    input: null,
+    cardOutput: "./card.svg",
+    skipCard: false,
+    color: "#8b5cf6",
+    template: "",             // for `pick`
     force: false,
     dry: false,
     overrides: {}
@@ -102,10 +123,14 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "-h" || a === "--help") { console.log(HELP); process.exit(0); }
-    else if (["init", "og", "brand"].includes(a)) o.cmd = a;
+    else if (["init", "og", "brand", "badge", "pick"].includes(a)) o.cmd = a;
     else if (a === "--source")        o.source = argv[++i];
     else if (a === "--year")          o.year = parseYearArg(argv[++i]);
     else if (a === "--output" || a === "-o") o.output = argv[++i];
+    else if (a === "--input")         o.input = argv[++i];
+    else if (a === "--card-output")   o.cardOutput = argv[++i];
+    else if (a === "--no-card")       o.skipCard = true;
+    else if (a === "--color")         o.color = argv[++i];
     else if (a === "--name")          o.overrides.name = argv[++i];
     else if (a === "--handle")        o.overrides.handle = argv[++i];
     else if (a === "--title")         o.overrides.title = argv[++i];
@@ -114,6 +139,7 @@ function parseArgs(argv) {
     else if (a === "--site-url")      o.overrides.siteUrl = argv[++i];
     else if (a === "--force")         o.force = true;
     else if (a === "--dry")           o.dry = true;
+    else if (o.cmd === "pick" && !o.template && !a.startsWith("-")) o.template = a;
     else { console.error(`unknown arg: ${a}\n${HELP}`); process.exit(2); }
   }
   if (!o.cmd) { console.error(HELP); process.exit(2); }
@@ -121,7 +147,12 @@ function parseArgs(argv) {
     console.error(`× --source must be one of: all, claude, codex`); process.exit(2);
   }
   // resolve default output per-cmd
-  if (o.output == null) o.output = o.cmd === "og" ? "./og.png" : "./data.js";
+  if (o.output == null) {
+    if (o.cmd === "og") o.output = "./og.png";
+    else if (o.cmd === "badge") o.output = "./badge.svg";
+    else o.output = "./data.js";
+  }
+  if (o.input == null) o.input = "./data.js";
   return o;
 }
 
@@ -708,6 +739,220 @@ function runBrand(args) {
   }
 }
 
+// ─── badge: emit SVG badge.svg + card.svg ─────────────────────────────────
+
+function loadResumeData(filepath) {
+  if (!existsSync(filepath)) {
+    console.error(`× ${filepath} not found.`);
+    console.error(`  generate it first: \`tokenfolio init\``);
+    process.exit(1);
+  }
+  const text = readFileSync(filepath, "utf8");
+  const sandbox = { window: {}, console };
+  try {
+    vm.runInNewContext(text, sandbox, { timeout: 1000 });
+  } catch (e) {
+    console.error(`× couldn't read ${filepath}: ${e.message}`);
+    process.exit(1);
+  }
+  const data = sandbox.window.RESUME_DATA;
+  if (!data || typeof data !== "object") {
+    console.error(`× ${filepath} did not define window.RESUME_DATA`);
+    process.exit(1);
+  }
+  return data;
+}
+
+function fmtNum(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + "B";
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + "k";
+  return String(n | 0);
+}
+
+// Verdana 11 averages ~6.4px/char; pad both ends.
+function approxTextWidth(s, fontSize = 11) {
+  return Math.ceil(String(s).length * (fontSize * 0.585));
+}
+
+function escXml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;"
+  }[c]));
+}
+
+function buildBadgeSvg({ label, value, color }) {
+  const PAD = 10;
+  const labelW = approxTextWidth(label) + PAD * 2;
+  const valueW = approxTextWidth(value) + PAD * 2;
+  const totalW = labelW + valueW;
+  const H = 20;
+  const labelMid = labelW / 2;
+  const valueMid = labelW + valueW / 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${totalW}" height="${H}" role="img" aria-label="${escXml(label)}: ${escXml(value)}">
+  <title>${escXml(label)}: ${escXml(value)}</title>
+  <linearGradient id="tf-s" x2="0" y2="100%">
+    <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+    <stop offset="1" stop-opacity=".1"/>
+  </linearGradient>
+  <clipPath id="tf-r"><rect width="${totalW}" height="${H}" rx="3" fill="#fff"/></clipPath>
+  <g clip-path="url(#tf-r)">
+    <rect width="${labelW}" height="${H}" fill="#0a0a0f"/>
+    <rect x="${labelW}" width="${valueW}" height="${H}" fill="${escXml(color)}"/>
+    <rect width="${totalW}" height="${H}" fill="url(#tf-s)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="11">
+    <text x="${labelMid}" y="14" fill="#010101" fill-opacity=".3">${escXml(label)}</text>
+    <text x="${labelMid}" y="13">${escXml(label)}</text>
+    <text x="${valueMid}" y="14" fill="#010101" fill-opacity=".3">${escXml(value)}</text>
+    <text x="${valueMid}" y="13">${escXml(value)}</text>
+  </g>
+</svg>
+`;
+}
+
+function buildCardSvg({ data, color }) {
+  const W = 460, H = 180;
+  const handle = data.user?.handle || "@you";
+  const year = data.year || new Date().getFullYear();
+  const totalTokens = (data.totals?.tokens) | 0;
+  const totalSessions = (data.totals?.sessions) | 0;
+  const projects = (data.totals?.projects) | (data.top_projects?.length || 0);
+  const topModel = data.by_model?.[0]?.name || "—";
+  const months = Array.isArray(data.by_month) ? data.by_month : [];
+  const peak = months.reduce((a, b) => (a?.tokens || 0) > (b?.tokens || 0) ? a : b, months[0] || { tokens: 0 });
+
+  // sparkline: 12 bars, right-side area
+  const sparkX = 240, sparkY = 80, sparkW = 200, sparkH = 70;
+  const maxT = months.reduce((m, x) => Math.max(m, x.tokens || 0), 1);
+  const barCount = months.length || 12;
+  const gap = 4;
+  const barW = Math.max(2, (sparkW - gap * (barCount - 1)) / barCount);
+  const bars = months.map((m, i) => {
+    const h = Math.max(2, ((m.tokens || 0) / maxT) * sparkH);
+    const x = sparkX + i * (barW + gap);
+    const y = sparkY + sparkH - h;
+    const isPeak = m === peak && (m.tokens || 0) > 0;
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="1" fill="${isPeak ? color : "#3a3450"}" opacity="${isPeak ? 1 : 0.85}"/>
+    <text x="${(x + barW / 2).toFixed(1)}" y="${(sparkY + sparkH + 14).toFixed(1)}" fill="#6b6580" font-size="8" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">${escXml((m.label || "").slice(0, 1))}</text>`;
+  }).join("\n    ");
+
+  const lineFmt = `${fmtNum(totalSessions)} sessions · ${projects} projects · top ${topModel}`;
+  const peakLine = peak && peak.tokens > 0
+    ? `peak ${peak.label} · ${fmtNum(peak.tokens)} tokens`
+    : "";
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="tokenfolio card">
+  <title>tokenfolio · ${escXml(handle)} · ${fmtNum(totalTokens)} tokens in ${year}</title>
+  <defs>
+    <linearGradient id="tf-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c0c14"/>
+      <stop offset="1" stop-color="#1a1530"/>
+    </linearGradient>
+    <linearGradient id="tf-accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="${escXml(color)}"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+  <rect width="${W}" height="${H}" rx="10" fill="url(#tf-bg)" stroke="#2a2438" stroke-width="1"/>
+  <circle cx="22" cy="28" r="4" fill="url(#tf-accent)"/>
+  <text x="34" y="33" fill="${escXml(color)}" font-size="12" font-weight="700" letter-spacing="0.12em">TOKENFOLIO · ${escXml(String(year))}</text>
+  <text x="22" y="56" fill="#9ca3af" font-size="11">${escXml(handle)}</text>
+  <text x="22" y="106" fill="#fff" font-size="38" font-weight="800" letter-spacing="-0.02em">${escXml(fmtNum(totalTokens))} tokens</text>
+  <text x="22" y="132" fill="#a3a3b8" font-size="11">${escXml(lineFmt)}</text>
+  <text x="22" y="150" fill="#a3a3b8" font-size="11">${escXml(peakLine)}</text>
+  <g>
+    ${bars}
+  </g>
+</svg>
+`;
+}
+
+function runBadge(args) {
+  const data = loadResumeData(args.input);
+  const totalTokens = (data.totals?.tokens) | 0;
+  const year = data.year || new Date().getFullYear();
+  const value = `${fmtNum(totalTokens)} tokens · ${year}`;
+  const badge = buildBadgeSvg({ label: "tokenfolio", value, color: args.color });
+
+  if (args.dry) {
+    process.stdout.write(badge);
+    if (!args.skipCard) {
+      process.stdout.write("\n");
+      process.stdout.write(buildCardSvg({ data, color: args.color }));
+    }
+    return;
+  }
+
+  checkOutputPath(args.output);
+  writeFileSync(args.output, badge, "utf8");
+  console.error(`✓ wrote ${args.output} (${badge.length} bytes)`);
+
+  if (!args.skipCard) {
+    checkOutputPath(args.cardOutput);
+    const card = buildCardSvg({ data, color: args.color });
+    writeFileSync(args.cardOutput, card, "utf8");
+    console.error(`✓ wrote ${args.cardOutput} (${card.length} bytes)`);
+  }
+
+  // Print embed snippet so the user can paste directly into their profile README.
+  const remote = gitRemoteUrl();
+  const m = remote.match(/[:/]([^/:]+)\/([^/]+?)(?:\.git)?\/?$/);
+  if (m) {
+    const [, gh, repo] = m;
+    const rawBase = `https://raw.githubusercontent.com/${gh}/${repo}/main`;
+    const siteUrl = `https://${gh}.github.io/${repo}/`;
+    console.error(``);
+    console.error(`  embed snippet (paste into your GitHub profile README):`);
+    console.error(``);
+    console.error(`    [![tokenfolio](${rawBase}/${basename(args.output)})](${siteUrl})`);
+    if (!args.skipCard) {
+      console.error(`    [![tokenfolio card](${rawBase}/${basename(args.cardOutput)})](${siteUrl})`);
+    }
+  }
+}
+
+// ─── pick: redirect index.html → templates/<name>/ ────────────────────────
+
+function runPick(args) {
+  const t = args.template;
+  if (!t) {
+    console.error("× usage: tokenfolio pick <template>");
+    console.error("  available: " + TEMPLATE_DIRS.join(", "));
+    process.exit(2);
+  }
+  if (!TEMPLATE_DIRS.includes(t)) {
+    console.error(`× unknown template: ${t}`);
+    console.error("  available: " + TEMPLATE_DIRS.join(", "));
+    process.exit(1);
+  }
+  const target = `templates/${t}/`;
+  const out = join(process.cwd(), "index.html");
+  if (existsSync(out) && !args.force) {
+    console.error(`× ${out} exists. Use --force to overwrite.`);
+    process.exit(1);
+  }
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>tokenfolio · ${t}</title>
+<meta http-equiv="refresh" content="0; url=${target}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="${target}">
+<style>html,body{margin:0;height:100%;background:#0a0a0f;color:#cdcdd6;font:14px/1.5 -apple-system,system-ui,sans-serif;display:grid;place-items:center}a{color:#a78bfa}</style>
+</head>
+<body>
+<p>Redirecting to <a href="${target}">${target}</a> …</p>
+<script>location.replace(${JSON.stringify(target)})</script>
+</body>
+</html>
+`;
+  writeFileSync(out, html, "utf8");
+  console.error(`✓ index.html → ${target}`);
+  console.error(`  open it in a browser, then \`git add index.html && git commit\``);
+}
+
 // ─── output safety ────────────────────────────────────────────────────────
 
 function checkOutputPath(p) {
@@ -730,6 +975,8 @@ function main() {
 
   if (args.cmd === "brand") { runBrand(args); return; }
   if (args.cmd === "og")    { checkOutputPath(args.output); runOg(args); return; }
+  if (args.cmd === "badge") { runBadge(args); return; }
+  if (args.cmd === "pick")  { runPick(args); return; }
 
   // === init ===
   const year = args.year;
