@@ -13,6 +13,29 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 
 **Live demo:** https://tt-a1i.github.io/tokenfolio/
 
+<table>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/wrapped/"><img src="previews/wrapped.jpg" alt="wrapped" width="280"></a><br><sub><b>wrapped</b> · social</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/cosmos/"><img src="previews/cosmos.jpg" alt="cosmos" width="280"></a><br><sub><b>cosmos</b> · constellations</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/almanac/"><img src="previews/almanac.jpg" alt="almanac" width="280"></a><br><sub><b>almanac</b> · gothic broadsheet</sub></td>
+</tr>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/terminal/"><img src="previews/terminal.jpg" alt="terminal" width="280"></a><br><sub><b>terminal</b> · hacker</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/aurora/"><img src="previews/aurora.jpg" alt="aurora" width="280"></a><br><sub><b>aurora</b> · glassmorphism</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/holo/"><img src="previews/holo.jpg" alt="holo" width="280"></a><br><sub><b>holo</b> · trading card</sub></td>
+</tr>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/pixel/"><img src="previews/pixel.jpg" alt="pixel" width="280"></a><br><sub><b>pixel</b> · 8-bit RPG</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/pass/"><img src="previews/pass.jpg" alt="pass" width="280"></a><br><sub><b>pass</b> · boarding pass</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/brutalist/"><img src="previews/brutalist.jpg" alt="brutalist" width="280"></a><br><sub><b>brutalist</b> · Wired cover</sub></td>
+</tr>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/tcg/"><img src="previews/tcg.jpg" alt="tcg" width="280"></a><br><sub><b>tcg</b> · TCG card</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/vinyl/"><img src="previews/vinyl.jpg" alt="vinyl" width="280"></a><br><sub><b>vinyl</b> · LP liner notes</sub></td>
+  <td align="center"><sub><i>your template here →</i><br>PRs welcome</sub></td>
+</tr>
+</table>
+
 > 🆕 **v0.7** — new **vinyl** template (back-of-an-LP-sleeve liner notes, square 1:1, made for IG screenshots) and new `tokenfolio share` one-liner that opens X / LinkedIn pre-filled with your stats.
 > **v0.6** — every template ships with a one-tap **PNG export + Web Share** button (bottom-right) and a "Built with tokenfolio" chip (top-right) that survives screenshot crops. `tokenfolio badge` mints an SVG for your GitHub profile README. `tokenfolio pick <template>` picks your homepage. **TCG** template added (Pokémon-style trading card).
 

@@ -68,14 +68,16 @@
   }
   .tcard:hover { transform: translateY(-3px); border-color: var(--accent); }
   .tcard .frame {
-    height: 320px; overflow: hidden; position: relative;
+    aspect-ratio: 16 / 10; overflow: hidden; position: relative;
     background: #000; border-bottom: 1px solid var(--border);
   }
-  .tcard iframe {
-    width: 200%; height: 200%;
-    transform: scale(0.5); transform-origin: 0 0;
-    border: 0; pointer-events: none;
+  .tcard .frame img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
   }
+  .tcard:hover .frame img { transform: scale(1.04); }
   .tcard .info {
     padding: 16px 18px 18px;
     display: flex; flex-direction: column; gap: 8px;
@@ -122,7 +124,7 @@
 <body>
   <header>
     <div class="brand">token<em>folio</em></div>
-    <div class="meta">v0.7 · 11 TEMPLATES · NPX READY</div>
+    <div class="meta">v0.8 · 11 TEMPLATES · INSTANT-LOAD GALLERY</div>
   </header>
 
   <h1>An AI usage <em>portfolio</em>,<br>made readable.</h1>
@@ -135,7 +137,7 @@
   <div class="grid">
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/wrapped/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/wrapped.jpg" alt="wrapped" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Wrapped</h3>
@@ -150,7 +152,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/cosmos/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/cosmos.jpg" alt="cosmos" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Cosmos</h3>
@@ -165,7 +167,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/almanac/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/almanac.jpg" alt="almanac" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Almanac</h3>
@@ -180,7 +182,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/terminal/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/terminal.jpg" alt="terminal" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Terminal</h3>
@@ -195,7 +197,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/aurora/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/aurora.jpg" alt="aurora" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Aurora</h3>
@@ -210,7 +212,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/holo/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/holo.jpg" alt="holo" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Holo Card</h3>
@@ -225,7 +227,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/pixel/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/pixel.jpg" alt="pixel" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Pixel</h3>
@@ -240,7 +242,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/pass/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/pass.jpg" alt="pass" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Boarding Pass</h3>
@@ -255,7 +257,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/brutalist/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/brutalist.jpg" alt="brutalist" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Brutalist</h3>
@@ -270,7 +272,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/tcg/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/tcg.jpg" alt="tcg" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>TCG Card</h3>
@@ -285,7 +287,7 @@
     </article>
 
     <article class="tcard">
-      <div class="frame"><iframe src="templates/vinyl/" loading="lazy"></iframe></div>
+      <div class="frame"><img src="previews/vinyl.jpg" alt="vinyl" loading="lazy"></div>
       <div class="info">
         <div class="row">
           <h3>Vinyl LP</h3>

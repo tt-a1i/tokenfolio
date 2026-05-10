@@ -13,6 +13,29 @@
 
 **在线 Demo：** https://tt-a1i.github.io/tokenfolio/
 
+<table>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/wrapped/"><img src="previews/wrapped.jpg" alt="wrapped" width="280"></a><br><sub><b>wrapped</b> · social</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/cosmos/"><img src="previews/cosmos.jpg" alt="cosmos" width="280"></a><br><sub><b>cosmos</b> · constellations</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/almanac/"><img src="previews/almanac.jpg" alt="almanac" width="280"></a><br><sub><b>almanac</b> · gothic broadsheet</sub></td>
+</tr>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/terminal/"><img src="previews/terminal.jpg" alt="terminal" width="280"></a><br><sub><b>terminal</b> · hacker</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/aurora/"><img src="previews/aurora.jpg" alt="aurora" width="280"></a><br><sub><b>aurora</b> · glassmorphism</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/holo/"><img src="previews/holo.jpg" alt="holo" width="280"></a><br><sub><b>holo</b> · trading card</sub></td>
+</tr>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/pixel/"><img src="previews/pixel.jpg" alt="pixel" width="280"></a><br><sub><b>pixel</b> · 8-bit RPG</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/pass/"><img src="previews/pass.jpg" alt="pass" width="280"></a><br><sub><b>pass</b> · boarding pass</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/brutalist/"><img src="previews/brutalist.jpg" alt="brutalist" width="280"></a><br><sub><b>brutalist</b> · Wired cover</sub></td>
+</tr>
+<tr>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/tcg/"><img src="previews/tcg.jpg" alt="tcg" width="280"></a><br><sub><b>tcg</b> · TCG card</sub></td>
+  <td align="center"><a href="https://tt-a1i.github.io/tokenfolio/templates/vinyl/"><img src="previews/vinyl.jpg" alt="vinyl" width="280"></a><br><sub><b>vinyl</b> · LP liner notes</sub></td>
+  <td align="center"><sub><i>your template here →</i><br>PRs welcome</sub></td>
+</tr>
+</table>
+
 > 🆕 **v0.7**：新增 **vinyl** 模板（黑胶唱片背面 liner notes 风，方形 1:1 适合发 IG），新增 `tokenfolio share` 一行命令打开 X / LinkedIn 预填好的分享窗口。
 > **v0.6**：每个模板右下角内置「截图为 PNG / 一键分享」按钮，右上角带 "Built with tokenfolio" 徽章（截图也能看到）。新增 `tokenfolio badge` 把成绩做成 SVG 直接贴到 GitHub profile README，新增 `tokenfolio pick <template>` 一行命令选首页，新增 **TCG** 模板（宝可梦风格收藏卡）。
 

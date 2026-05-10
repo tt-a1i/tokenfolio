@@ -69,6 +69,15 @@ jobs:
           kill $server_pid
           exit $fail
 
+      - name: Every template has a preview JPEG
+        run: |
+          fail=0
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl; do
+            f=previews/$t.jpg
+            test -s "$f" || { echo "✗ $f missing or empty"; fail=1; }
+          done
+          [ $fail = 0 ] && echo "✓ all 11 previews present" || exit 1
+
       - name: Every template loads share.js + has data-tf-capture
         run: |
           fail=0
