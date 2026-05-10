@@ -31,6 +31,7 @@ USAGE
   tokenfolio brand [options]            point templates' og:meta at your deploy URL
   tokenfolio badge [options]            emit badge.svg + card.svg for your README
   tokenfolio pick  <template> [--force] make <template> the homepage (rewrites index.html)
+  tokenfolio share [options]            open your deploy URL + a pre-filled X share intent
 
 INIT OPTIONS
   --source NAME      claude | codex | all   (default: all)
@@ -59,6 +60,11 @@ BADGE OPTIONS
 
 PICK OPTIONS
   --force            overwrite existing index.html
+
+SHARE OPTIONS
+  --site-url URL     deploy URL (default: inferred from \`git remote origin\`)
+  --text TEXT        override the share text
+  --no-open          print URLs only, don't open the browser
 
 GLOBAL
   -h, --help
@@ -102,7 +108,7 @@ const CODEX_ALLOWED_PAYLOAD_TYPES = new Set(["token_count", "turn_context"]);
 const TEMPLATE_DIRS = [
   "wrapped", "cosmos", "almanac", "terminal",
   "aurora", "holo", "pixel", "pass", "brutalist",
-  "tcg"
+  "tcg", "vinyl"
 ];
 
 function parseArgs(argv) {
@@ -123,13 +129,15 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "-h" || a === "--help") { console.log(HELP); process.exit(0); }
-    else if (["init", "og", "brand", "badge", "pick"].includes(a)) o.cmd = a;
+    else if (["init", "og", "brand", "badge", "pick", "share"].includes(a)) o.cmd = a;
     else if (a === "--source")        o.source = argv[++i];
     else if (a === "--year")          o.year = parseYearArg(argv[++i]);
     else if (a === "--output" || a === "-o") o.output = argv[++i];
     else if (a === "--input")         o.input = argv[++i];
     else if (a === "--card-output")   o.cardOutput = argv[++i];
     else if (a === "--no-card")       o.skipCard = true;
+    else if (a === "--no-open")       o.noOpen = true;
+    else if (a === "--text")          o.shareText = argv[++i];
     else if (a === "--color")         o.color = argv[++i];
     else if (a === "--name")          o.overrides.name = argv[++i];
     else if (a === "--handle")        o.overrides.handle = argv[++i];
@@ -953,6 +961,59 @@ function runPick(args) {
   console.error(`  open it in a browser, then \`git add index.html && git commit\``);
 }
 
+// ─── share: open deploy URL + pre-filled X intent ────────────────────────
+
+function openInBrowser(url) {
+  // Best-effort: macOS `open`, Linux `xdg-open`, Windows `start`. Don't crash
+  // if none work — `--no-open` always prints URLs anyway.
+  const candidates = process.platform === "darwin"  ? [["open", [url]]]
+                    : process.platform === "win32"  ? [["cmd", ["/c", "start", "", url]]]
+                    : [["xdg-open", [url]], ["gio", ["open", url]]];
+  for (const [cmd, args] of candidates) {
+    const r = spawnSync(cmd, args, { stdio: "ignore" });
+    if (r.status === 0) return true;
+  }
+  return false;
+}
+
+function runShare(args) {
+  let siteUrl = args.overrides.siteUrl || detectSiteUrl();
+  if (!siteUrl) {
+    console.error("× could not detect site URL.");
+    console.error("  pass it explicitly:");
+    console.error("    tokenfolio share --site-url https://you.github.io/repo/");
+    process.exit(1);
+  }
+  if (!siteUrl.endsWith("/")) siteUrl += "/";
+
+  // Try to enrich the share text with real numbers if data.js exists.
+  let text = args.shareText;
+  if (!text) {
+    try {
+      const data = loadResumeData(args.input);
+      const total = fmtNum((data.totals?.tokens) | 0);
+      const year  = data.year || new Date().getFullYear();
+      text = `My ${year} on Claude Code & Codex: ${total} tokens.\nMade with tokenfolio →`;
+    } catch {
+      text = "Made with tokenfolio →";
+    }
+  }
+
+  const xUrl  = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text)
+              + "&url=" + encodeURIComponent(siteUrl);
+  const liUrl = "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(siteUrl);
+
+  console.error("▸ deploy:   " + siteUrl);
+  console.error("▸ X intent: " + xUrl);
+  console.error("▸ LinkedIn: " + liUrl);
+
+  if (args.noOpen) return;
+  const opened = openInBrowser(siteUrl) && openInBrowser(xUrl);
+  if (!opened) {
+    console.error("  (couldn't auto-open; copy the URLs above into a browser)");
+  }
+}
+
 // ─── output safety ────────────────────────────────────────────────────────
 
 function checkOutputPath(p) {
@@ -977,6 +1038,7 @@ function main() {
   if (args.cmd === "og")    { checkOutputPath(args.output); runOg(args); return; }
   if (args.cmd === "badge") { runBadge(args); return; }
   if (args.cmd === "pick")  { runPick(args); return; }
+  if (args.cmd === "share") { runShare(args); return; }
 
   // === init ===
   const year = args.year;

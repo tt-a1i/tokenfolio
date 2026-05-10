@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tokenfolio · vinyl</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="tokenfolio · vinyl liner notes">
+<meta property="og:description" content="A vinyl album back-cover portrait of one engineer's year with the machine.">
+<meta property="og:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<meta property="og:url" content="https://tt-a1i.github.io/tokenfolio/templates/vinyl/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="tokenfolio · vinyl liner notes">
+<meta name="twitter:description" content="A vinyl album back-cover portrait of one engineer's year with the machine.">
+<meta name="twitter:image" content="https://tt-a1i.github.io/tokenfolio/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Crimson+Pro:ital,wght@1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #f0ead8;
+  --cream-mid: #e8dfc8;
+  --cream-dark: #d6cba8;
+  --ink: #0a0a0a;
+  --ink-mid: #1a1a1a;
+  --ink-soft: #3a3a3a;
+  --ink-faint: #6b6b6b;
+  --rule: #1a1a1a;
+}
+
+html, body {
+  min-height: 100vh;
+  background: #2a2520;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', Helvetica Neue, Helvetica, Arial, sans-serif;
+  padding: 32px 16px 48px;
+}
+
+/* Paper texture on body */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(240,234,216,.03) 1px, transparent 1px),
+    radial-gradient(circle at 8px 5px, rgba(240,234,216,.025) 1px, transparent 1px);
+  background-size: 12px 12px, 19px 19px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ── Sleeve (the square card) ─────────────────────────── */
+.sleeve {
+  position: relative; z-index: 1;
+  width: clamp(360px, 60vmin, 640px);
+  aspect-ratio: 1;
+  background: var(--cream);
+  color: var(--ink);
+
+  /* Paper texture on sleeve */
+  background-image:
+    radial-gradient(circle at 2px 3px, rgba(100,80,40,.07) 1px, transparent 1px),
+    radial-gradient(circle at 9px 7px, rgba(100,80,40,.05) 1px, transparent 1px),
+    radial-gradient(circle at 5px 14px, rgba(100,80,40,.04) 1px, transparent 1px);
+  background-size: 8px 8px, 13px 13px, 6px 6px;
+  background-color: var(--cream);
+
+  box-shadow:
+    0 0 0 1px var(--ink),
+    0 40px 100px rgba(0,0,0,.5),
+    /* dog-ear shadow on bottom-right corner */
+    8px 8px 0 -4px rgba(0,0,0,.08),
+    inset -1px -1px 0 rgba(0,0,0,.06);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* ── Vinyl disc ornament (top-right, concentric rings) ─── */
+.vinyl-disc {
+  position: absolute;
+  top: -24px; right: -24px;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      #0a0a0a 0%,
+      #0a0a0a 10%,
+      transparent 10%,
+      transparent 12%,
+      #1a1a1a 12%,
+      #1a1a1a 16%,
+      var(--cream-dark) 16%,
+      var(--cream-dark) 18%,
+      #0a0a0a 18%,
+      #0a0a0a 22%,
+      var(--cream-dark) 22%,
+      var(--cream-dark) 24%,
+      #0a0a0a 24%,
+      #0a0a0a 32%,
+      var(--cream-dark) 32%,
+      var(--cream-dark) 33%,
+      #0a0a0a 33%,
+      #0a0a0a 42%,
+      var(--cream-dark) 42%,
+      var(--cream-dark) 43%,
+      #0a0a0a 43%,
+      #0a0a0a 50%,
+      var(--cream-dark) 50%,
+      var(--cream-dark) 51%,
+      #0a0a0a 51%,
+      #0a0a0a 100%
+    );
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* ── Top section: Artist + Album title ────────────────── */
+.sleeve-top {
+  flex: 0 0 auto;
+  padding: 18px 20px 14px;
+  border-bottom: 2px solid var(--rule);
+  position: relative;
+}
+
+.artist-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 6vmin, 36px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--ink);
+  padding-right: 90px; /* avoid overlapping disc */
+}
+
+.album-meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 5px;
+  padding-right: 0;
+}
+
+.album-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: clamp(8px, 1.8vmin, 12px);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.album-runtime {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(9px, 2vmin, 13px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  font-feature-settings: "tnum" 1;
+}
+
+/* ── Track listing ────────────────────────────────────── */
+.tracklist-section {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px 8px;
+  border-bottom: 1px solid var(--rule);
+  min-height: 0;
+}
+
+.tracklist-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 18px;
+  flex: 1 1 auto;
+}
+
+.tracklist-side {
+  display: flex;
+  flex-direction: column;
+}
+
+.side-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(7px, 1.5vmin, 10px);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 4px;
+  margin-bottom: 5px;
+}
+
+.track-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 3px 0;
+  border-bottom: 1px dotted rgba(10,10,10,.18);
+  font-feature-settings: "tnum" 1;
+}
+.track-row:last-child {
+  border-bottom: none;
+}
+
+.track-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(7px, 1.6vmin, 10px);
+  font-weight: 500;
+  color: var(--ink-faint);
+  flex: 0 0 auto;
+  min-width: 1.6em;
+}
+
+.track-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: clamp(7px, 1.6vmin, 10px);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+}
+
+.track-dots {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(7px, 1.6vmin, 10px);
+  color: rgba(10,10,10,.25);
+  flex: 0 0 auto;
+  letter-spacing: -0.04em;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 40px;
+}
+
+.track-dur {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(7px, 1.6vmin, 10px);
+  font-weight: 500;
+  color: var(--ink-soft);
+  flex: 0 0 auto;
+}
+
+/* ── Credits block ────────────────────────────────────── */
+.credits-section {
+  flex: 0 0 auto;
+  padding: 8px 20px 6px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.credits-produced {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: clamp(6.5px, 1.4vmin, 9.5px);
+  letter-spacing: 0.06em;
+  color: var(--ink-mid);
+  line-height: 1.7;
+}
+
+.credits-recording {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(7px, 1.5vmin, 10.5px);
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.liner-notes {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(7px, 1.5vmin, 10.5px);
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px dotted rgba(10,10,10,.2);
+}
+
+/* ── Bottom strip: catalog + barcode + runout ─────────── */
+.sleeve-bottom {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 7px 20px 7px;
+  gap: 12px;
+  border-top: 0;
+}
+
+.catalog-block {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+
+.catalog-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: clamp(7px, 1.5vmin, 10px);
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+
+.runout {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(5.5px, 1.1vmin, 7.5px);
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+/* ── Barcode ──────────────────────────────────────────── */
+.barcode-block {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.barcode-bars {
+  display: flex;
+  align-items: stretch;
+  height: 28px;
+  gap: 0;
+}
+
+.barcode-bars span {
+  display: inline-block;
+  background: var(--ink);
+  height: 100%;
+}
+
+.barcode-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(5px, 1.1vmin, 7.5px);
+  letter-spacing: 0.18em;
+  color: var(--ink);
+}
+
+/* ── Mobile: stack Side A / Side B ───────────────────── */
+@media (max-width: 639px) {
+  .sleeve {
+    width: 92vw;
+  }
+  .tracklist-cols {
+    grid-template-columns: 1fr;
+    gap: 6px 0;
+  }
+}
+</style>
+</head>
+<body data-tf-capture=".sleeve">
+
+<article class="sleeve" id="sleeve">
+
+  <!-- Vinyl disc ornament -->
+  <div class="vinyl-disc" aria-hidden="true"></div>
+
+  <!-- Top: Artist + album title + runtime -->
+  <header class="sleeve-top">
+    <div class="artist-name" id="artist-name">—</div>
+    <div class="album-meta-row">
+      <span class="album-title" id="album-title">—</span>
+      <span class="album-runtime" id="album-runtime">—</span>
+    </div>
+  </header>
+
+  <!-- Track listing -->
+  <section class="tracklist-section">
+    <div class="tracklist-cols">
+      <div class="tracklist-side">
+        <div class="side-label">Side A</div>
+        <div id="side-a"></div>
+      </div>
+      <div class="tracklist-side">
+        <div class="side-label">Side B</div>
+        <div id="side-b"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Credits + liner notes -->
+  <section class="credits-section">
+    <div class="credits-produced" id="credits-produced">—</div>
+    <div class="credits-recording" id="credits-recording">—</div>
+    <div class="liner-notes" id="liner-notes">—</div>
+  </section>
+
+  <!-- Bottom strip -->
+  <div class="sleeve-bottom">
+    <div class="catalog-block">
+      <div class="catalog-number" id="catalog-number">—</div>
+      <div class="runout" id="runout">—</div>
+    </div>
+    <div class="barcode-block">
+      <div class="barcode-bars" id="barcode-bars"></div>
+      <div class="barcode-number" id="barcode-number">—</div>
+    </div>
+  </div>
+
+</article>
+
+<script src="../../data.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const D = window.RESUME_DATA || {};
+  const F = window.RESUME_FMT || { num: function(x) { return String(x); }, pct: function() { return '0%'; }, comma: function(n) { return n.toLocaleString('en-US'); } };
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* ── Year → long-form words (2024–2030 range) ─────────── */
+  function yearToWords(y) {
+    var ones = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE',
+                'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN',
+                'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+    var tens = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+    function twoDigit(n) {
+      if (n < 20) return ones[n];
+      var t = tens[Math.floor(n / 10)];
+      var o = ones[n % 10];
+      return o ? t + '-' + o : t;
+    }
+    // Handle four-digit years as two pairs: 20 + 25 → "TWENTY TWENTY-FIVE"
+    var hi = Math.floor(y / 100);
+    var lo = y % 100;
+    var hiW = twoDigit(hi);
+    var loW = lo === 0 ? 'HUNDRED' : twoDigit(lo);
+    return hiW + ' ' + loW;
+  }
+
+  /* ── Stylized runtime from raw token count ─────────────
+     HH = millions, MM = hundreds-of-thousands mod 100,
+     SS = tens-of-thousands mod 100. Pure visual rhythm.   */
+  function tokensToRuntime(t) {
+    var hh = Math.floor(t / 1e6);
+    var mm = Math.floor((t % 1e6) / 1e4);
+    var ss = Math.floor((t % 1e4) / 100);
+    function pad(n) { return String(n).padStart(2, '0'); }
+    return pad(hh) + ':' + pad(mm) + ':' + pad(ss);
+  }
+
+  /* ── Track duration from token count ───────────────────
+     (tokens / 1e6) → "12:40" style (whole.decimal → whole:decimal) */
+  function tokensToTrackDur(t) {
+    var val = t / 1e6;
+    var whole = Math.floor(val);
+    var dec = Math.round((val - whole) * 100);
+    return String(whole) + ':' + String(dec).padStart(2, '0');
+  }
+
+  /* ── Deterministic catalog number ──────────────────────── */
+  function makeCatalog(year, handle) {
+    var h = String(handle || '').replace(/^@/, '');
+    var seed = h.length * 7 + (year % 100) * 13;
+    var num = String(((seed * 37 + 89) % 899) + 100);
+    return 'TF-' + year + ' · LP ' + num;
+  }
+
+  /* ── Fake EAN-style barcode bars ───────────────────────── */
+  // Pattern encodes alternating narrow/wide bars with guard bars.
+  var BAR_PATTERN = [1,1,2,1,3,1,2,1,1,2,3,1,1,2,1,3,2,1,1,2,1,3,1,1,2,2,1,3,1,1,2,1,3,2,1,1,2,3,1,1,2,1];
+  var BAR_GAPS    = [2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1];
+
+  function renderBarcode() {
+    var bars = document.getElementById('barcode-bars');
+    if (!bars) return;
+    var html = '';
+    for (var i = 0; i < BAR_PATTERN.length; i++) {
+      var w = BAR_PATTERN[i];
+      var g = BAR_GAPS[i];
+      // bar
+      html += '<span style="width:' + w + 'px;' + (i % 7 === 0 ? 'height:105%;' : '') + '"></span>';
+      // gap
+      if (g > 0) {
+        html += '<span style="width:' + g + 'px;background:transparent;"></span>';
+      }
+    }
+    bars.innerHTML = html;
+  }
+
+  /* ── Fake barcode digit string ──────────────────────────── */
+  function makeBarcodeNum(year, handle) {
+    var h = String(handle || '').replace(/^@/, '');
+    var seed = (year % 100) * 100000 + (h.charCodeAt(0) || 7) * 1000 + (h.charCodeAt(1) || 3) * 100;
+    var n = (seed % 90000000) + 10000000;
+    var s = String(n);
+    return '7 ' + s.slice(0,5) + ' ' + s.slice(5) + ' 3';
+  }
+
+  /* ── Peak month helper ───────────────────────────────────── */
+  var months = D.by_month || [];
+  var peak = months.find(function(m) { return m.peak; }) ||
+             months.reduce(function(a, b) { return (a && a.tokens > b.tokens) ? a : b; }, null) ||
+             { label: 'March', tokens: 0, note: '' };
+
+  /* ── Data ───────────────────────────────────────────────── */
+  var u        = D.user    || {};
+  var totals   = D.totals  || {};
+  var year     = D.year    || new Date().getFullYear();
+  var models   = D.by_model   || [];
+  var projects = D.top_projects || [];
+
+  /* ── Artist + album title ───────────────────────────────── */
+  document.getElementById('artist-name').textContent = (u.name || 'UNKNOWN ARTIST').toUpperCase();
+  document.getElementById('album-title').textContent = yearToWords(year);
+  document.getElementById('album-runtime').textContent = tokensToRuntime(totals.tokens || 0);
+
+  /* ── Track listing ──────────────────────────────────────── */
+  var tracks = projects.slice(0, 6);
+  var mid    = Math.ceil(tracks.length / 2);
+  var sideA  = tracks.slice(0, mid);
+  var sideB  = tracks.slice(mid);
+
+  function renderTracks(list, startIdx) {
+    if (list.length === 0) {
+      return '<div class="track-row"><span class="track-name" style="color:var(--ink-faint);font-style:italic">no tracks</span></div>';
+    }
+    return list.map(function(p, i) {
+      var n  = startIdx + i + 1;
+      var num = (n < 10 ? '0' : '') + n + '.';
+      var dur = tokensToTrackDur(p.tokens || 0);
+      return '<div class="track-row">' +
+        '<span class="track-num">' + esc(num) + '</span>' +
+        '<span class="track-name">' + esc((p.name || '').toUpperCase()) + '</span>' +
+        '<span class="track-dots">&nbsp;&middot;&middot;&middot;&middot;&middot;&middot;</span>' +
+        '<span class="track-dur">' + esc(dur) + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  document.getElementById('side-a').innerHTML = renderTracks(sideA, 0);
+  document.getElementById('side-b').innerHTML = renderTracks(sideB, sideA.length);
+
+  /* ── Produced by credits ────────────────────────────────── */
+  var roles   = ['Produced by', 'Engineered by', 'Mastered by'];
+  var credits = models.slice(0, 3).map(function(m, i) {
+    return roles[i] + ' ' + esc(m.name.toUpperCase());
+  });
+  var producedLine = credits.join(' · ');
+  if (!producedLine) producedLine = 'Produced by the machine.';
+  document.getElementById('credits-produced').innerHTML = producedLine;
+
+  /* ── Recording credits (italic) ─────────────────────────── */
+  var loc       = esc(u.location || 'parts unknown');
+  var peakLabel = esc(peak.label || 'peak month');
+  var recLine   = 'Recorded at ' + loc + ' · ' + peakLabel + ' ' + year + '. Mixed in the dark hours.';
+  document.getElementById('credits-recording').textContent = recLine;
+
+  /* ── Liner notes paragraph ──────────────────────────────── */
+  var sess = totals.sessions || 0;
+  var proj = totals.projects || 0;
+  var tokFmt = F.num(totals.tokens || 0);
+  var avgFmt = F.num(totals.avg_session_tokens || 0);
+  var peakNote = peak.note ? esc(peak.note) : 'a formidable run that defined the arc of the year.';
+  var linerText = tokFmt + ' tokens across ' + sess + ' sessions and ' + proj + ' projects. ' +
+    peakLabel + ' carried the heaviest load—' + peakNote +
+    ' Averaging ' + avgFmt + ' tokens per session, these are not the traces of idle curiosity ' +
+    'but of sustained, deliberate craft at the seam between mind and machine.';
+  document.getElementById('liner-notes').textContent = linerText;
+
+  /* ── Catalog number ─────────────────────────────────────── */
+  document.getElementById('catalog-number').textContent = makeCatalog(year, u.handle || u.name || '');
+
+  /* ── Run-out groove ─────────────────────────────────────── */
+  document.getElementById('runout').innerHTML =
+    'MASTERED FOR DIGITAL · CORRECTLY RUN AT 33⅓ RPM · NO RIGHTS RESERVED';
+
+  /* ── Barcode ─────────────────────────────────────────────── */
+  renderBarcode();
+  document.getElementById('barcode-number').textContent = makeBarcodeNum(year, u.handle || u.name || '');
+
+})();
+</script>
+<script src="../../share.js" defer></script>
+</body>
+</html>

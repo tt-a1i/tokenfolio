@@ -13,7 +13,8 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 
 **Live demo:** https://tt-a1i.github.io/tokenfolio/
 
-> 🆕 **v0.6** — every template now ships with a one-tap **PNG export + Web Share** button (bottom-right) and a "Built with tokenfolio" chip (top-right) that survives screenshot crops. New `tokenfolio badge` mints an SVG for your GitHub profile README. New `tokenfolio pick <template>` picks your homepage. New 10th template: **TCG** (Pokémon-style trading card).
+> 🆕 **v0.7** — new **vinyl** template (back-of-an-LP-sleeve liner notes, square 1:1, made for IG screenshots) and new `tokenfolio share` one-liner that opens X / LinkedIn pre-filled with your stats.
+> **v0.6** — every template ships with a one-tap **PNG export + Web Share** button (bottom-right) and a "Built with tokenfolio" chip (top-right) that survives screenshot crops. `tokenfolio badge` mints an SVG for your GitHub profile README. `tokenfolio pick <template>` picks your homepage. **TCG** template added (Pokémon-style trading card).
 
 ## Templates
 
@@ -28,7 +29,8 @@ Pick a template. Edit one `data.js`. Deploy. Done.
 | 🎮 | **pixel**     | An 8-bit RPG character sheet. HP/MP bars, star stats, quest log, "Press A to recruit" |
 | ✈️ | **pass**      | A 1980s airline boarding pass — perforations, barcode, passport stamps per month |
 | 🟨 | **brutalist** | Wired magazine cover meets 1968 protest poster. Helvetica Black 200px, hard edges |
-| 🃏 | **tcg**       | A Pokémon-style trading card. Gold border, psychic frame, attacks, mouse-tracked foil (**new**) |
+| 🃏 | **tcg**       | A Pokémon-style trading card. Gold border, psychic frame, attacks, mouse-tracked foil |
+| 💿 | **vinyl**     | Back of a vinyl LP sleeve — square 1:1, track listing, "Produced by" credits, barcode (**new**) |
 
 More coming. Contributions welcome.
 
@@ -113,6 +115,20 @@ Available: `wrapped` / `cosmos` / `almanac` / `terminal` / `aurora` / `holo` / `
 
 > ⚠️ **Don't copy template files to the root directly** — they reference `<script src="../../data.js">` with a relative path. Copying to the root turns that into a 404. `tokenfolio pick` uses a redirect to sidestep this.
 
+### One-line share (`tokenfolio share`)
+
+After deploying, ship a post in one command:
+
+```bash
+npx tokenfolio share
+# auto-detects your GitHub Pages URL, then opens (in your browser):
+#   1. your tokenfolio deploy
+#   2. an X intent pre-filled with your stats
+# also prints a LinkedIn share URL to copy
+npx tokenfolio share --no-open    # print URLs only
+npx tokenfolio share --text "burned 47M tokens this year, you?"
+```
+
 ### GitHub profile badge (`tokenfolio badge`)
 
 After `init`, mint an SVG badge for your GitHub profile README:
@@ -163,12 +179,13 @@ Every template reads from the same data object. Switch templates with zero data 
 
 ## Roadmap
 
-- [x] 10 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist, tcg)
+- [x] 11 templates (wrapped, cosmos, almanac, terminal, aurora, holo, pixel, pass, brutalist, tcg, vinyl)
 - [x] `tokenfolio init` CLI for Claude Code (via ccusage)
 - [x] CLI: Codex (`~/.codex/sessions/`) parser
 - [x] CLI: `tokenfolio og` for personalized OG image (Pillow)
 - [x] CLI: `tokenfolio badge` README badge + sparkline card (pure Node, zero deps)
 - [x] CLI: `tokenfolio pick <template>` for homepage redirect
+- [x] CLI: `tokenfolio share` opens browser with pre-filled X / LinkedIn intent
 - [x] In-page PNG export + one-tap social sharing (v0.6)
 - [x] Bilingual README (中 / EN)
 - [ ] CLI: Cursor / Aider / Continue.dev support (where token counts exist)

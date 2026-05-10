@@ -13,9 +13,10 @@
 
 **在线 Demo：** https://tt-a1i.github.io/tokenfolio/
 
-> 🆕 **v0.6**：每个模板右下角内置「截图为 PNG / 一键分享」按钮，右上角带 "Built with tokenfolio" 徽章（截图也能看到）。新增 `tokenfolio badge` 把成绩做成 SVG 直接贴到 GitHub profile README，新增 `tokenfolio pick <template>` 一行命令选首页，新增第 10 个模板 **TCG**（宝可梦风格收藏卡）。
+> 🆕 **v0.7**：新增 **vinyl** 模板（黑胶唱片背面 liner notes 风，方形 1:1 适合发 IG），新增 `tokenfolio share` 一行命令打开 X / LinkedIn 预填好的分享窗口。
+> **v0.6**：每个模板右下角内置「截图为 PNG / 一键分享」按钮，右上角带 "Built with tokenfolio" 徽章（截图也能看到）。新增 `tokenfolio badge` 把成绩做成 SVG 直接贴到 GitHub profile README，新增 `tokenfolio pick <template>` 一行命令选首页，新增 **TCG** 模板（宝可梦风格收藏卡）。
 
-## 模板（10 个，更多持续加）
+## 模板（11 个，更多持续加）
 
 | | 名字 | 风格 |
 |---|---|---|
@@ -28,7 +29,8 @@
 | 🎮 | **pixel**     | 8-bit RPG 角色卡：HP/MP 条 + 星级属性 + 任务日志，「按 A 招募我」 |
 | ✈️ | **pass**      | 80 年代航空登机牌：穿孔 + 条形码 + 月度护照盖章，复古收藏感 |
 | 🟨 | **brutalist** | 瑞士 + Wired 风：黄黑红三色块、Helvetica Black 200px、不对称 grid |
-| 🃏 | **tcg**       | 宝可梦风格收藏卡：金边 + 紫色 psychic 框 + 攻击表 + 鼠标跟随 foil（**新**） |
+| 🃏 | **tcg**       | 宝可梦风格收藏卡：金边 + 紫色 psychic 框 + 攻击表 + 鼠标跟随 foil |
+| 💿 | **vinyl**     | 黑胶唱片背面 liner notes：方形 1:1，曲目列表 + 制作人致谢 + 真假条形码（**新**） |
 
 欢迎 PR 新模板。
 
@@ -113,6 +115,20 @@ npx tokenfolio pick wrapped --force
 
 > ⚠️ **不要直接把模板文件复制到根目录** — 模板里的 `<script src="../../data.js">` 是相对路径，复制到根后会变成 404。`tokenfolio pick` 用重定向规避了这个问题。
 
+### 一键分享 · `tokenfolio share`
+
+部署完之后想发个朋友圈/X？
+
+```bash
+npx tokenfolio share
+# 自动检测你的 GitHub Pages URL，浏览器同时打开：
+#   1. 你的 tokenfolio 部署页
+#   2. X intent，文案预填好你的成绩
+# 还会打印 LinkedIn 分享 URL 备用
+npx tokenfolio share --no-open    # 只打印 URL，不开浏览器
+npx tokenfolio share --text "我又搞了 47M token 了，你呢"
+```
+
 ### GitHub Profile 徽章 · `tokenfolio badge`
 
 跑完 `init` 后，把成绩做成 SVG，贴到你的 GitHub profile README：
@@ -163,12 +179,13 @@ window.RESUME_DATA = {
 
 ## 路线图
 
-- [x] 10 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist / tcg）
+- [x] 11 个模板（wrapped / cosmos / almanac / terminal / aurora / holo / pixel / pass / brutalist / tcg / vinyl）
 - [x] `tokenfolio init` CLI · Claude Code（通过 ccusage）
 - [x] CLI · Codex（`~/.codex/sessions/`）
 - [x] CLI · `tokenfolio og` 个性化 OG 图（Pillow）
 - [x] CLI · `tokenfolio badge` README 徽章 + 大卡片（纯 Node，零依赖）
 - [x] CLI · `tokenfolio pick <template>` 选首页
+- [x] CLI · `tokenfolio share` 一键打开 X / LinkedIn 预填分享窗口
 - [x] 模板 PNG 导出 + 一键社交分享（v0.6 内置）
 - [x] README 中英双语
 - [ ] CLI · Cursor / Aider / Continue.dev

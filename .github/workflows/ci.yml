@@ -42,13 +42,13 @@ jobs:
           echo "✓ pick wrapped wrote redirect"
           cd .. && rm -rf _ci-tmp
 
-      - name: All 10 templates serve 200
+      - name: All 11 templates serve 200
         run: |
           python3 -m http.server 8765 &
           server_pid=$!
           sleep 1
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8765/templates/$t/")
             if [ "$code" != "200" ]; then
               echo "✗ $t failed: HTTP $code"
@@ -72,12 +72,19 @@ jobs:
       - name: Every template loads share.js + has data-tf-capture
         run: |
           fail=0
-          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg; do
+          for t in wrapped cosmos almanac terminal aurora holo pixel pass brutalist tcg vinyl; do
             f=templates/$t/index.html
             grep -q 'share.js' "$f"        || { echo "✗ $t missing share.js"; fail=1; }
             grep -q 'data-tf-capture' "$f" || { echo "✗ $t missing data-tf-capture"; fail=1; }
           done
           [ $fail = 0 ] && echo "✓ all templates wired up" || exit 1
+
+      - name: share subcommand emits sane URLs
+        run: |
+          out=$(node bin/tokenfolio.js share --no-open --site-url https://example.com/me/ 2>&1)
+          echo "$out" | grep -q 'twitter.com/intent/tweet' || (echo "× share missing X URL" && exit 1)
+          echo "$out" | grep -q 'linkedin.com/sharing'    || (echo "× share missing LinkedIn URL" && exit 1)
+          echo "✓ share subcommand prints intent URLs"
 
       - name: npm pack contents are sane
         run: |
